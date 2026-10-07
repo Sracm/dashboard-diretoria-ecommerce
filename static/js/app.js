@@ -2140,6 +2140,30 @@ function renderizarPagamentosPorCanal(data) {
 // ==========================================================================
 // 8.1. Gráfico de Rosca Premium: Participação por Forma de Pagamento em %
 // ==========================================================================
+// ==========================================================================
+// 8.1. Gráfico de Rosca Premium: Participação por Forma de Pagamento em %
+// Visão Executiva: Redimensionado, Cores Harmoniosas & Seletor de Modo
+// ==========================================================================
+let modoDonutPagamento = 'tipo'; // 'tipo' (consolidado por categoria) ou 'forma' (detalhado por canal)
+let donutHoverIndex = null;
+let currentDisplayDonutItens = [];
+
+function trocarModoDonut(modo) {
+    modoDonutPagamento = modo;
+    const btnTipo = document.getElementById('btn-pay-mode-tipo');
+    const btnForma = document.getElementById('btn-pay-mode-forma');
+    if (btnTipo && btnForma) {
+        if (modo === 'tipo') {
+            btnTipo.classList.add('active');
+            btnForma.classList.remove('active');
+        } else {
+            btnTipo.classList.remove('active');
+            btnForma.classList.add('active');
+        }
+    }
+    renderizarGraficoPagamentos();
+}
+
 function renderizarGraficoPagamentos(data) {
     if (data) {
         currentPagamentosGraficoData = data;
@@ -2154,16 +2178,90 @@ function renderizarGraficoPagamentos(data) {
         chartPagamentosPizzaInstance = null;
     }
 
-    const itens = currentPagamentosGraficoData.itens;
-    const labels = itens.map(i => i.nome);
-    const dataVals = itens.map(i => i.valor);
-    const bgColors = itens.map(i => i.cor || '#A0AEC0');
+    const totalGeral = currentPagamentosGraficoData.total_valor || 0;
+    let itensParaExibir = [];
 
-    // Contador de modalidades no cabeçalho do card
+    if (modoDonutPagamento === 'tipo') {
+        // Consolidação Executiva por Macro Categoria (Cartão, Pix, Saldo, Boleto)
+        const cats = {
+            'CARTAO': { nome: 'Cartão de Crédito', cor: '#0284C7', valor: 0.0, pedidos: 0 },
+            'PIX': { nome: 'Pix Instantâneo', cor: '#00E676', valor: 0.0, pedidos: 0 },
+            'SALDO': { nome: 'Saldo / Carteira Digital', cor: '#FFD700', valor: 0.0, pedidos: 0 },
+            'BOLETO': { nome: 'Boleto Bancário', cor: '#F97316', valor: 0.0, pedidos: 0 },
+            'OUTROS': { nome: 'Outros Métodos', cor: '#64748B', valor: 0.0, pedidos: 0 }
+        };
+
+        currentPagamentosGraficoData.itens.forEach(it => {
+            const nomeU = (it.nome || '').toUpperCase();
+            const val = Number(it.valor) || 0;
+            const ped = Number(it.pedidos) || 0;
+
+            if (nomeU.includes('PIX')) {
+                cats['PIX'].valor += val;
+                cats['PIX'].pedidos += ped;
+            } else if (nomeU.includes('CART') || nomeU.includes('MASTER') || nomeU.includes('VISA') || nomeU.includes('ELO') || nomeU.includes('HIPER') || nomeU.includes('AMEX') || nomeU.includes('CHECKOUT')) {
+                cats['CARTAO'].valor += val;
+                cats['CARTAO'].pedidos += ped;
+            } else if (nomeU.includes('SALDO') || nomeU.includes('MERCADO PAGO') || nomeU.includes('SHOPEEPAY')) {
+                cats['SALDO'].valor += val;
+                cats['SALDO'].pedidos += ped;
+            } else if (nomeU.includes('BOLETO')) {
+                cats['BOLETO'].valor += val;
+                cats['BOLETO'].pedidos += ped;
+            } else {
+                cats['OUTROS'].valor += val;
+                cats['OUTROS'].pedidos += ped;
+            }
+        });
+
+        itensParaExibir = Object.values(cats)
+            .filter(c => c.valor > 0)
+            .sort((a, b) => b.valor - a.valor)
+            .map(c => ({
+                ...c,
+                pct: totalGeral > 0 ? (c.valor / totalGeral * 100) : 0
+            }));
+    } else {
+        // Exibição por Canal / Modalidade com Paleta Executiva Única (Sem Repetições!)
+        const PALETA_EXECUTIVA = [
+            '#00E676', // Pix ML (Verde Esmeralda)
+            '#0284C7', // Mastercard VTEX (Azul Oceano)
+            '#6366F1', // Cartão Shopee (Índigo)
+            '#10B981', // Pix Shopee (Verde Menta)
+            '#06B6D4', // PIX VTEX (Ciano)
+            '#3B82F6', // Visa VTEX (Azul Real)
+            '#F59E0B', // Saldo Mercado Pago (Âmbar Ouro)
+            '#F97316', // Boleto Shopee (Laranja)
+            '#EC4899', // Saldo ShopeePay (Rosa)
+            '#8B5CF6', // Cartão Magalu (Violeta)
+            '#14B8A6', // Pix Magalu (Teal)
+            '#A855F7', // Elo VTEX (Púrpura)
+            '#E11D48', // Boleto Magalu (Rubi)
+            '#64748B'  // Outros (Ardósia)
+        ];
+
+        itensParaExibir = currentPagamentosGraficoData.itens.map((it, idx) => ({
+            ...it,
+            cor: PALETA_EXECUTIVA[idx % PALETA_EXECUTIVA.length]
+        }));
+    }
+
+    currentDisplayDonutItens = itensParaExibir;
+
     const countEl = document.getElementById('pay-modalidades-count');
-    if (countEl) countEl.textContent = `${itens.length} FORMAS DE PAGTO`;
+    if (countEl) {
+        countEl.textContent = modoDonutPagamento === 'tipo' 
+            ? `${itensParaExibir.length} TIPOS` 
+            : `${itensParaExibir.length} FORMAS`;
+    }
 
-    // Plugin para desenhar o Totalizador no Centro da Rosquinha (Padrão MQ Hair Executivo)
+    const labels = itensParaExibir.map(i => i.nome);
+    const dataVals = itensParaExibir.map(i => i.valor);
+    const bgColors = itensParaExibir.map(i => i.cor || '#38BDF8');
+
+    donutHoverIndex = null;
+
+    // Plugin para desenhar o Totalizador Interativo no Centro da Rosquinha (Padrão Executivo MQ)
     const centerTotalPlugin = {
         id: 'pagamentosCenterTotal',
         beforeDraw(chart) {
@@ -2176,22 +2274,44 @@ function renderizarGraficoPagamentos(data) {
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
 
-            // Tag superior
-            ctx.font = '700 8.5px Montserrat';
-            ctx.fillStyle = '#94A3B8';
-            ctx.fillText('TOTAL CONSOLIDADO', centerX, centerY - 12);
+            if (donutHoverIndex !== null && donutHoverIndex !== undefined && currentDisplayDonutItens[donutHoverIndex]) {
+                const item = currentDisplayDonutItens[donutHoverIndex];
+                const total = currentPagamentosGraficoData ? currentPagamentosGraficoData.total_valor : 0;
+                const pct = total > 0 ? (item.valor / total * 100) : 0;
 
-            // Valor total faturado em ouro MQ
-            ctx.font = '800 13px Montserrat';
-            ctx.fillStyle = '#E5B244';
-            const total = currentPagamentosGraficoData ? currentPagamentosGraficoData.total_valor : 0;
-            ctx.fillText(`R$ ${fmtMoedaZero(total)}`, centerX, centerY + 2);
+                // Título do item selecionado
+                ctx.font = '800 10.5px Montserrat';
+                ctx.fillStyle = item.cor || '#38BDF8';
+                const nomeCurto = item.nome.length > 20 ? item.nome.substring(0, 18) + '...' : item.nome;
+                ctx.fillText(nomeCurto.toUpperCase(), centerX, centerY - 16);
 
-            // Quantidade de transações
-            ctx.font = '600 9px Montserrat';
-            ctx.fillStyle = '#CBD5E1';
-            const pedidos = currentPagamentosGraficoData ? currentPagamentosGraficoData.total_pedidos : 0;
-            ctx.fillText(`${fmtInt(pedidos)} PEDIDOS`, centerX, centerY + 15);
+                // Valor do item selecionado
+                ctx.font = '800 20px Montserrat';
+                ctx.fillStyle = '#FFFFFF';
+                ctx.fillText(`R$ ${fmtMoedaZero(item.valor)}`, centerX, centerY + 3);
+
+                // Percentual e pedidos
+                ctx.font = '700 11px Montserrat';
+                ctx.fillStyle = item.cor || '#38BDF8';
+                ctx.fillText(`${pct.toFixed(1).replace('.', ',')}% • ${fmtInt(item.pedidos)} PED`, centerX, centerY + 21);
+            } else {
+                // Estado Padrão: Total Consolidado
+                ctx.font = '800 10.5px Montserrat';
+                ctx.fillStyle = '#94A3B8';
+                ctx.fillText('TOTAL CONSOLIDADO', centerX, centerY - 16);
+
+                // Valor total faturado em ouro MQ
+                ctx.font = '800 21px Montserrat';
+                ctx.fillStyle = '#FFD700';
+                const total = currentPagamentosGraficoData ? currentPagamentosGraficoData.total_valor : 0;
+                ctx.fillText(`R$ ${fmtMoedaZero(total)}`, centerX, centerY + 3);
+
+                // Quantidade total de transações
+                ctx.font = '700 11px Montserrat';
+                ctx.fillStyle = '#CBD5E1';
+                const pedidos = currentPagamentosGraficoData ? currentPagamentosGraficoData.total_pedidos : 0;
+                ctx.fillText(`${fmtInt(pedidos)} PEDIDOS • 100%`, centerX, centerY + 21);
+            }
 
             ctx.restore();
         }
@@ -2206,40 +2326,53 @@ function renderizarGraficoPagamentos(data) {
                 data: dataVals,
                 backgroundColor: bgColors,
                 borderColor: '#111116',
-                borderWidth: 2.5,
+                borderWidth: 3,
                 hoverBorderColor: '#FFFFFF',
-                hoverBorderWidth: 2,
-                hoverOffset: 8,
-                borderRadius: 4
+                hoverBorderWidth: 2.5,
+                hoverOffset: 12,
+                borderRadius: 6,
+                spacing: 2
             }]
         },
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            cutout: '62%',
+            cutout: '70%',
+            layout: {
+                padding: 10
+            },
+            onHover: (event, elements) => {
+                if (elements && elements.length > 0) {
+                    donutHoverIndex = elements[0].index;
+                } else {
+                    donutHoverIndex = null;
+                }
+                chartPagamentosPizzaInstance.draw();
+            },
             plugins: {
                 legend: {
-                    display: false // Usamos nossa lista/legenda customizada rica embaixo!
+                    display: false // Usamos os pills executivos modernos embaixo!
                 },
                 tooltip: {
-                    backgroundColor: 'rgba(17, 17, 22, 0.95)',
+                    backgroundColor: 'rgba(18, 19, 28, 0.96)',
                     borderColor: 'rgba(203, 151, 39, 0.4)',
                     borderWidth: 1,
-                    titleColor: '#FFFFFF',
-                    bodyColor: '#E2E8F0',
-                    titleFont: { family: 'Montserrat', size: 12, weight: '700' },
-                    bodyFont: { family: 'Montserrat', size: 11 },
-                    padding: 10,
-                    boxPadding: 4,
+                    titleColor: '#FFD700',
+                    bodyColor: '#FFFFFF',
+                    titleFont: { family: 'Montserrat', size: 12, weight: '800' },
+                    bodyFont: { family: 'Montserrat', size: 11, weight: '600' },
+                    padding: 12,
+                    cornerRadius: 8,
                     displayColors: true,
                     callbacks: {
                         label: function(context) {
-                            const item = itens[context.dataIndex];
+                            const val = context.raw || 0;
+                            const total = currentPagamentosGraficoData ? currentPagamentosGraficoData.total_valor : 0;
+                            const pct = total > 0 ? (val / total * 100) : 0;
+                            const peds = currentDisplayDonutItens[context.dataIndex]?.pedidos || 0;
                             return [
-                                ` Faturamento: R$ ${fmtMoeda(item.valor)}`,
-                                ` Participação: ${fmtPct(item.pct)}`,
-                                ` Pedidos: ${fmtInt(item.pedidos)} transações`,
-                                ` Ticket Médio: R$ ${fmtMoeda(item.ticket_medio)}`
+                                `  Faturamento: R$ ${fmtMoeda(val)} (${pct.toFixed(2).replace('.', ',')}%)`,
+                                `  Transações: ${fmtInt(peds)} pedidos`
                             ];
                         }
                     }
@@ -2249,34 +2382,34 @@ function renderizarGraficoPagamentos(data) {
         plugins: [centerTotalPlugin]
     });
 
-    // Renderiza lista/legenda de participação detalhada abaixo da rosquinha
-    const legendContainer = document.getElementById('payment-chart-legend');
-    if (legendContainer) {
-        legendContainer.innerHTML = '';
-        itens.forEach(item => {
-            const div = document.createElement('div');
-            div.className = 'payment-legend-item';
-            div.innerHTML = `
-                <div class="legend-left">
-                    <span class="legend-dot" style="background: ${item.cor}; box-shadow: 0 0 6px ${item.cor}88;"></span>
-                    <div>
-                        <div class="legend-nome">${item.nome}</div>
-                        <div class="legend-canal">${item.canal || ''}</div>
-                    </div>
-                </div>
-                <div class="legend-right">
-                    <div class="legend-val">R$ ${fmtMoeda(item.valor)}</div>
-                    <div class="legend-pct" style="color: ${item.cor};">${fmtPct(item.pct)}</div>
-                </div>
+    // Renderiza legenda executiva em pills horizontais abaixo do gráfico
+    const pillsContainer = document.getElementById('payment-pills-legend');
+    if (pillsContainer) {
+        pillsContainer.innerHTML = '';
+        itensParaExibir.forEach((item, idx) => {
+            const pill = document.createElement('div');
+            pill.className = 'donut-pill-item';
+            pill.title = `${item.nome}: R$ ${fmtMoeda(item.valor)} (${fmtPct(item.pct)})`;
+            pill.innerHTML = `
+                <span class="donut-pill-dot" style="background: ${item.cor}; box-shadow: 0 0 6px ${item.cor}88;"></span>
+                <span class="donut-pill-label">${item.nome}</span>
+                <span class="donut-pill-pct" style="color: ${item.cor};">${fmtPct(item.pct)}</span>
             `;
-            legendContainer.appendChild(div);
+            pill.addEventListener('mouseenter', () => {
+                donutHoverIndex = idx;
+                chartPagamentosPizzaInstance.setActiveElements([{ datasetIndex: 0, index: idx }]);
+                chartPagamentosPizzaInstance.draw();
+            });
+            pill.addEventListener('mouseleave', () => {
+                donutHoverIndex = null;
+                chartPagamentosPizzaInstance.setActiveElements([]);
+                chartPagamentosPizzaInstance.draw();
+            });
+            pillsContainer.appendChild(pill);
         });
     }
 }
 
-// ==========================================================================
-// Acompanhamento de Cupons Promocionais (Checkout VTEX)
-// ==========================================================================
 function renderizarCupons() {
     if (!currentCuponsData) return;
 

@@ -840,21 +840,27 @@
                     </div>
 
                     <!-- Coluna Direita: Gráfico de Rosca / Doughnut Premium de Participação -->
-                    <div class="payment-chart-card">
+                                        <div class="payment-chart-card">
                         <div class="vtex-chart-top">
                             <div class="vtex-chart-title-tag">
                                 <i data-lucide="pie-chart" class="chart-tag-icon"></i>
                                 <span>PARTICIPAÇÃO POR FORMA DE PAGAMENTO (%)</span>
                             </div>
-                            <span class="vtex-modalidades-count" id="pay-modalidades-count">TOTAL GERAL</span>
+                            <div class="vtex-chart-header-actions">
+                                <div class="chart-mode-toggle-group">
+                                    <button type="button" class="btn-donut-mode active" id="btn-pay-mode-tipo" onclick="trocarModoDonut('tipo')">Por Tipo</button>
+                                    <button type="button" class="btn-donut-mode" id="btn-pay-mode-forma" onclick="trocarModoDonut('forma')">Por Canal</button>
+                                </div>
+                                <span class="vtex-modalidades-count" id="pay-modalidades-count">TOTAL GERAL</span>
+                            </div>
                         </div>
                         <div class="payment-donut-container">
                             <div class="vtex-pizza-wrapper">
                                 <canvas id="chart-pizza-pagamentos"></canvas>
                             </div>
                         </div>
-                        <div class="payment-chart-legend" id="payment-chart-legend">
-                            <!-- Preenchido dinamicamente via JS com resumo das formas -->
+                        <div class="payment-pills-legend" id="payment-pills-legend">
+                            <!-- Preenchido dinamicamente com pills horizontais elegantes -->
                         </div>
                     </div>
                 </div>
@@ -1267,7 +1273,7 @@
     </div>
 
     <!-- Scripts -->
-    <script src="/static/js/app.js?v=26_cards_impact"></script>
+    <script src="/static/js/app.js?v=27_donut_pro"></script>
     <script>
         lucide.createIcons();
     </script>
