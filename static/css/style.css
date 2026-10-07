@@ -3407,3 +3407,20 @@ body.tv-mode .matrices-dual-grid {
     grid-template-columns: repeat(2, 1fr) !important;
     gap: 20px;
 }
+
+
+/* REGRA DEFINITIVA: Meta Mês e Valores em Verde Vibrante */
+.kpi-meta-green,
+span[id^="kpi-meta-"],
+#kpi-meta-mes,
+#kpi-meta-ml,
+#kpi-meta-shopee,
+#kpi-meta-vtex,
+#kpi-meta-magalu,
+#kpi-meta-parlux {
+    color: #00E676 !important;
+    font-weight: 700 !important;
+    font-size: 11.5px !important;
+    text-shadow: 0 0 10px rgba(0, 230, 118, 0.3) !important;
+    white-space: nowrap !important;
+}

@@ -658,7 +658,11 @@ function atualizarKPIs(kpis) {
     }
 
     const metaMesEl = document.getElementById('kpi-meta-mes');
-    if (metaMesEl) metaMesEl.textContent = `Meta Mês: R$ ${fmtMoeda(kpis.meta_mes_geral)}`;
+    if (metaMesEl) {
+        metaMesEl.textContent = `Meta Mês: R$ ${fmtMoeda(kpis.meta_mes_geral)}`;
+        metaMesEl.style.color = '#00E676';
+        metaMesEl.style.fontWeight = '700';
+    }
 
     // MoM & YTD Projeção Consolidada
     const projMomVal = document.getElementById('kpi-proj-mom-val');
@@ -694,7 +698,11 @@ function atualizarKPIs(kpis) {
             }
 
             const metaEl = document.getElementById(`kpi-meta-${key}`);
-            if (metaEl) metaEl.textContent = `Meta Mês: R$ ${fmtMoeda(c.meta_mes)}`;
+            if (metaEl) {
+                metaEl.textContent = `Meta Mês: R$ ${fmtMoeda(c.meta_mes)}`;
+                metaEl.style.color = '#00E676';
+                metaEl.style.fontWeight = '700';
+            }
 
             const momVal = document.getElementById(`kpi-proj-mom-val-${key}`);
             if (momVal) momVal.textContent = `R$ ${fmtMoedaZero(c.fat_ant_mes_cheio)}`;
