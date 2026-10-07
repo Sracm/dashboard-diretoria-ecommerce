@@ -2081,14 +2081,14 @@ function renderizarPagamentosPorCanal(data) {
                 trMod.setAttribute('data-parent', c.id);
                 if (isCollapsed) trMod.style.display = 'none';
 
-                let dotColor = m.cor || '#00E676';
-                if (m.forma.includes('Mastercard')) dotColor = '#38BDF8';
-                else if (m.forma.includes('PIX')) dotColor = '#00E676';
+                let dotColor = m.cor || '#38BDF8';
+                if (m.forma.toLowerCase().includes('pix')) dotColor = '#00E676';
+                else if (m.forma.toLowerCase().includes('saldo')) dotColor = '#FFE600';
+                else if (m.forma.toLowerCase().includes('boleto')) dotColor = '#FFA726';
+                else if (m.forma.includes('Mastercard')) dotColor = '#38BDF8';
                 else if (m.forma.includes('Visa')) dotColor = '#06B6D4';
                 else if (m.forma.includes('Elo')) dotColor = '#A855F7';
-                else if (m.forma.includes('Mercado Pago')) dotColor = '#FFE600';
-                else if (m.forma.includes('ShopeePay')) dotColor = '#FF5722';
-                else if (m.forma.includes('MagaluPay')) dotColor = '#2563EB';
+                else if (m.forma.toLowerCase().includes('cartão') || m.forma.toLowerCase().includes('cartao')) dotColor = '#38BDF8';
 
                 trMod.innerHTML = `
                     <td class="cell-tree" style="padding-left: 36px; color: #E2E8F0;">
