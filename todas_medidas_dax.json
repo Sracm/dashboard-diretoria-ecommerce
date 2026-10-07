@@ -1,0 +1,1447 @@
+﻿[
+    {
+        "Tabela":  "Consulta1",
+        "Medida":  "Medida 7",
+        "ExpressaoDAX":  "BLANK()"
+    },
+    {
+        "Tabela":  "Consulta1",
+        "Medida":  "Qtd Clientes Primeira Compra 3",
+        "ExpressaoDAX":  "CALCULATE(\n    DISTINCTCOUNT(Consulta1[CODPARC]),\n    FILTER(\n        Consulta1,\n        Consulta1[DTENTSAI]\n            = CALCULATE(\n                MIN(Consulta1[DTENTSAI]),\n                ALLEXCEPT(Consulta1, Consulta1[CODPARC])\n            )\n        \u0026\u0026\n        NOT ISBLANK(Consulta1[VALOR])\n    )\n)"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "SOMA DAS DEVOLUCOES",
+        "ExpressaoDAX":  "SUM(Consulta1[VALORDEVOLUCAO])"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "_SOMA DEVOLUCAO",
+        "ExpressaoDAX":  "SUM(Consulta1[VALORDEVOLUCAO])"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "_SOMA VALOR VENDA",
+        "ExpressaoDAX":  "SUM(Consulta1[VALORVENDA])"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "_SOMA FRETE",
+        "ExpressaoDAX":  "SUM(Consulta1[FRETE])"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "_VENDA(-) FRETE (+) DEVOLUCAO",
+        "ExpressaoDAX":  "VAR Resultado =\n    ( [_SOMA VALOR VENDA] - [_SOMA FRETE] ) - [SOMA DAS DEVOLUCOES]\nRETURN\nIF (\n    Resultado \u003c 0,\n    BLANK(),\n    Resultado\n)"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "_SOMA FRETE E DEVOLUCAO",
+        "ExpressaoDAX":  "MEDIDAS[_SOMA FRETE] + MEDIDAS[_SOMA DEVOLUCAO]"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "SOMA QTDE DE VENDAS",
+        "ExpressaoDAX":  "SUM(Consulta1[QTDVENDIDA])"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "SOMA BONIFICACAO",
+        "ExpressaoDAX":  "SUM(Consulta1[VLRBONIFICADO])"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "SOMA QTDE DE BONIFICACAO",
+        "ExpressaoDAX":  "SUM(Consulta1[QTDBONIFIC])"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "%devolucao",
+        "ExpressaoDAX":  "IFERROR( [SOMA DAS DEVOLUCOES] / [_SOMA VALOR VENDA],0)"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "ticket",
+        "ExpressaoDAX":  "IFERROR([_VENDA(-) FRETE (+) DEVOLUCAO] /[SOMA QTDE DE VENDAS],\"\")"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "RNGK",
+        "ExpressaoDAX":  "RANKX(ALLSELECTED(Consulta1[PRODUTO]),([_VENDA(-) FRETE (+) DEVOLUCAO]))"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "ACUMULADO",
+        "ExpressaoDAX":  "CALCULATE([_VENDA(-) FRETE (+) DEVOLUCAO],TOPN([RNGK],ALLSELECTED(Consulta1[PRODUTO]),([_VENDA(-) FRETE (+) DEVOLUCAO])))"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "Total de _VENDA (-) FRETE (+) DEVOLUCAO para PRODUTO",
+        "ExpressaoDAX":  "CALCULATE(\n\t[_VENDA(-) FRETE (+) DEVOLUCAO],\n\tALLSELECTED(\u0027Consulta1\u0027[PRODUTO])\n)"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "% ACUMULADO",
+        "ExpressaoDAX":  "[ACUMULADO_SKU] /[Total de _VENDA_SKU     (-) FRETE (+) DEVOLUCAO para PRODUTO]"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "80%",
+        "ExpressaoDAX":  "0.8"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "95%",
+        "ExpressaoDAX":  "0.95"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "RNGK_SKU",
+        "ExpressaoDAX":  "RANKX(ALLSELECTED(Consulta1[CODPROD]),([_VENDA(-) FRETE (+) DEVOLUCAO]))"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "ACUMULADO_SKU",
+        "ExpressaoDAX":  "CALCULATE([_VENDA(-) FRETE (+) DEVOLUCAO],TOPN([RNGK_SKU],ALLSELECTED(Consulta1[CODPROD]),([_VENDA(-) FRETE (+) DEVOLUCAO])))"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "Total de _VENDA_SKU     (-) FRETE (+) DEVOLUCAO para PRODUTO",
+        "ExpressaoDAX":  "CALCULATE(\n\t[_VENDA(-) FRETE (+) DEVOLUCAO],\n\tALLSELECTED(\u0027Consulta1\u0027[CODPROD])\n)"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "% ACUMULADO_SKU",
+        "ExpressaoDAX":  "[Total de _VENDA (-) FRETE (+) DEVOLUCAO para PRODUTO]/[Total de _VENDA_SKU     (-) FRETE (+) DEVOLUCAO para PRODUTO]"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "CLASSE ABC_SKU",
+        "ExpressaoDAX":  "IF([% ACUMULADO_SKU]\u003c= 0.8,\n            \"A\",\n            IF([% ACUMULADO_SKU]\u003c=0.95,\n            \"B\",\n            \"C\"\n            ))"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "CLASSE ABC_SKU_02",
+        "ExpressaoDAX":  "IF([% ACUMULADO_SKU] \u003c 0.400 ,\"D\", IF([% ACUMULADO_SKU] \u003c 0.464 ,\"C\", IF([% ACUMULADO_SKU] \u003c0.524,\"B\",\"A\")))"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "% acymulado  teste",
+        "ExpressaoDAX":  "[Total de _VENDA (-) FRETE (+) DEVOLUCAO para PRODUTO] / [Total de _VENDA_SKU     (-) FRETE (+) DEVOLUCAO para PRODUTO]"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "% acumalado do total",
+        "ExpressaoDAX":  "[ACUMULADO_SKU]/[Total de _VENDA_SKU     (-) FRETE (+) DEVOLUCAO para PRODUTO]"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "soma curva A",
+        "ExpressaoDAX":  "BLANK()"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "CONTAGEM_SKU",
+        "ExpressaoDAX":  "DISTINCTCOUNT(Consulta1[CODPROD])"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "teste contagem",
+        "ExpressaoDAX":  "CALCULATE(DISTINCTCOUNT(Consulta1[PRODUTO]),\n                                            ALLSELECTED(Consulta1[ANO]),\n                                                        ALLSELECTED(Consulta1[MES]),\n                                                                    ALLSELECTED(Consulta1[MARCA]),\n                                                                                ALLSELECTED(Consulta1[PERFIL_CLI]))"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "FATURAMENTO_80%",
+        "ExpressaoDAX":  "CALCULATE(\n                [_VENDA(-) FRETE (+) DEVOLUCAO],\n                FILTER(\n                    ALLSELECTED(Consulta1[CODPROD]),\n                    [% ACUMULADO] \u003c=0.81\n                )\n            )"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "PRODUTOS 80%",
+        "ExpressaoDAX":  "COUNTROWS(\n            FILTER(\n                ALLSELECTED(Consulta1[CODPROD]),\n               [% ACUMULADO] \u003c= 0.8\n            )\n        )"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "% QTDE_PARETO",
+        "ExpressaoDAX":  "[PRODUTOS 80%] / [CONTAGEM_SKU]"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "100 %",
+        "ExpressaoDAX":  "1.0"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "DIFERENCA qtde PARETO",
+        "ExpressaoDAX":  "ABS(  [% QTDE_PARETO] - [100 %])"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "% vlr_PARETO",
+        "ExpressaoDAX":  "[FATURAMENTO_80%] / [_VENDA(-) FRETE (+) DEVOLUCAO]"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "DIFERENCA vlr PARETO",
+        "ExpressaoDAX":  "ABS(  [% vlr_PARETO] - [100 %])"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "CLIENTES_UNICOS",
+        "ExpressaoDAX":  "DISTINCTCOUNT(Consulta1[NOMEPARC])"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "% venda",
+        "ExpressaoDAX":  "[_VENDA(-) FRETE (+) DEVOLUCAO] / [Total de _VENDA_SKU     (-) FRETE (+) DEVOLUCAO para PRODUTO]"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "_% da curva",
+        "ExpressaoDAX":  "[_VENDA(-) FRETE (+) DEVOLUCAO] /[Total de _VENDA_SKU     (-) FRETE (+) DEVOLUCAO para PRODUTO]"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "FAT. ANO 2022",
+        "ExpressaoDAX":  "CALCULATE( [_SOMA VALOR VENDA] - MEDIDAS[_SOMA FRETE E DEVOLUCAO],Consulta1[ANO] =2022)"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "FAT. ANO 2023",
+        "ExpressaoDAX":  "CALCULATE( [_SOMA VALOR VENDA] - MEDIDAS[_SOMA FRETE E DEVOLUCAO],Consulta1[ANO] =2023)"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "%EVOLUCAO",
+        "ExpressaoDAX":  "IFERROR( ([FAT. ANO 2023] -[FAT. ANO 2022])/[FAT. ANO 2023],\"\")"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "FAT. ANO 2021",
+        "ExpressaoDAX":  "CALCULATE( [_SOMA VALOR VENDA] - MEDIDAS[_SOMA FRETE E DEVOLUCAO],Consulta1[ANO] =2021)"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "%EVOLUCAO 2022",
+        "ExpressaoDAX":  "IFERROR( ([FAT. ANO 2022] -[FAT. ANO 2021])/[FAT. ANO 2022],\"\")"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "QTDE NOTAS",
+        "ExpressaoDAX":  "DISTINCTCOUNT(Consulta1[NUNOTA])"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "QTDE VENDIDA NOTA",
+        "ExpressaoDAX":  "SUM(Consulta1[QTDVENDIDA])"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "ITENS POR PEDIDO",
+        "ExpressaoDAX":  "[QTDE VENDIDA NOTA] /[QTDE NOTAS]"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "JAN CLI.UNICOS",
+        "ExpressaoDAX":  "CALCULATE(DISTINCTCOUNT(Consulta1[CODPARC]),Consulta1[MES] =\"jan\" \u0026\u0026 Consulta1[ANO] =2023)"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "FEV CLI.UNICOS",
+        "ExpressaoDAX":  "CALCULATE(DISTINCTCOUNT(Consulta1[CODPARC]),Consulta1[MES] =\"fev\" \u0026\u0026 Consulta1[ANO] =2023)"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "MAR CLI.UNICOS",
+        "ExpressaoDAX":  "CALCULATE(DISTINCTCOUNT(Consulta1[CODPARC]),Consulta1[MES] =\"mar\" \u0026\u0026 Consulta1[ANO] =2023)"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "ABR CLI.UNICOS",
+        "ExpressaoDAX":  "CALCULATE(DISTINCTCOUNT(Consulta1[CODPARC]),Consulta1[MES] =\"abr\" \u0026\u0026 Consulta1[ANO] =2023)"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "MAI CLI.UNICOS",
+        "ExpressaoDAX":  "CALCULATE(DISTINCTCOUNT(Consulta1[CODPARC]),Consulta1[MES] =\"mai\" \u0026\u0026 Consulta1[ANO] =2023)"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "JUN CLI.UNICOS",
+        "ExpressaoDAX":  "CALCULATE(DISTINCTCOUNT(Consulta1[CODPARC]),Consulta1[MES] =\"jun\" \u0026\u0026 Consulta1[ANO] =2023)"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "JUL CLI.UNICOS",
+        "ExpressaoDAX":  "CALCULATE(DISTINCTCOUNT(Consulta1[CODPARC]),Consulta1[MES] =\"jul\" \u0026\u0026 Consulta1[ANO] =2023)"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "AGO CLI.UNICOS",
+        "ExpressaoDAX":  "CALCULATE(DISTINCTCOUNT(Consulta1[CODPARC]),Consulta1[MES] =\"ago\" \u0026\u0026 Consulta1[ANO] =2023)"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "SET CLI.UNICOS",
+        "ExpressaoDAX":  "CALCULATE(DISTINCTCOUNT(Consulta1[CODPARC]),Consulta1[MES] =\"set\" \u0026\u0026 Consulta1[ANO] =2023)"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "OUT CLI.UNICOS",
+        "ExpressaoDAX":  "CALCULATE(DISTINCTCOUNT(Consulta1[CODPARC]),Consulta1[MES] =\"out\" \u0026\u0026 Consulta1[ANO] =2023)"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "JAN QTDE VDS",
+        "ExpressaoDAX":  "CALCULATE(SUM(Consulta1[QTDVENDIDA]),Consulta1[MES] =\"jan\" \u0026\u0026 Consulta1[ANO] =2023)"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "FEV QTDE VDS",
+        "ExpressaoDAX":  "CALCULATE(SUM(Consulta1[QTDVENDIDA]),Consulta1[MES] =\"fev\" \u0026\u0026 Consulta1[ANO] =2023)"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "mar QTDE VDS",
+        "ExpressaoDAX":  "CALCULATE(SUM(Consulta1[QTDVENDIDA]),Consulta1[MES] =\"mar\" \u0026\u0026 Consulta1[ANO] =2023)"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "abr QTDE VDS",
+        "ExpressaoDAX":  "CALCULATE(SUM(Consulta1[QTDVENDIDA]),Consulta1[MES] =\"abr\" \u0026\u0026 Consulta1[ANO] =2023)"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "mai QTDE VDS",
+        "ExpressaoDAX":  "CALCULATE(SUM(Consulta1[QTDVENDIDA]),Consulta1[MES] =\"mai\" \u0026\u0026 Consulta1[ANO] =2023)"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "jun QTDE VDS",
+        "ExpressaoDAX":  "CALCULATE(SUM(Consulta1[QTDVENDIDA]),Consulta1[MES] =\"jun\" \u0026\u0026 Consulta1[ANO] =2023)"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "jul QTDE VDS",
+        "ExpressaoDAX":  "CALCULATE(SUM(Consulta1[QTDVENDIDA]),Consulta1[MES] =\"jul\" \u0026\u0026 Consulta1[ANO] =2023)"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "ago QTDE VDS",
+        "ExpressaoDAX":  "CALCULATE(SUM(Consulta1[QTDVENDIDA]),Consulta1[MES] =\"ago\" \u0026\u0026 Consulta1[ANO] =2023)"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "set QTDE VDS",
+        "ExpressaoDAX":  "CALCULATE(SUM(Consulta1[QTDVENDIDA]),Consulta1[MES] =\"set\" \u0026\u0026 Consulta1[ANO] =2023)"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "out QTDE VDS",
+        "ExpressaoDAX":  "CALCULATE(SUM(Consulta1[QTDVENDIDA]),Consulta1[MES] =\"out\" \u0026\u0026 Consulta1[ANO] =2023)"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "JAN fat",
+        "ExpressaoDAX":  "CALCULATE(SUM(Consulta1[CALCULO LIQUIDO]),Consulta1[MES] =\"jan\" \u0026\u0026 Consulta1[ANO] =2023)"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "fev fat",
+        "ExpressaoDAX":  "CALCULATE(SUM(Consulta1[CALCULO LIQUIDO]),Consulta1[MES] =\"fev\" \u0026\u0026 Consulta1[ANO] =2023)"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "mar fat",
+        "ExpressaoDAX":  "CALCULATE(SUM(Consulta1[CALCULO LIQUIDO]),Consulta1[MES] =\"mar\" \u0026\u0026 Consulta1[ANO] =2023)"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "abr fat",
+        "ExpressaoDAX":  "CALCULATE(SUM(Consulta1[CALCULO LIQUIDO]),Consulta1[MES] =\"abr\" \u0026\u0026 Consulta1[ANO] =2023)"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "mai fat",
+        "ExpressaoDAX":  "CALCULATE(SUM(Consulta1[CALCULO LIQUIDO]),Consulta1[MES] =\"mai\" \u0026\u0026 Consulta1[ANO] =2023)"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "jun fat",
+        "ExpressaoDAX":  "CALCULATE(SUM(Consulta1[CALCULO LIQUIDO]),Consulta1[MES] =\"jun\" \u0026\u0026 Consulta1[ANO] =2023)"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "jul fat",
+        "ExpressaoDAX":  "CALCULATE(SUM(Consulta1[CALCULO LIQUIDO]),Consulta1[MES] =\"jul\" \u0026\u0026 Consulta1[ANO] =2023)"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "ago fat",
+        "ExpressaoDAX":  "CALCULATE(SUM(Consulta1[CALCULO LIQUIDO]),Consulta1[MES] =\"ago\" \u0026\u0026 Consulta1[ANO] =2023)"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "set fat",
+        "ExpressaoDAX":  "CALCULATE(SUM(Consulta1[CALCULO LIQUIDO]),Consulta1[MES] =\"set\" \u0026\u0026 Consulta1[ANO] =2023)"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "out fat",
+        "ExpressaoDAX":  "CALCULATE(SUM(Consulta1[CALCULO LIQUIDO]),Consulta1[MES] =\"out\" \u0026\u0026 Consulta1[ANO] =2023)"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "% FEV CL",
+        "ExpressaoDAX":  "([FEV CLI.UNICOS]-[JAN CLI.UNICOS])/[FEV CLI.UNICOS]"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "% MAR CL",
+        "ExpressaoDAX":  "([MAR CLI.UNICOS]-[FEV CLI.UNICOS])/[MAR CLI.UNICOS]"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "% ABR CL",
+        "ExpressaoDAX":  "([ABR CLI.UNICOS]-[MAR CLI.UNICOS])/[ABR CLI.UNICOS]"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "% MAI CL",
+        "ExpressaoDAX":  "([MAI CLI.UNICOS]-[ABR CLI.UNICOS])/[MAI CLI.UNICOS]"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "% JUN CL",
+        "ExpressaoDAX":  "([JUN CLI.UNICOS]-[MAI CLI.UNICOS])/[JUN CLI.UNICOS]"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "% JUL CL",
+        "ExpressaoDAX":  "([JUL CLI.UNICOS]-[JUN CLI.UNICOS])/[JUL CLI.UNICOS]"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "% AGO CL",
+        "ExpressaoDAX":  "([AGO CLI.UNICOS]-[JUL CLI.UNICOS])/[AGO CLI.UNICOS]"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "% SET CL",
+        "ExpressaoDAX":  "([SET CLI.UNICOS]-[AGO CLI.UNICOS])/[SET CLI.UNICOS]"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "% OUT CL",
+        "ExpressaoDAX":  "([OUT CLI.UNICOS]-[SET CLI.UNICOS])/[OUT CLI.UNICOS]"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  ".",
+        "ExpressaoDAX":  "BLANK()"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "% FEV VDS",
+        "ExpressaoDAX":  "([FEV QTDE VDS]-[JAN QTDE VDS])/[FEV QTDE VDS]"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "% MAR VDS",
+        "ExpressaoDAX":  "([mar QTDE VDS]-[FEV QTDE VDS])/[mar QTDE VDS]"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "% ABR VDS",
+        "ExpressaoDAX":  "([abr QTDE VDS]-[mar QTDE VDS])/[abr QTDE VDS]"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "% MAI VDS",
+        "ExpressaoDAX":  "([mai QTDE VDS]-[abr QTDE VDS])/[mai QTDE VDS]"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "% JUN VDS",
+        "ExpressaoDAX":  "([jun QTDE VDS]-[mai QTDE VDS])/[jun QTDE VDS]"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "% JUL VDS",
+        "ExpressaoDAX":  "([jul QTDE VDS]-[jun QTDE VDS])/[jul QTDE VDS]"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "% AGO VDS",
+        "ExpressaoDAX":  "([ago QTDE VDS]-[jul QTDE VDS])/[ago QTDE VDS]"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "% SET VDS",
+        "ExpressaoDAX":  "([set QTDE VDS]-[ago QTDE VDS])/[set QTDE VDS]"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "% OUT VDS",
+        "ExpressaoDAX":  "([out QTDE VDS]-[set QTDE VDS])/[out QTDE VDS]"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "% FEV FAT",
+        "ExpressaoDAX":  "([fev fat]-[JAN fat])/[fev fat]"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "% MAR FAT",
+        "ExpressaoDAX":  "([mar fat]-[fev fat])/[mar fat]"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "% ABR FAT",
+        "ExpressaoDAX":  "([abr fat]-[mar fat])/[abr fat]"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "% MAI FAT",
+        "ExpressaoDAX":  "([mai fat]-[abr fat])/[mai fat]"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "% JUN FAT",
+        "ExpressaoDAX":  "([jun fat]-[mai fat])/[jun fat]"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "% JUL FAT",
+        "ExpressaoDAX":  "([jul fat]-[jun fat])/[jul fat]"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "% AGO FAT",
+        "ExpressaoDAX":  "([ago fat]-[jul fat])/[ago fat]"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "% SET FAT",
+        "ExpressaoDAX":  "([set fat]-[ago fat])/[set fat]"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "% OUT FAT",
+        "ExpressaoDAX":  "([out fat]-[set fat])/[out fat]"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "tx conversao",
+        "ExpressaoDAX":  "IFERROR(   [QTDE NOTAS]/[SOMASESSION],0)"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "contagem cpf",
+        "ExpressaoDAX":  "DISTINCTCOUNT(Consulta1[NOMEPARC])"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "receita div cpf",
+        "ExpressaoDAX":  "[_VENDA(-) FRETE (+) DEVOLUCAO]/[contagem cpf]"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "ANO ANTERIOR",
+        "ExpressaoDAX":  "CALCULATE(\n        [SOMA VALOR ANO ATUAL],\n        SAMEPERIODLASTYEAR(DCALENDARIO[Date]))"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "0SOMA QTDE VENDAS ANO ANTERIOR",
+        "ExpressaoDAX":  "CALCULATE([SOMA QTDE DE VENDAS],\nSAMEPERIODLASTYEAR(DCALENDARIO[Date]))"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "DIVIDE QTDE VENDAS ANO",
+        "ExpressaoDAX":  "IFERROR( ([SOMA QTDE VENDAS ANO ATUAL]- [0SOMA QTDE VENDAS ANO ANTERIOR])/[0SOMA QTDE VENDAS ANO ANTERIOR],\"\")"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "SOMA QTDE VENDAS ANO ATUAL",
+        "ExpressaoDAX":  "CALCULATE([SOMA QTDE DE VENDAS],\nDCALENDARIO[ANO] =2023)"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "RECEITA DIV CPF ANTERIOR",
+        "ExpressaoDAX":  "CALCULATE([receita div cpf],\nSAMEPERIODLASTYEAR(DCALENDARIO[Date]))"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "RECEITA/PEDIDO UNICO ANO ATUAL",
+        "ExpressaoDAX":  "CALCULATE([receita div cpf],\nDCALENDARIO[ANO] =2023)"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "DIVIDE RECEITA CPF UNICO",
+        "ExpressaoDAX":  "( [RECEITA/PEDIDO UNICO ANO ATUAL]- [RECEITA DIV CPF ANTERIOR])/[RECEITA DIV CPF ANTERIOR]"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "FATURAMENTO ANO ATUAL",
+        "ExpressaoDAX":  "CALCULATE([_VENDA(-) FRETE (+) DEVOLUCAO],\nDCALENDARIO[ANO] =2024)"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "FATURMANETO ANO ANTERIOR",
+        "ExpressaoDAX":  "CALCULATE([_VENDA(-) FRETE (+) DEVOLUCAO],\nSAMEPERIODLASTYEAR(DCALENDARIO[Date]))-1"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "DIVIDE FATURAMENTO",
+        "ExpressaoDAX":  "( [FATURAMENTO ANO ATUAL]- [FATURMANETO ANO ANTERIOR])/[FATURMANETO ANO ANTERIOR]"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "TICKET ANO ATUAL",
+        "ExpressaoDAX":  "CALCULATE([ticket],\nDCALENDARIO[ANO] =2023)"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "TICKET ANO ANTERIOR",
+        "ExpressaoDAX":  "CALCULATE([ticket],\nSAMEPERIODLASTYEAR(DCALENDARIO[Date]))"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "DIVIDE TICKET ANO",
+        "ExpressaoDAX":  "( [TICKET ANO ATUAL]- [TICKET ANO ANTERIOR])/[TICKET ANO ANTERIOR]"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "TX.CONVERS. ANO ATUAL",
+        "ExpressaoDAX":  "CALCULATE([tx conversao],\nDCALENDARIO[ANO] =2023)"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "TX CONVERS ANO ANTERIOR",
+        "ExpressaoDAX":  "CALCULATE([tx conversao],\nSAMEPERIODLASTYEAR(DCALENDARIO[Date]))"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "DIVIDE TX CONVERS.",
+        "ExpressaoDAX":  "( [TX.CONVERS. ANO ATUAL]- [TX CONVERS ANO ANTERIOR])/[TX CONVERS ANO ANTERIOR]"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "SOMAUSER ANO ATUAL",
+        "ExpressaoDAX":  "CALCULATE([SOMASESSION],\nDCALENDARIO[ANO] =2023)"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "SOMA USER ANO ANTERIOR",
+        "ExpressaoDAX":  "CALCULATE([SOMASESSION],\nSAMEPERIODLASTYEAR(DCALENDARIO[Date]))"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "DIVIDE USER",
+        "ExpressaoDAX":  "( [SOMAUSER ANO ATUAL]- [SOMA USER ANO ANTERIOR])/[SOMA USER ANO ANTERIOR]"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "FATURAMENTO INFLUENCER ANO 2023",
+        "ExpressaoDAX":  "CALCULATE(SUM(Consulta1[CALCULO LIQUIDO]),ALLSELECTED(Consulta1[CALCULO FRETE + DEVOLUCAO]),FILTER(Consulta1,Consulta1[ANO]=2023))"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "QTDE NOTAS INFLUENCERS ANO 2023",
+        "ExpressaoDAX":  "CALCULATE(DISTINCTCOUNT(Consulta1[NUNOTA]),ALLSELECTED(Consulta1[NUNOTA]),FILTER(Consulta1,Consulta1[ANO]=2023))"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "% cresc",
+        "ExpressaoDAX":  "IFERROR( [FAT. ANO 2023]/[FAT. ANO 2022]-1,\"\")"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "SOMA MQ PRO",
+        "ExpressaoDAX":  "CALCULATE(SUM(Consulta1[CALCULO FRETE + DEVOLUCAO]),Consulta1[MARCA] = \"MQ PRO\")"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "SOMA MQ TESOURA",
+        "ExpressaoDAX":  "CALCULATE(SUM(Consulta1[CALCULO FRETE + DEVOLUCAO]),Consulta1[MARCA] = \"MQ TESOURA\")"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "SOMA MQ ESCOVA",
+        "ExpressaoDAX":  "CALCULATE(SUM(Consulta1[CALCULO FRETE + DEVOLUCAO]),Consulta1[MARCA] = \"MQ ESCOVAS\")"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "IF MQ PRO",
+        "ExpressaoDAX":  "IF([SOMA MQ PRO] \u003c=0,0,1)"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "IF MQ TESOURA",
+        "ExpressaoDAX":  "IF([SOMA MQ TESOURA] \u003c=0,0,1)"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "IF MQ ESCOVA",
+        "ExpressaoDAX":  "IF([SOMA MQ ESCOVA] \u003c=0,0,1)"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "SOMA RESULTADO",
+        "ExpressaoDAX":  "[SOMA MQ PRO]+[SOMA MQ TESOURA]+[SOMA MQ ESCOVA]"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "CONDICAO RESULTADO",
+        "ExpressaoDAX":  "IF([SOMA MQ PRO]= [SOMA RESULTADO],\"\",1)"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "CONTAGEM NUNOTA",
+        "ExpressaoDAX":  "DISTINCTCOUNT(Consulta1[NUNOTA])"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "SITUACAO TESOURA",
+        "ExpressaoDAX":  "IF([SOMA MQ TESOURA] \u003e [SOMA MQ PRO],1,0)"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "CONTAGEM TESOURA",
+        "ExpressaoDAX":  "COUNT(MEDIDAS[SOMA SITUAÇÃO TESPURA])"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "QTDE MQ TESOURA",
+        "ExpressaoDAX":  "CALCULATE(DISTINCTCOUNT(Consulta1[CALCULO FRETE + DEVOLUCAO]),Consulta1[MARCA] = \"MQ TESOURA\")"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "DISTINCT NOTAS",
+        "ExpressaoDAX":  "DISTINCTCOUNT(Consulta1[NUNOTA])"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "SOMA QTDE PEDIDOS ANO ANTERIOR",
+        "ExpressaoDAX":  "CALCULATE([DISTINCT NOTAS],\nSAMEPERIODLASTYEAR(DCALENDARIO[Date]))"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "SOMA QTDE PEDIDOS ANO ATUAL",
+        "ExpressaoDAX":  "CALCULATE([DISTINCT NOTAS],\nDCALENDARIO[ANO] =2023)"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "DIVIDE QTDE PEDIDOS ANO",
+        "ExpressaoDAX":  "IFERROR( ( [SOMA QTDE PEDIDOS ANO ATUAL]- [SOMA QTDE PEDIDOS ANO ANTERIOR])/[SOMA QTDE PEDIDOS ANO ANTERIOR],\"\")"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "FAT. ANO 2024",
+        "ExpressaoDAX":  "CALCULATE( [_SOMA VALOR VENDA] - MEDIDAS[_SOMA FRETE E DEVOLUCAO],Consulta1[ANO] =2024)"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "SEIJE",
+        "ExpressaoDAX":  "[FAT. ANO 2024]/[FAT. ANO 2023]-1"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "SOMA VALOR ANO ATUAL",
+        "ExpressaoDAX":  "sum(Consulta1[CALCULO LIQUIDO])"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "ANO ANTERIOR 2",
+        "ExpressaoDAX":  "CALCULATE(\n        [SOMA VALOR ANO ATUAL],\n        SAMEPERIODLASTYEAR(DCALENDARIO[Date])\n    )"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "% CRESC.",
+        "ExpressaoDAX":  "IFERROR([SOMA VALOR ANO ATUAL]  / MEDIDAS[ANO ANTERIOR] - 1,0)"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "ANO ANTERIOR receita div",
+        "ExpressaoDAX":  "CALCULATE(\n        [receita div cpf],\n        SAMEPERIODLASTYEAR(DCALENDARIO[Date]))"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "% CRESC.receita div cpf",
+        "ExpressaoDAX":  "IFERROR([receita div cpf]  / MEDIDAS[ANO ANTERIOR receita div] - 1,0)"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "TICKET ANO ANTERIOR 2",
+        "ExpressaoDAX":  "CALCULATE(\n        [ticket],\n        SAMEPERIODLASTYEAR(DCALENDARIO[Date])\n    )"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "% CRESC.TICKET",
+        "ExpressaoDAX":  "IFERROR([ticket]  / MEDIDAS[TICKET ANO ANTERIOR 2] - 1,0)"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "%DEVOLUCAO ANO ANTERIOR",
+        "ExpressaoDAX":  "CALCULATE(\n        [%devolucao],\n        SAMEPERIODLASTYEAR(DCALENDARIO[Date])\n    )"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "% CRESC.%DEVOLUCAO",
+        "ExpressaoDAX":  "IFERROR([%devolucao]  / MEDIDAS[%DEVOLUCAO ANO ANTERIOR] - 1,0)"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "2023",
+        "ExpressaoDAX":  "CALCULATE(SUM(Consulta1[CALCULO LIQUIDO]),DCALENDARIO[ANO] =2023)"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "2024",
+        "ExpressaoDAX":  "CALCULATE(SUM(Consulta1[CALCULO LIQUIDO]),DCALENDARIO[ANO] =2024)"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "% CRESCIMENTO FATURAMENTO",
+        "ExpressaoDAX":  "IFERROR(  (  [2024]-[2023])/[2023],0)"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "receita div cpf 2023",
+        "ExpressaoDAX":  "CALCULATE(  ( [_VENDA(-) FRETE (+) DEVOLUCAO]/[contagem cpf]),DCALENDARIO[ANO] =2023)"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "receita div cpf 2024",
+        "ExpressaoDAX":  "CALCULATE(  ( [_VENDA(-) FRETE (+) DEVOLUCAO]/[contagem cpf]),DCALENDARIO[ANO] =2024)"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "% CRESCIMENTO PEDIDO",
+        "ExpressaoDAX":  "IFERROR(  (  [receita div cpf 2024]-[receita div cpf 2023])/[receita div cpf 2023],0)"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "STATUS SOMA DEVOLUCAO",
+        "ExpressaoDAX":  "IF(SUM(Consulta1[VALORDEVOLUCAO])\u003e1,1,0)"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "FATURAMENTO INFLUENCER ANO 2024",
+        "ExpressaoDAX":  "CALCULATE(SUM(Consulta1[CALCULO LIQUIDO]),ALLSELECTED(Consulta1[CALCULO LIQUIDO]),FILTER(Consulta1,Consulta1[ANO]=2024))"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "QTDE NOTAS INFLUENCERS ANO 2024",
+        "ExpressaoDAX":  "CALCULATE(DISTINCTCOUNT(Consulta1[NUNOTA]),ALLSELECTED(Consulta1[NUNOTA]),FILTER(Consulta1,Consulta1[ANO]=2024))"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "CRES CERTO",
+        "ExpressaoDAX":  "IFERROR(   [2023]/[2024],\"\")"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "PEDIDOS FAT. 2023",
+        "ExpressaoDAX":  "CALCULATE( [DISTINCT NOTAS],Consulta1[ANO] =2023)"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "PEDIDOS FAT. 2024",
+        "ExpressaoDAX":  "CALCULATE( [DISTINCT NOTAS],Consulta1[ANO] =2024)"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "QTDE ITENS VENDIDOS 2023",
+        "ExpressaoDAX":  "CALCULATE( [SOMA QTDE DE VENDAS],Consulta1[ANO] =2023)"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "QTDE ITENS VENDIDOS 2024",
+        "ExpressaoDAX":  "CALCULATE( [SOMA QTDE DE VENDAS],Consulta1[ANO] =2024)"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "CRESC ITENS VENDIDOS",
+        "ExpressaoDAX":  "[QTDE ITENS VENDIDOS 2024]/[QTDE ITENS VENDIDOS 2023]"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "RECEITA P PEDIDO 2023",
+        "ExpressaoDAX":  "CALCULATE( [receita div cpf],Consulta1[ANO] =2023)"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "RECEITA P PEDIDO 2024",
+        "ExpressaoDAX":  "CALCULATE( [receita div cpf],Consulta1[ANO] =2024)"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "CRESC RECEITA P PEDIDO",
+        "ExpressaoDAX":  "[RECEITA P PEDIDO 2024]/[RECEITA P PEDIDO 2023]"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "TICKET. 2023",
+        "ExpressaoDAX":  "CALCULATE( [ticket],Consulta1[ANO] =2023)"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "TICKET. 2024",
+        "ExpressaoDAX":  "CALCULATE( [ticket],Consulta1[ANO] =2024)"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "CRESC TICKET",
+        "ExpressaoDAX":  "[TICKET. 2024]/[TICKET. 2023]"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "DEVOLUCAO. 2023",
+        "ExpressaoDAX":  "CALCULATE( [%devolucao],Consulta1[ANO] =2023)"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "DEVOLUCAO. 2024",
+        "ExpressaoDAX":  "CALCULATE( [%devolucao],Consulta1[ANO] =2024)"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "CRESC DEVOLUCAO",
+        "ExpressaoDAX":  "[DEVOLUCAO. 2024]/[DEVOLUCAO. 2023]"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "diferenca pedidos ano",
+        "ExpressaoDAX":  "ABS( ([PEDIDOS FAT. 2024]-[PEDIDOS FAT. 2023]))"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "diferenca ano",
+        "ExpressaoDAX":  "- [PEDIDOS FAT. 2024]+[PEDIDOS FAT. 2023]"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "% PEDIDOS FAT FINAL",
+        "ExpressaoDAX":  "IFERROR( CALCULATE([PEDIDOS FAT. 2025]-[PEDIDOS FAT. 2024])/[PEDIDOS FAT. 2024],0)"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "% CRESC. FATURMANTO FINAL",
+        "ExpressaoDAX":  "IFERROR( CALCULATE([FAT. ANO 2025]-[FAT. ANO 2024])/[FAT. ANO 2024],0)"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "% CRESC. QTDE ITENS VENDIDOS FINAL",
+        "ExpressaoDAX":  "IFERROR(  CALCULATE([QTDE ITENS VENDIDOS 2025]-[QTDE ITENS VENDIDOS 2024])/[QTDE ITENS VENDIDOS 2024],0)"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "% CRESC. RECEITA P PEDIDO FINAL",
+        "ExpressaoDAX":  "IFERROR( CALCULATE([RECEITA P PEDIDO 2025]-[RECEITA P PEDIDO 2024])/[RECEITA P PEDIDO 2024],0)"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "% CRESC. TICKET FINAL",
+        "ExpressaoDAX":  "IFERROR( CALCULATE([TICKET. 2025]-[TICKET. 2024])/[TICKET. 2024],0)"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "% CRESC. DEVOLUÇÃO FINAL",
+        "ExpressaoDAX":  "IFERROR( CALCULATE([DEVOLUCAO. 2025]-[DEVOLUCAO. 2024])/[DEVOLUCAO. 2024],0)"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "% CRESC. FATURMANTO FINAL VISAO MENSAL",
+        "ExpressaoDAX":  "CALCULATE(([FAT. ANO 2024]-[FAT. ANO 2023])/[FAT. ANO 2023],REMOVEFILTERS(DCALENDARIO[NOME MES]),REMOVEFILTERS(DCALENDARIO[ANO]))"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "CLIENTES UNICOS",
+        "ExpressaoDAX":  "DISTINCTCOUNT(Consulta1[CODPARC])"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "QTDE NOTA UNICA",
+        "ExpressaoDAX":  "DISTINCTCOUNT(Consulta1[NUNOTA])"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "DIFERENÇA",
+        "ExpressaoDAX":  "[QTDE NOTA UNICA] -[CLIENTES UNICOS]"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "% REPRESENTA",
+        "ExpressaoDAX":  "[DIFERENÇA]/[CLIENTES UNICOS]"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "RECEITA P PEDIDO ME ANTERIOR",
+        "ExpressaoDAX":  "CALCULATE([receita div cpf],\n                    DATEADD(DCALENDARIO[Date], -1,MONTH\n                      )\n                    )"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "RECEITA P PEDIDO MES ANTERIOR %",
+        "ExpressaoDAX":  "VAR MesAnterior =\n                    CALCULATE([receita div cpf],\n                    DATEADD(DCALENDARIO[Date], -1,MONTH\n                      )\n                    )\n                    \n                    RETURN\n                    DIVIDE(\n                        [receita div cpf] - MesAnterior,MesAnterior,\n                        \"Sem Vendas\"\n                    )"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "% REPRESENTA MES ANTERIOR",
+        "ExpressaoDAX":  "CALCULATE([% REPRESENTA],\n                    DATEADD(DCALENDARIO[Date], -1,MONTH\n                      )\n                    )"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "% REPRESENTA EVOL",
+        "ExpressaoDAX":  "VAR PMesAnterior =\n                    CALCULATE([% REPRESENTA],\n                    DATEADD(DCALENDARIO[Date], -1,MONTH\n                      )\n                    )\n                    \n                    RETURN\n                    DIVIDE(\n                        [% REPRESENTA] - PMesAnterior,PMesAnterior,\n                        \"Sem Vendas\"\n                    )"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "dif",
+        "ExpressaoDAX":  "[2024]-[2023]"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "% correto",
+        "ExpressaoDAX":  "IFERROR([dif]/[2024],\"\")"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "PEDIDOS FAT. 2025",
+        "ExpressaoDAX":  "CALCULATE( [DISTINCT NOTAS],Consulta1[ANO] =2025)"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "QTDE ITENS VENDIDOS 2025",
+        "ExpressaoDAX":  "CALCULATE( [SOMA QTDE DE VENDAS],Consulta1[ANO] =2025)"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "QTDE NOTAS INFLUENCERS ANO 2025",
+        "ExpressaoDAX":  "CALCULATE(DISTINCTCOUNT(Consulta1[NUNOTA]),ALLSELECTED(Consulta1[NUNOTA]),FILTER(Consulta1,Consulta1[ANO]=2025))"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "receita div cpf 2025",
+        "ExpressaoDAX":  "CALCULATE(  ( [_VENDA(-) FRETE (+) DEVOLUCAO]/[contagem cpf]),DCALENDARIO[ANO] =2025)"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "RECEITA P PEDIDO 2025",
+        "ExpressaoDAX":  "CALCULATE( [receita div cpf],Consulta1[ANO] =2025)"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "FATURAMENTO INFLUENCER ANO 2025",
+        "ExpressaoDAX":  "CALCULATE(SUM(Consulta1[CALCULO LIQUIDO]),ALLSELECTED(Consulta1[CALCULO LIQUIDO]),FILTER(Consulta1,Consulta1[ANO]=2025))"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "FAT. ANO 2025",
+        "ExpressaoDAX":  "CALCULATE( [_SOMA VALOR VENDA] - MEDIDAS[_SOMA FRETE E DEVOLUCAO],Consulta1[ANO] =2025)"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "2025",
+        "ExpressaoDAX":  "CALCULATE(SUM(Consulta1[CALCULO LIQUIDO]),DCALENDARIO[ANO] =2025)"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "TICKET. 2025",
+        "ExpressaoDAX":  "CALCULATE( [ticket],Consulta1[ANO] =2025)"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "DEVOLUCAO. 2025",
+        "ExpressaoDAX":  "CALCULATE( [%devolucao],Consulta1[ANO] =2025)"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "DISTINCT NOTAS VTEX",
+        "ExpressaoDAX":  "CALCULATE( DISTINCTCOUNT(Consulta1[NUNOTA]),Consulta1[DESCROPER]=\"7- VENDA NF-E ECOMERCE\" \u0026\u0026 Consulta1[VENDEDOR]=\"LOJA VTEX\")"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "TXA CONVERSAO VTEX",
+        "ExpressaoDAX":  "IFERROR(   [DISTINCT NOTAS VTEX]/[SOMASESSION],0)"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "CONTAGEM",
+        "ExpressaoDAX":  "COUNT(VMQ_VTEXPED_MKT_POWERBI[CREATION_DATE])"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "TT PREICE VALUE",
+        "ExpressaoDAX":  "SUM(VMQ_VTEXPED_MKT_POWERBI[TOTAL_VALUE])"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "TOTAL VALUE",
+        "ExpressaoDAX":  "SUM(VMQ_VTEXPED_MKT_POWERBI[TOTAL_VALUE])"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "QTDE VENDAS MES ANTERIOR",
+        "ExpressaoDAX":  "CALCULATE(\n    [SOMA QTDE DE VENDAS],\n    DATEADD(DCALENDARIO[Date], -1, MONTH))"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "EVOLUCAO MES %",
+        "ExpressaoDAX":  "VAR Atual = [SOMA QTDE DE VENDAS]\nVAR Anterior = [QTDE VENDAS MES ANTERIOR]\nRETURN\nDIVIDE(Atual - Anterior, Anterior)"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "Primeira Data Compra",
+        "ExpressaoDAX":  "CALCULATE(\n    MIN(Consulta1[DTENTSAI]),\n    ALLEXCEPT(\n        Consulta1,\n        Consulta1[CODPARC]\n    )\n)"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "Valor Primeira Compra",
+        "ExpressaoDAX":  "VAR PrimeiraData =\n    CALCULATE(\n        MIN(Consulta1[DTENTSAI]),\n        ALLEXCEPT(Consulta1,Consulta1[CODPARC]\n    ))\n\n    RETURN\nCALCULATE(\n    SUM(Consulta1[VALOR]),\n    Consulta1[DTENTSAI] = PrimeiraData\n)"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "Qtd Clientes Primeira Compra",
+        "ExpressaoDAX":  "CALCULATE(\n    DISTINCTCOUNT(Consulta1[CODPARC]),\n    FILTER(\n        Consulta1,\n        Consulta1[DTENTSAI]\n            = CALCULATE(\n                MIN(Consulta1[DTENTSAI]),\n                ALLEXCEPT(Consulta1, Consulta1[CODPARC])\n            )\n        \u0026\u0026\n        NOT ISBLANK(Consulta1[VALOR])\n    )\n)"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "Valor Primeira Compra02",
+        "ExpressaoDAX":  "SUMX(\n    VALUES(Consulta1[CODPARC]),\n    VAR PrimeiraData =\n        CALCULATE(\n            MIN(Consulta1[DTENTSAI]),\n            ALLEXCEPT(Consulta1, Consulta1[CODPARC])\n        )\n    RETURN\n        CALCULATE(\n            SUM(Consulta1[VALOR]),\n            Consulta1[DTENTSAI] = PrimeiraData\n        )\n)"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "DISTINTO PARC",
+        "ExpressaoDAX":  "DISTINCTCOUNTNOBLANK(Consulta1[CODPARC])"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "TT ABSOLUTO FAT",
+        "ExpressaoDAX":  "CALCULATE (\n    [_VENDA(-) FRETE (+) DEVOLUCAO],\n    ALL ( \u0027Consulta1\u0027[UF] )\n)"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "(%) DO FAT.",
+        "ExpressaoDAX":  "[_VENDA(-) FRETE (+) DEVOLUCAO]/[TT ABSOLUTO FAT]"
+    },
+    {
+        "Tabela":  "MEDIDAS",
+        "Medida":  "SOMA CALCULO LIQUIDO",
+        "ExpressaoDAX":  "SUM(Consulta1[CALCULO LIQUIDO])"
+    },
+    {
+        "Tabela":  "MQ Hair – GA4",
+        "Medida":  "SOMASESSION",
+        "ExpressaoDAX":  "SUM(\u0027MQ Hair – GA4\u0027[sessions])"
+    },
+    {
+        "Tabela":  "MEDIDA BASE INSTAGRAM",
+        "Medida":  "COMMENTS POSITIVE",
+        "ExpressaoDAX":  "SUM(\u0027BASE INSTAGRAM\u0027[Positive comments])"
+    },
+    {
+        "Tabela":  "MEDIDA BASE INSTAGRAM",
+        "Medida":  "COMMENTS NEGATIVE",
+        "ExpressaoDAX":  "SUM(\u0027BASE INSTAGRAM\u0027[Negative comments])"
+    },
+    {
+        "Tabela":  "MEDIDA BASE INSTAGRAM",
+        "Medida":  "COMMENTS TOTAL",
+        "ExpressaoDAX":  "SUM(\u0027BASE INSTAGRAM\u0027[Total comments])"
+    },
+    {
+        "Tabela":  "MEDIDA BASE INSTAGRAM",
+        "Medida":  "ORGANIC LIKES",
+        "ExpressaoDAX":  "SUM(\u0027BASE INSTAGRAM\u0027[Organic likes])"
+    },
+    {
+        "Tabela":  "MEDIDA BASE INSTAGRAM",
+        "Medida":  "TOTAL LIKES",
+        "ExpressaoDAX":  "SUM(\u0027BASE INSTAGRAM\u0027[Total likes])"
+    },
+    {
+        "Tabela":  "MEDIDA BASE INSTAGRAM",
+        "Medida":  "VIDEO VIEW",
+        "ExpressaoDAX":  "SUM(\u0027BASE INSTAGRAM\u0027[Video view count])"
+    },
+    {
+        "Tabela":  "MEDIDA BASE INSTAGRAM",
+        "Medida":  "TOTAL INTERACTIVE",
+        "ExpressaoDAX":  "SUM(\u0027BASE INSTAGRAM\u0027[Total interactions])"
+    },
+    {
+        "Tabela":  "MEDIDA BASE INSTAGRAM",
+        "Medida":  "TT CONTEUDO",
+        "ExpressaoDAX":  "COUNT(\u0027BASE INSTAGRAM\u0027[Content ID])"
+    },
+    {
+        "Tabela":  "MEDIDA BASE INSTAGRAM",
+        "Medida":  "ENGAJAMENTO/CONTEUDO",
+        "ExpressaoDAX":  "[TOTAL INTERACTIVE]/ [TT CONTEUDO]"
+    },
+    {
+        "Tabela":  "MEDIDA BASE INSTAGRAM",
+        "Medida":  "Qtde Autor",
+        "ExpressaoDAX":  "DISTINCTCOUNT(\u0027BASE INSTAGRAM\u0027[AUTOR])"
+    },
+    {
+        "Tabela":  "MEDIDAS GA",
+        "Medida":  "SOMA SESSION1",
+        "ExpressaoDAX":  "SUM(\u0027MQ Hair – GA4 (2)\u0027[sessions])"
+    },
+    {
+        "Tabela":  "MEDIDAS GA",
+        "Medida":  "SOMA ADD TO_CART",
+        "ExpressaoDAX":  "SUM(\u0027MQ Hair – GA4 (2)\u0027[addToCarts])"
+    },
+    {
+        "Tabela":  "MEDIDAS GA",
+        "Medida":  "DISTINCT NOTAS VTEX2",
+        "ExpressaoDAX":  "CALCULATE( DISTINCTCOUNT(\u0027Consulta1 (2)\u0027[NUNOTA]),\u0027Consulta1 (2)\u0027[DESCROPER]=\"7- VENDA NF-E ECOMERCE\" \u0026\u0026 \u0027Consulta1 (2)\u0027[VENDEDOR]=\"LOJA VTEX\")"
+    },
+    {
+        "Tabela":  "MEDIDAS GA",
+        "Medida":  "TX ABANDONO CARRINHO",
+        "ExpressaoDAX":  "[DISTINCT NOTAS VTEX2]/[SOMA ADD TO_CART]"
+    },
+    {
+        "Tabela":  "MEDIDAS GA",
+        "Medida":  "TX CONVERSAO  VTEX",
+        "ExpressaoDAX":  "[DISTINCT NOTAS VTEX2]/[SOMA SESSION1]"
+    },
+    {
+        "Tabela":  "MEDIDAS GA",
+        "Medida":  "SESSAO (MES ANTERIOR)",
+        "ExpressaoDAX":  "CALCULATE(\n                    [SOMA SESSION1],\n                    DATEADD(\u0027CALENDARIO GA\u0027[Date],-1,MONTH\n                    ))"
+    },
+    {
+        "Tabela":  "MEDIDAS GA",
+        "Medida":  "SESSAO (ANO ANTERIOR)",
+        "ExpressaoDAX":  "CALCULATE([SOMA SESSION1],\n        SAMEPERIODLASTYEAR(\u0027CALENDARIO GA\u0027[Date]))"
+    },
+    {
+        "Tabela":  "MEDIDAS GA",
+        "Medida":  "CRESC MES ANTERIOR SESSIONS",
+        "ExpressaoDAX":  "([DIF SESSIONS])/[SESSAO (MES ANTERIOR)]"
+    },
+    {
+        "Tabela":  "MEDIDAS GA",
+        "Medida":  "CRESC ANO ANTERIOR SESSIONS",
+        "ExpressaoDAX":  "([dif sessao ano])/[SESSAO (ANO ANTERIOR)]"
+    },
+    {
+        "Tabela":  "MEDIDAS GA",
+        "Medida":  "TX. ADD CARRINHO (MES ANTERIOR)",
+        "ExpressaoDAX":  "CALCULATE(\n                     [SOMA ADD TO_CART]/[SOMA SESSION1],\n                    DATEADD(\u0027CALENDARIO GA\u0027[Date],-1,MONTH\n                    ))"
+    },
+    {
+        "Tabela":  "MEDIDAS GA",
+        "Medida":  "TX. ADD. CARRINHO (ANO ANTERIOR)",
+        "ExpressaoDAX":  "CALCULATE([TX ABANDONO CARRINHO],\n        SAMEPERIODLASTYEAR(\u0027CALENDARIO GA\u0027[Date]))"
+    },
+    {
+        "Tabela":  "MEDIDAS GA",
+        "Medida":  "CRESC MES ANTERIOR  TX. ADD. CARRINHO",
+        "ExpressaoDAX":  "([TX ABANDONO CARRINHO]-[TX. ADD CARRINHO (MES ANTERIOR)])/[TX ABANDONO CARRINHO]"
+    },
+    {
+        "Tabela":  "MEDIDAS GA",
+        "Medida":  "CRESC ANO ANTERIOR  TX ADD CARRINHO",
+        "ExpressaoDAX":  "[DIF ADD CART]/ [ADD TO CART (ANO ANTERIOR)]"
+    },
+    {
+        "Tabela":  "MEDIDAS GA",
+        "Medida":  "TX. CONVERSAO (MES ANTERIOR)",
+        "ExpressaoDAX":  "CALCULATE(\n                    [TX CONVERSAO  VTEX],\n                    DATEADD(\u0027CALENDARIO GA\u0027[Date],1,MONTH\n                    ))"
+    },
+    {
+        "Tabela":  "MEDIDAS GA",
+        "Medida":  "TX. CONVERSAO (ANO ANTERIOR)",
+        "ExpressaoDAX":  "CALCULATE([TX CONVERSAO  VTEX],\n        SAMEPERIODLASTYEAR(\u0027CALENDARIO GA\u0027[Date]))"
+    },
+    {
+        "Tabela":  "MEDIDAS GA",
+        "Medida":  "CRESC MES ANTERIOR  TX. CONVERSAO",
+        "ExpressaoDAX":  "[dif tx conversao vtex]/[TX CONVERSAO VTEX (MES ANTERIOR)]"
+    },
+    {
+        "Tabela":  "MEDIDAS GA",
+        "Medida":  "CRESC ANO ANTERIOR TX CONVERSAO",
+        "ExpressaoDAX":  "([TX CONVERSAO  VTEX]-[TX CONVERS ANO ANTERIOR])/[TX CONVERSAO  VTEX]"
+    },
+    {
+        "Tabela":  "MEDIDAS GA",
+        "Medida":  "PEDIDOS (MES ANTERIOR)",
+        "ExpressaoDAX":  "CALCULATE(\n                    [DISTINCT NOTAS VTEX2],\n                    DATEADD(\u0027CALENDARIO GA\u0027[Date],-1,MONTH\n                    ))"
+    },
+    {
+        "Tabela":  "MEDIDAS GA",
+        "Medida":  "PEDIDOS (ANO ANTERIOR)",
+        "ExpressaoDAX":  "CALCULATE([DISTINCT NOTAS VTEX2],\n        SAMEPERIODLASTYEAR(\u0027CALENDARIO GA\u0027[Date]))"
+    },
+    {
+        "Tabela":  "MEDIDAS GA",
+        "Medida":  "CRESC MES ANTERIOR  PEDIDOS",
+        "ExpressaoDAX":  "IFERROR([dif pedidos]/[PEDIDOS (MES ANTERIOR)],\"\")"
+    },
+    {
+        "Tabela":  "MEDIDAS GA",
+        "Medida":  "CRESC ANO ANTERIOR PEDIDOS",
+        "ExpressaoDAX":  "([DISTINCT NOTAS VTEX2]-[PEDIDOS (ANO ANTERIOR)])/[DISTINCT NOTAS VTEX2]"
+    },
+    {
+        "Tabela":  "MEDIDAS GA",
+        "Medida":  "ADD TO_CART (MES ANTERIOR)",
+        "ExpressaoDAX":  "CALCULATE(\n                    [SOMA ADD TO_CART],\n                    DATEADD(\u0027CALENDARIO GA\u0027[Date],-1,MONTH\n                    ))"
+    },
+    {
+        "Tabela":  "MEDIDAS GA",
+        "Medida":  "ADD TO CART (ANO ANTERIOR)",
+        "ExpressaoDAX":  "CALCULATE([SOMA ADD TO_CART],\n        SAMEPERIODLASTYEAR(\u0027CALENDARIO GA\u0027[Date]))"
+    },
+    {
+        "Tabela":  "MEDIDAS GA",
+        "Medida":  "CRESC ADD TO CART (MES ANTERIOR)",
+        "ExpressaoDAX":  "([DIF ADD TO CART])/[ADD TO_CART (MES ANTERIOR)]"
+    },
+    {
+        "Tabela":  "MEDIDAS GA",
+        "Medida":  "CRESC ANO ANTERIOR  ADD TO CART",
+        "ExpressaoDAX":  "([SOMA ADD TO_CART]-[ADD TO CART (ANO ANTERIOR)])/[SOMA ADD TO_CART]"
+    },
+    {
+        "Tabela":  "MEDIDAS GA",
+        "Medida":  "TX CONVERSAO VTEX (MES ANTERIOR)",
+        "ExpressaoDAX":  "CALCULATE(\n                    [TX CONVERSAO  VTEX],\n                    DATEADD(\u0027CALENDARIO GA\u0027[Date],-1,MONTH\n                    ))"
+    },
+    {
+        "Tabela":  "MEDIDAS GA",
+        "Medida":  "CRESC ANO ANTERIOR  TX. CONVERSAO",
+        "ExpressaoDAX":  "[DIF TX CONVERSAO ANO]/[TX. CONVERSAO (ANO ANTERIOR)]"
+    },
+    {
+        "Tabela":  "MEDIDAS GA",
+        "Medida":  "TX CARRINHO",
+        "ExpressaoDAX":  "[SOMA ADD TO_CART]/[SOMA SESSION1]"
+    },
+    {
+        "Tabela":  "MEDIDAS GA",
+        "Medida":  "TAXA CONVERSAO",
+        "ExpressaoDAX":  "[DISTINCT NOTAS VTEX2]/[SOMA SESSION1]"
+    },
+    {
+        "Tabela":  "MEDIDAS GA",
+        "Medida":  "DIF SESSIONS",
+        "ExpressaoDAX":  "[SOMA SESSION1]-  [SESSAO (MES ANTERIOR)]"
+    },
+    {
+        "Tabela":  "MEDIDAS GA",
+        "Medida":  "DIF ADD TO CART",
+        "ExpressaoDAX":  "[SOMA ADD TO_CART] - [ADD TO_CART (MES ANTERIOR)]"
+    },
+    {
+        "Tabela":  "MEDIDAS GA",
+        "Medida":  "DIF TX ADD",
+        "ExpressaoDAX":  "[TX CARRINHO] - [TX. ADD CARRINHO (MES ANTERIOR)]"
+    },
+    {
+        "Tabela":  "MEDIDAS GA",
+        "Medida":  "CRESC TX ADD CARRINHO",
+        "ExpressaoDAX":  "[DIF TX ADD]/[TX. ADD CARRINHO (MES ANTERIOR)]"
+    },
+    {
+        "Tabela":  "MEDIDAS GA",
+        "Medida":  "dif tx conversao vtex",
+        "ExpressaoDAX":  "[TX CONVERSAO  VTEX] -[TX CONVERSAO VTEX (MES ANTERIOR)]"
+    },
+    {
+        "Tabela":  "MEDIDAS GA",
+        "Medida":  "dif pedidos",
+        "ExpressaoDAX":  "[DISTINCT NOTAS VTEX2]-[PEDIDOS (MES ANTERIOR)]"
+    },
+    {
+        "Tabela":  "MEDIDAS GA",
+        "Medida":  "dif sessao ano",
+        "ExpressaoDAX":  "[SOMA SESSION1]-[SESSAO (ANO ANTERIOR)]"
+    },
+    {
+        "Tabela":  "MEDIDAS GA",
+        "Medida":  "DIF ADD CART",
+        "ExpressaoDAX":  "[SOMA ADD TO_CART]-[ADD TO CART (ANO ANTERIOR)]"
+    },
+    {
+        "Tabela":  "MEDIDAS GA",
+        "Medida":  "DIF TX CONVERSAO ANO",
+        "ExpressaoDAX":  "[TX CONVERSAO  VTEX]-[TX. CONVERSAO (ANO ANTERIOR)]"
+    },
+    {
+        "Tabela":  "MEDIDAS GA",
+        "Medida":  "dif pedidos ano",
+        "ExpressaoDAX":  "[DISTINCT NOTAS VTEX2] - [PEDIDOS (ANO ANTERIOR)]"
+    },
+    {
+        "Tabela":  "MEDIDAS GA",
+        "Medida":  "TX CARRINHO MES ANTERIOR",
+        "ExpressaoDAX":  "CALCULATE(\n                    [TX CARRINHO],\n                    DATEADD(\u0027CALENDARIO GA\u0027[Date],-1,MONTH\n                    ))"
+    },
+    {
+        "Tabela":  "MEDIDAS AMAZON USA",
+        "Medida":  "SUM QTY",
+        "ExpressaoDAX":  "SUM(BASE_AMAZON_USA[quantity])"
+    },
+    {
+        "Tabela":  "MEDIDAS AMAZON USA",
+        "Medida":  "SUM ITEM PRICE",
+        "ExpressaoDAX":  "SUM(BASE_AMAZON_USA[item-price])"
+    },
+    {
+        "Tabela":  "MEDIDAS AMAZON USA",
+        "Medida":  "FORMAT MOEDA",
+        "ExpressaoDAX":  "FORMAT([SUM ITEM PRICE],\"$#,##0.00\", \"en-US\")"
+    },
+    {
+        "Tabela":  "INDICADOR",
+        "Medida":  "indicador",
+        "ExpressaoDAX":  "SWITCH(\n                SELECTEDVALUE(INDICADOR[INDICADORES]),\n                \"QTDE\",[SUM QTY],\n                \"VLR\",[SUM ITEM PRICE],\n                \n              [SUM ITEM PRICE]\n                )"
+    },
+    {
+        "Tabela":  "METAS ECOMMERCE_2026",
+        "Medida":  "SOMA META",
+        "ExpressaoDAX":  "SUM(\u0027METAS ECOMMERCE_2026\u0027[VLR META])"
+    },
+    {
+        "Tabela":  "METAS ECOMMERCE_2026",
+        "Medida":  "MEDIA META DIA",
+        "ExpressaoDAX":  "[Total de SOMA META para DIA]/[Total MAX DIA]"
+    },
+    {
+        "Tabela":  "METAS ECOMMERCE_2026",
+        "Medida":  "MAX DIAS",
+        "ExpressaoDAX":  "MAX(DCALENDARIO[DIAS DE CADA MES])"
+    },
+    {
+        "Tabela":  "METAS ECOMMERCE_2026",
+        "Medida":  "Total de SOMA META para DIA",
+        "ExpressaoDAX":  "CALCULATE([SOMA META], ALLSELECTED(\u0027DCALENDARIO\u0027[DIA]))"
+    },
+    {
+        "Tabela":  "METAS ECOMMERCE_2026",
+        "Medida":  "Total MAX DIA",
+        "ExpressaoDAX":  "CALCULATE([MAX DIAS], ALLSELECTED(\u0027DCALENDARIO\u0027[DIA]))"
+    },
+    {
+        "Tabela":  "METAS ECOMMERCE_2026",
+        "Medida":  "ACUMULADO FAT DIA MES",
+        "ExpressaoDAX":  "CALCULATE([_VENDA(-) FRETE (+) DEVOLUCAO],\n            FILTER(ALLSELECTED(DCALENDARIO[DIA],DCALENDARIO[DIA]),\n            DCALENDARIO[DIA] \u003c=MAX(DCALENDARIO[dia])))"
+    },
+    {
+        "Tabela":  "METAS ECOMMERCE_2026",
+        "Medida":  "ACUMULADO META DIA MES",
+        "ExpressaoDAX":  "SUMX (\n    FILTER (\n        ALLSELECTED ( DCALENDARIO[DIA] ),\n        DCALENDARIO[DIA] \u003c= MAX ( DCALENDARIO[DIA] )\n    ),\n    [MEDIA META DIA]\n)"
+    },
+    {
+        "Tabela":  null,
+        "Medida":  "__Default measure",
+        "ExpressaoDAX":  "1"
+    }
+]

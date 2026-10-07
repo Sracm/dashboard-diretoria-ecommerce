@@ -1,0 +1,1086 @@
+{
+  "metas_ecommerce_2026": [
+    {
+      "ano": 2026,
+      "mes": 1,
+      "mes_nome": "Janeiro",
+      "vendedor": "MERCADO LIVRE",
+      "vlr_meta": 828302.9,
+      "dias_mes": 31,
+      "vlr_dia": 26719.45
+    },
+    {
+      "ano": 2026,
+      "mes": 2,
+      "mes_nome": "Fevereiro",
+      "vendedor": "MERCADO LIVRE",
+      "vlr_meta": 795000.0,
+      "dias_mes": 28,
+      "vlr_dia": 28392.86
+    },
+    {
+      "ano": 2026,
+      "mes": 3,
+      "mes_nome": "Março",
+      "vendedor": "MERCADO LIVRE",
+      "vlr_meta": 1006349.5,
+      "dias_mes": 31,
+      "vlr_dia": 32462.89
+    },
+    {
+      "ano": 2026,
+      "mes": 4,
+      "mes_nome": "Abril",
+      "vendedor": "MERCADO LIVRE",
+      "vlr_meta": 1060801.49,
+      "dias_mes": 30,
+      "vlr_dia": 35360.05
+    },
+    {
+      "ano": 2026,
+      "mes": 5,
+      "mes_nome": "Maio",
+      "vendedor": "MERCADO LIVRE",
+      "vlr_meta": 1320000.0,
+      "dias_mes": 31,
+      "vlr_dia": 42580.65
+    },
+    {
+      "ano": 2026,
+      "mes": 6,
+      "mes_nome": "Junho",
+      "vendedor": "MERCADO LIVRE",
+      "vlr_meta": 1320000.0,
+      "dias_mes": 30,
+      "vlr_dia": 44000.0
+    },
+    {
+      "ano": 2026,
+      "mes": 7,
+      "mes_nome": "Julho",
+      "vendedor": "MERCADO LIVRE",
+      "vlr_meta": 1260000.0,
+      "dias_mes": 31,
+      "vlr_dia": 40645.16
+    },
+    {
+      "ano": 2026,
+      "mes": 8,
+      "mes_nome": "Agosto",
+      "vendedor": "MERCADO LIVRE",
+      "vlr_meta": 1350000.0,
+      "dias_mes": 31,
+      "vlr_dia": 43548.39
+    },
+    {
+      "ano": 2026,
+      "mes": 9,
+      "mes_nome": "Setembro",
+      "vendedor": "MERCADO LIVRE",
+      "vlr_meta": 1335000.0,
+      "dias_mes": 30,
+      "vlr_dia": 44500.0
+    },
+    {
+      "ano": 2026,
+      "mes": 10,
+      "mes_nome": "Outubro",
+      "vendedor": "MERCADO LIVRE",
+      "vlr_meta": 1403471.7,
+      "dias_mes": 31,
+      "vlr_dia": 45273.28
+    },
+    {
+      "ano": 2026,
+      "mes": 11,
+      "mes_nome": "Novembro",
+      "vendedor": "MERCADO LIVRE",
+      "vlr_meta": 2003005.18,
+      "dias_mes": 30,
+      "vlr_dia": 66766.84
+    },
+    {
+      "ano": 2026,
+      "mes": 12,
+      "mes_nome": "Dezembro",
+      "vendedor": "MERCADO LIVRE",
+      "vlr_meta": 1523005.19,
+      "dias_mes": 31,
+      "vlr_dia": 49129.2
+    },
+    {
+      "ano": 2026,
+      "mes": 1,
+      "mes_nome": "Janeiro",
+      "vendedor": "VTEX",
+      "vlr_meta": 345126.21,
+      "dias_mes": 31,
+      "vlr_dia": 11133.1
+    },
+    {
+      "ano": 2026,
+      "mes": 2,
+      "mes_nome": "Fevereiro",
+      "vendedor": "VTEX",
+      "vlr_meta": 331250.0,
+      "dias_mes": 28,
+      "vlr_dia": 11830.36
+    },
+    {
+      "ano": 2026,
+      "mes": 3,
+      "mes_nome": "Março",
+      "vendedor": "VTEX",
+      "vlr_meta": 419312.29,
+      "dias_mes": 31,
+      "vlr_dia": 13526.2
+    },
+    {
+      "ano": 2026,
+      "mes": 4,
+      "mes_nome": "Abril",
+      "vendedor": "VTEX",
+      "vlr_meta": 442000.62,
+      "dias_mes": 30,
+      "vlr_dia": 14733.35
+    },
+    {
+      "ano": 2026,
+      "mes": 5,
+      "mes_nome": "Maio",
+      "vendedor": "VTEX",
+      "vlr_meta": 550000.0,
+      "dias_mes": 31,
+      "vlr_dia": 17741.94
+    },
+    {
+      "ano": 2026,
+      "mes": 6,
+      "mes_nome": "Junho",
+      "vendedor": "VTEX",
+      "vlr_meta": 550000.0,
+      "dias_mes": 30,
+      "vlr_dia": 18333.33
+    },
+    {
+      "ano": 2026,
+      "mes": 7,
+      "mes_nome": "Julho",
+      "vendedor": "VTEX",
+      "vlr_meta": 525000.0,
+      "dias_mes": 31,
+      "vlr_dia": 16935.48
+    },
+    {
+      "ano": 2026,
+      "mes": 8,
+      "mes_nome": "Agosto",
+      "vendedor": "VTEX",
+      "vlr_meta": 562500.0,
+      "dias_mes": 31,
+      "vlr_dia": 18145.16
+    },
+    {
+      "ano": 2026,
+      "mes": 9,
+      "mes_nome": "Setembro",
+      "vendedor": "VTEX",
+      "vlr_meta": 556250.0,
+      "dias_mes": 30,
+      "vlr_dia": 18541.67
+    },
+    {
+      "ano": 2026,
+      "mes": 10,
+      "mes_nome": "Outubro",
+      "vendedor": "VTEX",
+      "vlr_meta": 517678.83,
+      "dias_mes": 31,
+      "vlr_dia": 16699.32
+    },
+    {
+      "ano": 2026,
+      "mes": 11,
+      "mes_nome": "Novembro",
+      "vendedor": "VTEX",
+      "vlr_meta": 747500.0,
+      "dias_mes": 30,
+      "vlr_dia": 24916.67
+    },
+    {
+      "ano": 2026,
+      "mes": 12,
+      "mes_nome": "Dezembro",
+      "vendedor": "VTEX",
+      "vlr_meta": 563500.0,
+      "dias_mes": 31,
+      "vlr_dia": 18177.42
+    },
+    {
+      "ano": 2026,
+      "mes": 1,
+      "mes_nome": "Janeiro",
+      "vendedor": "SHOPEE",
+      "vlr_meta": 151855.53,
+      "dias_mes": 31,
+      "vlr_dia": 4898.57
+    },
+    {
+      "ano": 2026,
+      "mes": 2,
+      "mes_nome": "Fevereiro",
+      "vendedor": "SHOPEE",
+      "vlr_meta": 145750.0,
+      "dias_mes": 28,
+      "vlr_dia": 5205.36
+    },
+    {
+      "ano": 2026,
+      "mes": 3,
+      "mes_nome": "Março",
+      "vendedor": "SHOPEE",
+      "vlr_meta": 184497.41,
+      "dias_mes": 31,
+      "vlr_dia": 5951.53
+    },
+    {
+      "ano": 2026,
+      "mes": 4,
+      "mes_nome": "Abril",
+      "vendedor": "SHOPEE",
+      "vlr_meta": 194480.27,
+      "dias_mes": 30,
+      "vlr_dia": 6482.68
+    },
+    {
+      "ano": 2026,
+      "mes": 5,
+      "mes_nome": "Maio",
+      "vendedor": "SHOPEE",
+      "vlr_meta": 242000.0,
+      "dias_mes": 31,
+      "vlr_dia": 7806.45
+    },
+    {
+      "ano": 2026,
+      "mes": 6,
+      "mes_nome": "Junho",
+      "vendedor": "SHOPEE",
+      "vlr_meta": 242000.0,
+      "dias_mes": 30,
+      "vlr_dia": 8066.67
+    },
+    {
+      "ano": 2026,
+      "mes": 7,
+      "mes_nome": "Julho",
+      "vendedor": "SHOPEE",
+      "vlr_meta": 231000.0,
+      "dias_mes": 31,
+      "vlr_dia": 7451.61
+    },
+    {
+      "ano": 2026,
+      "mes": 8,
+      "mes_nome": "Agosto",
+      "vendedor": "SHOPEE",
+      "vlr_meta": 247500.0,
+      "dias_mes": 31,
+      "vlr_dia": 7983.87
+    },
+    {
+      "ano": 2026,
+      "mes": 9,
+      "mes_nome": "Setembro",
+      "vendedor": "SHOPEE",
+      "vlr_meta": 244750.0,
+      "dias_mes": 30,
+      "vlr_dia": 8158.33
+    },
+    {
+      "ano": 2026,
+      "mes": 10,
+      "mes_nome": "Outubro",
+      "vendedor": "SHOPEE",
+      "vlr_meta": 247585.53,
+      "dias_mes": 31,
+      "vlr_dia": 7986.63
+    },
+    {
+      "ano": 2026,
+      "mes": 11,
+      "mes_nome": "Novembro",
+      "vendedor": "SHOPEE",
+      "vlr_meta": 357500.0,
+      "dias_mes": 30,
+      "vlr_dia": 11916.67
+    },
+    {
+      "ano": 2026,
+      "mes": 12,
+      "mes_nome": "Dezembro",
+      "vendedor": "SHOPEE",
+      "vlr_meta": 269500.0,
+      "dias_mes": 31,
+      "vlr_dia": 8693.55
+    },
+    {
+      "ano": 2026,
+      "mes": 1,
+      "mes_nome": "Janeiro",
+      "vendedor": "MAGALU",
+      "vlr_meta": 55220.19,
+      "dias_mes": 31,
+      "vlr_dia": 1781.3
+    },
+    {
+      "ano": 2026,
+      "mes": 2,
+      "mes_nome": "Fevereiro",
+      "vendedor": "MAGALU",
+      "vlr_meta": 53000.0,
+      "dias_mes": 28,
+      "vlr_dia": 1892.86
+    },
+    {
+      "ano": 2026,
+      "mes": 3,
+      "mes_nome": "Março",
+      "vendedor": "MAGALU",
+      "vlr_meta": 67089.97,
+      "dias_mes": 31,
+      "vlr_dia": 2164.19
+    },
+    {
+      "ano": 2026,
+      "mes": 4,
+      "mes_nome": "Abril",
+      "vendedor": "MAGALU",
+      "vlr_meta": 70720.1,
+      "dias_mes": 30,
+      "vlr_dia": 2357.34
+    },
+    {
+      "ano": 2026,
+      "mes": 5,
+      "mes_nome": "Maio",
+      "vendedor": "MAGALU",
+      "vlr_meta": 88000.0,
+      "dias_mes": 31,
+      "vlr_dia": 2838.71
+    },
+    {
+      "ano": 2026,
+      "mes": 6,
+      "mes_nome": "Junho",
+      "vendedor": "MAGALU",
+      "vlr_meta": 88000.0,
+      "dias_mes": 30,
+      "vlr_dia": 2933.33
+    },
+    {
+      "ano": 2026,
+      "mes": 7,
+      "mes_nome": "Julho",
+      "vendedor": "MAGALU",
+      "vlr_meta": 84000.0,
+      "dias_mes": 31,
+      "vlr_dia": 2709.68
+    },
+    {
+      "ano": 2026,
+      "mes": 8,
+      "mes_nome": "Agosto",
+      "vendedor": "MAGALU",
+      "vlr_meta": 90000.0,
+      "dias_mes": 31,
+      "vlr_dia": 2903.23
+    },
+    {
+      "ano": 2026,
+      "mes": 9,
+      "mes_nome": "Setembro",
+      "vendedor": "MAGALU",
+      "vlr_meta": 89000.0,
+      "dias_mes": 30,
+      "vlr_dia": 2966.67
+    },
+    {
+      "ano": 2026,
+      "mes": 10,
+      "mes_nome": "Outubro",
+      "vendedor": "MAGALU",
+      "vlr_meta": 90031.1,
+      "dias_mes": 31,
+      "vlr_dia": 2904.23
+    },
+    {
+      "ano": 2026,
+      "mes": 11,
+      "mes_nome": "Novembro",
+      "vendedor": "MAGALU",
+      "vlr_meta": 130000.0,
+      "dias_mes": 30,
+      "vlr_dia": 4333.33
+    },
+    {
+      "ano": 2026,
+      "mes": 12,
+      "mes_nome": "Dezembro",
+      "vendedor": "MAGALU",
+      "vlr_meta": 98000.0,
+      "dias_mes": 31,
+      "vlr_dia": 3161.29
+    },
+    {
+      "ano": 2026,
+      "mes": 1,
+      "mes_nome": "Janeiro",
+      "vendedor": "PARLUX",
+      "vlr_meta": 91855.0,
+      "dias_mes": 31,
+      "vlr_dia": 2963.06
+    },
+    {
+      "ano": 2026,
+      "mes": 2,
+      "mes_nome": "Fevereiro",
+      "vendedor": "PARLUX",
+      "vlr_meta": 81855.0,
+      "dias_mes": 28,
+      "vlr_dia": 2923.39
+    },
+    {
+      "ano": 2026,
+      "mes": 3,
+      "mes_nome": "Março",
+      "vendedor": "PARLUX",
+      "vlr_meta": 99767.0,
+      "dias_mes": 31,
+      "vlr_dia": 3218.29
+    },
+    {
+      "ano": 2026,
+      "mes": 4,
+      "mes_nome": "Abril",
+      "vendedor": "PARLUX",
+      "vlr_meta": 110621.0,
+      "dias_mes": 30,
+      "vlr_dia": 3687.37
+    },
+    {
+      "ano": 2026,
+      "mes": 5,
+      "mes_nome": "Maio",
+      "vendedor": "PARLUX",
+      "vlr_meta": 137225.0,
+      "dias_mes": 31,
+      "vlr_dia": 4426.61
+    },
+    {
+      "ano": 2026,
+      "mes": 6,
+      "mes_nome": "Junho",
+      "vendedor": "PARLUX",
+      "vlr_meta": 122130.0,
+      "dias_mes": 30,
+      "vlr_dia": 4071.0
+    },
+    {
+      "ano": 2026,
+      "mes": 7,
+      "mes_nome": "Julho",
+      "vendedor": "PARLUX",
+      "vlr_meta": 119767.0,
+      "dias_mes": 31,
+      "vlr_dia": 3863.45
+    },
+    {
+      "ano": 2026,
+      "mes": 8,
+      "mes_nome": "Agosto",
+      "vendedor": "PARLUX",
+      "vlr_meta": 124749.0,
+      "dias_mes": 31,
+      "vlr_dia": 4024.16
+    },
+    {
+      "ano": 2026,
+      "mes": 9,
+      "mes_nome": "Setembro",
+      "vendedor": "PARLUX",
+      "vlr_meta": 127948.0,
+      "dias_mes": 30,
+      "vlr_dia": 4264.93
+    },
+    {
+      "ano": 2026,
+      "mes": 10,
+      "mes_nome": "Outubro",
+      "vendedor": "PARLUX",
+      "vlr_meta": 117287.25,
+      "dias_mes": 31,
+      "vlr_dia": 3783.46
+    },
+    {
+      "ano": 2026,
+      "mes": 11,
+      "mes_nome": "Novembro",
+      "vendedor": "PARLUX",
+      "vlr_meta": 137837.6,
+      "dias_mes": 30,
+      "vlr_dia": 4594.59
+    },
+    {
+      "ano": 2026,
+      "mes": 12,
+      "mes_nome": "Dezembro",
+      "vendedor": "PARLUX",
+      "vlr_meta": 107724.8,
+      "dias_mes": 31,
+      "vlr_dia": 3474.99
+    }
+  ],
+  "metas_ecommerce_2026_v2": [
+    {
+      "ano": 2026,
+      "mes": 1,
+      "mes_nome": "Janeiro",
+      "vendedor": "MERCADO LIVRE",
+      "vlr_meta": 828302.9,
+      "dias_mes": 31,
+      "vlr_dia": 26719.45
+    },
+    {
+      "ano": 2026,
+      "mes": 2,
+      "mes_nome": "Fevereiro",
+      "vendedor": "MERCADO LIVRE",
+      "vlr_meta": 795000.0,
+      "dias_mes": 28,
+      "vlr_dia": 28392.86
+    },
+    {
+      "ano": 2026,
+      "mes": 3,
+      "mes_nome": "Março",
+      "vendedor": "MERCADO LIVRE",
+      "vlr_meta": 1006349.5,
+      "dias_mes": 31,
+      "vlr_dia": 32462.89
+    },
+    {
+      "ano": 2026,
+      "mes": 4,
+      "mes_nome": "Abril",
+      "vendedor": "MERCADO LIVRE",
+      "vlr_meta": 1060801.49,
+      "dias_mes": 30,
+      "vlr_dia": 35360.05
+    },
+    {
+      "ano": 2026,
+      "mes": 5,
+      "mes_nome": "Maio",
+      "vendedor": "MERCADO LIVRE",
+      "vlr_meta": 1320000.0,
+      "dias_mes": 31,
+      "vlr_dia": 42580.65
+    },
+    {
+      "ano": 2026,
+      "mes": 6,
+      "mes_nome": "Junho",
+      "vendedor": "MERCADO LIVRE",
+      "vlr_meta": 1320000.0,
+      "dias_mes": 30,
+      "vlr_dia": 44000.0
+    },
+    {
+      "ano": 2026,
+      "mes": 7,
+      "mes_nome": "Julho",
+      "vendedor": "MERCADO LIVRE",
+      "vlr_meta": 1260000.0,
+      "dias_mes": 31,
+      "vlr_dia": 40645.16
+    },
+    {
+      "ano": 2026,
+      "mes": 8,
+      "mes_nome": "Agosto",
+      "vendedor": "MERCADO LIVRE",
+      "vlr_meta": 1350000.0,
+      "dias_mes": 31,
+      "vlr_dia": 43548.39
+    },
+    {
+      "ano": 2026,
+      "mes": 9,
+      "mes_nome": "Setembro",
+      "vendedor": "MERCADO LIVRE",
+      "vlr_meta": 1335000.0,
+      "dias_mes": 30,
+      "vlr_dia": 44500.0
+    },
+    {
+      "ano": 2026,
+      "mes": 10,
+      "mes_nome": "Outubro",
+      "vendedor": "MERCADO LIVRE",
+      "vlr_meta": 1403471.7,
+      "dias_mes": 31,
+      "vlr_dia": 45273.28
+    },
+    {
+      "ano": 2026,
+      "mes": 11,
+      "mes_nome": "Novembro",
+      "vendedor": "MERCADO LIVRE",
+      "vlr_meta": 2003005.18,
+      "dias_mes": 30,
+      "vlr_dia": 66766.84
+    },
+    {
+      "ano": 2026,
+      "mes": 12,
+      "mes_nome": "Dezembro",
+      "vendedor": "MERCADO LIVRE",
+      "vlr_meta": 1523005.19,
+      "dias_mes": 31,
+      "vlr_dia": 49129.2
+    },
+    {
+      "ano": 2026,
+      "mes": 1,
+      "mes_nome": "Janeiro",
+      "vendedor": "VTEX",
+      "vlr_meta": 345126.21,
+      "dias_mes": 31,
+      "vlr_dia": 11133.1
+    },
+    {
+      "ano": 2026,
+      "mes": 2,
+      "mes_nome": "Fevereiro",
+      "vendedor": "VTEX",
+      "vlr_meta": 331250.0,
+      "dias_mes": 28,
+      "vlr_dia": 11830.36
+    },
+    {
+      "ano": 2026,
+      "mes": 3,
+      "mes_nome": "Março",
+      "vendedor": "VTEX",
+      "vlr_meta": 419312.29,
+      "dias_mes": 31,
+      "vlr_dia": 13526.2
+    },
+    {
+      "ano": 2026,
+      "mes": 4,
+      "mes_nome": "Abril",
+      "vendedor": "VTEX",
+      "vlr_meta": 442000.62,
+      "dias_mes": 30,
+      "vlr_dia": 14733.35
+    },
+    {
+      "ano": 2026,
+      "mes": 5,
+      "mes_nome": "Maio",
+      "vendedor": "VTEX",
+      "vlr_meta": 550000.0,
+      "dias_mes": 31,
+      "vlr_dia": 17741.94
+    },
+    {
+      "ano": 2026,
+      "mes": 6,
+      "mes_nome": "Junho",
+      "vendedor": "VTEX",
+      "vlr_meta": 550000.0,
+      "dias_mes": 30,
+      "vlr_dia": 18333.33
+    },
+    {
+      "ano": 2026,
+      "mes": 7,
+      "mes_nome": "Julho",
+      "vendedor": "VTEX",
+      "vlr_meta": 525000.0,
+      "dias_mes": 31,
+      "vlr_dia": 16935.48
+    },
+    {
+      "ano": 2026,
+      "mes": 8,
+      "mes_nome": "Agosto",
+      "vendedor": "VTEX",
+      "vlr_meta": 562500.0,
+      "dias_mes": 31,
+      "vlr_dia": 18145.16
+    },
+    {
+      "ano": 2026,
+      "mes": 9,
+      "mes_nome": "Setembro",
+      "vendedor": "VTEX",
+      "vlr_meta": 556250.0,
+      "dias_mes": 30,
+      "vlr_dia": 18541.67
+    },
+    {
+      "ano": 2026,
+      "mes": 10,
+      "mes_nome": "Outubro",
+      "vendedor": "VTEX",
+      "vlr_meta": 517678.83,
+      "dias_mes": 31,
+      "vlr_dia": 16699.32
+    },
+    {
+      "ano": 2026,
+      "mes": 11,
+      "mes_nome": "Novembro",
+      "vendedor": "VTEX",
+      "vlr_meta": 747500.0,
+      "dias_mes": 30,
+      "vlr_dia": 24916.67
+    },
+    {
+      "ano": 2026,
+      "mes": 12,
+      "mes_nome": "Dezembro",
+      "vendedor": "VTEX",
+      "vlr_meta": 563500.0,
+      "dias_mes": 31,
+      "vlr_dia": 18177.42
+    },
+    {
+      "ano": 2026,
+      "mes": 1,
+      "mes_nome": "Janeiro",
+      "vendedor": "SHOPEE",
+      "vlr_meta": 151855.53,
+      "dias_mes": 31,
+      "vlr_dia": 4898.57
+    },
+    {
+      "ano": 2026,
+      "mes": 2,
+      "mes_nome": "Fevereiro",
+      "vendedor": "SHOPEE",
+      "vlr_meta": 145750.0,
+      "dias_mes": 28,
+      "vlr_dia": 5205.36
+    },
+    {
+      "ano": 2026,
+      "mes": 3,
+      "mes_nome": "Março",
+      "vendedor": "SHOPEE",
+      "vlr_meta": 184497.41,
+      "dias_mes": 31,
+      "vlr_dia": 5951.53
+    },
+    {
+      "ano": 2026,
+      "mes": 4,
+      "mes_nome": "Abril",
+      "vendedor": "SHOPEE",
+      "vlr_meta": 194480.27,
+      "dias_mes": 30,
+      "vlr_dia": 6482.68
+    },
+    {
+      "ano": 2026,
+      "mes": 5,
+      "mes_nome": "Maio",
+      "vendedor": "SHOPEE",
+      "vlr_meta": 242000.0,
+      "dias_mes": 31,
+      "vlr_dia": 7806.45
+    },
+    {
+      "ano": 2026,
+      "mes": 6,
+      "mes_nome": "Junho",
+      "vendedor": "SHOPEE",
+      "vlr_meta": 242000.0,
+      "dias_mes": 30,
+      "vlr_dia": 8066.67
+    },
+    {
+      "ano": 2026,
+      "mes": 7,
+      "mes_nome": "Julho",
+      "vendedor": "SHOPEE",
+      "vlr_meta": 231000.0,
+      "dias_mes": 31,
+      "vlr_dia": 7451.61
+    },
+    {
+      "ano": 2026,
+      "mes": 8,
+      "mes_nome": "Agosto",
+      "vendedor": "SHOPEE",
+      "vlr_meta": 247500.0,
+      "dias_mes": 31,
+      "vlr_dia": 7983.87
+    },
+    {
+      "ano": 2026,
+      "mes": 9,
+      "mes_nome": "Setembro",
+      "vendedor": "SHOPEE",
+      "vlr_meta": 244750.0,
+      "dias_mes": 30,
+      "vlr_dia": 8158.33
+    },
+    {
+      "ano": 2026,
+      "mes": 10,
+      "mes_nome": "Outubro",
+      "vendedor": "SHOPEE",
+      "vlr_meta": 247585.53,
+      "dias_mes": 31,
+      "vlr_dia": 7986.63
+    },
+    {
+      "ano": 2026,
+      "mes": 11,
+      "mes_nome": "Novembro",
+      "vendedor": "SHOPEE",
+      "vlr_meta": 357500.0,
+      "dias_mes": 30,
+      "vlr_dia": 11916.67
+    },
+    {
+      "ano": 2026,
+      "mes": 12,
+      "mes_nome": "Dezembro",
+      "vendedor": "SHOPEE",
+      "vlr_meta": 269500.0,
+      "dias_mes": 31,
+      "vlr_dia": 8693.55
+    },
+    {
+      "ano": 2026,
+      "mes": 1,
+      "mes_nome": "Janeiro",
+      "vendedor": "MAGALU",
+      "vlr_meta": 55220.19,
+      "dias_mes": 31,
+      "vlr_dia": 1781.3
+    },
+    {
+      "ano": 2026,
+      "mes": 2,
+      "mes_nome": "Fevereiro",
+      "vendedor": "MAGALU",
+      "vlr_meta": 53000.0,
+      "dias_mes": 28,
+      "vlr_dia": 1892.86
+    },
+    {
+      "ano": 2026,
+      "mes": 3,
+      "mes_nome": "Março",
+      "vendedor": "MAGALU",
+      "vlr_meta": 67089.97,
+      "dias_mes": 31,
+      "vlr_dia": 2164.19
+    },
+    {
+      "ano": 2026,
+      "mes": 4,
+      "mes_nome": "Abril",
+      "vendedor": "MAGALU",
+      "vlr_meta": 70720.1,
+      "dias_mes": 30,
+      "vlr_dia": 2357.34
+    },
+    {
+      "ano": 2026,
+      "mes": 5,
+      "mes_nome": "Maio",
+      "vendedor": "MAGALU",
+      "vlr_meta": 88000.0,
+      "dias_mes": 31,
+      "vlr_dia": 2838.71
+    },
+    {
+      "ano": 2026,
+      "mes": 6,
+      "mes_nome": "Junho",
+      "vendedor": "MAGALU",
+      "vlr_meta": 88000.0,
+      "dias_mes": 30,
+      "vlr_dia": 2933.33
+    },
+    {
+      "ano": 2026,
+      "mes": 7,
+      "mes_nome": "Julho",
+      "vendedor": "MAGALU",
+      "vlr_meta": 84000.0,
+      "dias_mes": 31,
+      "vlr_dia": 2709.68
+    },
+    {
+      "ano": 2026,
+      "mes": 8,
+      "mes_nome": "Agosto",
+      "vendedor": "MAGALU",
+      "vlr_meta": 90000.0,
+      "dias_mes": 31,
+      "vlr_dia": 2903.23
+    },
+    {
+      "ano": 2026,
+      "mes": 9,
+      "mes_nome": "Setembro",
+      "vendedor": "MAGALU",
+      "vlr_meta": 89000.0,
+      "dias_mes": 30,
+      "vlr_dia": 2966.67
+    },
+    {
+      "ano": 2026,
+      "mes": 10,
+      "mes_nome": "Outubro",
+      "vendedor": "MAGALU",
+      "vlr_meta": 90031.1,
+      "dias_mes": 31,
+      "vlr_dia": 2904.23
+    },
+    {
+      "ano": 2026,
+      "mes": 11,
+      "mes_nome": "Novembro",
+      "vendedor": "MAGALU",
+      "vlr_meta": 130000.0,
+      "dias_mes": 30,
+      "vlr_dia": 4333.33
+    },
+    {
+      "ano": 2026,
+      "mes": 12,
+      "mes_nome": "Dezembro",
+      "vendedor": "MAGALU",
+      "vlr_meta": 98000.0,
+      "dias_mes": 31,
+      "vlr_dia": 3161.29
+    },
+    {
+      "ano": 2026,
+      "mes": 1,
+      "mes_nome": "Janeiro",
+      "vendedor": "PARLUX",
+      "vlr_meta": 91855.0,
+      "dias_mes": 31,
+      "vlr_dia": 2963.06
+    },
+    {
+      "ano": 2026,
+      "mes": 2,
+      "mes_nome": "Fevereiro",
+      "vendedor": "PARLUX",
+      "vlr_meta": 81855.0,
+      "dias_mes": 28,
+      "vlr_dia": 2923.39
+    },
+    {
+      "ano": 2026,
+      "mes": 3,
+      "mes_nome": "Março",
+      "vendedor": "PARLUX",
+      "vlr_meta": 99767.0,
+      "dias_mes": 31,
+      "vlr_dia": 3218.29
+    },
+    {
+      "ano": 2026,
+      "mes": 4,
+      "mes_nome": "Abril",
+      "vendedor": "PARLUX",
+      "vlr_meta": 110621.0,
+      "dias_mes": 30,
+      "vlr_dia": 3687.37
+    },
+    {
+      "ano": 2026,
+      "mes": 5,
+      "mes_nome": "Maio",
+      "vendedor": "PARLUX",
+      "vlr_meta": 137225.0,
+      "dias_mes": 31,
+      "vlr_dia": 4426.61
+    },
+    {
+      "ano": 2026,
+      "mes": 6,
+      "mes_nome": "Junho",
+      "vendedor": "PARLUX",
+      "vlr_meta": 122130.0,
+      "dias_mes": 30,
+      "vlr_dia": 4071.0
+    },
+    {
+      "ano": 2026,
+      "mes": 7,
+      "mes_nome": "Julho",
+      "vendedor": "PARLUX",
+      "vlr_meta": 119767.0,
+      "dias_mes": 31,
+      "vlr_dia": 3863.45
+    },
+    {
+      "ano": 2026,
+      "mes": 8,
+      "mes_nome": "Agosto",
+      "vendedor": "PARLUX",
+      "vlr_meta": 124749.0,
+      "dias_mes": 31,
+      "vlr_dia": 4024.16
+    },
+    {
+      "ano": 2026,
+      "mes": 9,
+      "mes_nome": "Setembro",
+      "vendedor": "PARLUX",
+      "vlr_meta": 127948.0,
+      "dias_mes": 30,
+      "vlr_dia": 4264.93
+    },
+    {
+      "ano": 2026,
+      "mes": 10,
+      "mes_nome": "Outubro",
+      "vendedor": "PARLUX",
+      "vlr_meta": 117287.25,
+      "dias_mes": 31,
+      "vlr_dia": 3783.46
+    },
+    {
+      "ano": 2026,
+      "mes": 11,
+      "mes_nome": "Novembro",
+      "vendedor": "PARLUX",
+      "vlr_meta": 137837.6,
+      "dias_mes": 30,
+      "vlr_dia": 4594.59
+    },
+    {
+      "ano": 2026,
+      "mes": 12,
+      "mes_nome": "Dezembro",
+      "vendedor": "PARLUX",
+      "vlr_meta": 107724.8,
+      "dias_mes": 31,
+      "vlr_dia": 3474.99
+    }
+  ]
+}

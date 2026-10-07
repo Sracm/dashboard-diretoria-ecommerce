@@ -1,0 +1,27 @@
+Perfeito! Identifiquei na imagem a consulta do **Google Analytics 4 (Implementation 2.0)** com as 5 contas configuradas no seu Power BI:
+
+1. **`MQ HAIR`** (`accounts/46063852`) — *Conta principal da loja de onde vêm as sessões para calcular a Taxa de Conversão da VTEX (`[TXA CONVERSAO VTEX]`)*
+2. **`MQ Institucional`** (`accounts/134904615`)
+3. **`MQ Force Barber`** (`accounts/134924147`)
+4. **`Parlux - Oficial`** (`accounts/166822244`)
+5. **`MQ Beauty`** (`accounts/181442279`)
+
+---
+
+### 🌐 Como vamos conectar o Google Analytics no Servidor Linux:
+
+No Power BI no Windows, a Microsoft usa login interativo da sua conta Microsoft/Google. Já para rodar 100% autônomo no **servidor Linux**, o padrão profissional é usar a **Google Analytics Data API (GA4)** em Python (`google-analytics-data`):
+
+1. **Conta de Serviço (Service Account):**
+   - Criamos uma chave JSON de conta de serviço no Google Cloud Console (ex: `dashboard-ecommerce@seu-projeto.iam.gserviceaccount.com`).
+2. **Permissão no GA4:**
+   - Adiciona esse e-mail como **Leitor** dentro da propriedade do GA4 (em *Administrador > Acessos à Propriedade*).
+3. **ID da Propriedade (Property ID):**
+   - Só precisaremos do número da Propriedade GA4 (ex: `properties/123456789`).
+
+Com isso, o backend em Python consulta as **sessões diárias/mensais** automaticamente via API oficial e calcula em tempo real:
+- Total de Sessões / Visitantes
+- Taxa de Conversão do E-commerce (`Pedidos VTEX / Sessões GA4`)
+- Adições ao Carrinho (*Add to Cart*) e Abandono de Checkout
+
+Quando quiser configurar essa integração, só me avisar que eu crio o módulo de conexão com o GA4 no projeto!

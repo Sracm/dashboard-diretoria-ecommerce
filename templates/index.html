@@ -1,0 +1,1247 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MQ Professional — Painel Executivo E-commerce</title>
+    <!-- Google Fonts: Montserrat -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400&display=swap" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Estilos -->
+    <link rel="stylesheet" href="/static/css/style.css?v=20261007_v9_green_metames">
+</head>
+<body>
+    <div class="app-layout">
+        <!-- Top Executive Navbar -->
+        <header class="navbar app-header">
+            <div class="navbar-left header-brand">
+                <div class="header-logo-box">
+                    <a href="http://localhost:5080/portal" title="Voltar ao Portal MQ">
+                        <img src="/static/assets/a2ae7eaafd5d53c3ac8f9dcc3513af5c8beb9482.svg" alt="MQ HAIR COMPANY" class="header-logo">
+                    </a>
+                </div>
+                <span class="header-subtitle">Portal Corporativo &bull; E-Commerce</span>
+            </div>
+
+            <!-- Filtros Executivos -->
+            <div class="navbar-right">
+                <div class="filter-controls">
+                    <!-- Filtro Multi-Seleção: Ano -->
+                    <div class="filter-group custom-multiselect" id="ms-container-ano">
+                        <label class="filter-label">Ano</label>
+                        <div class="multiselect-trigger" id="trigger-ano" tabindex="0" title="Clique para selecionar um ou mais anos">
+                            <span class="trigger-label" id="label-selected-anos">{{ ano_atual }}</span>
+                            <i data-lucide="chevron-down" class="dropdown-chevron"></i>
+                        </div>
+                        <div class="multiselect-dropdown hidden" id="dropdown-ano">
+                            <div class="multiselect-options">
+                                <label class="checkbox-item">
+                                    <input type="checkbox" class="chk-ano" value="2026" {% if ano_atual == 2026 %}checked{% endif %}>
+                                    <span class="chk-custom"></span>
+                                    <span class="chk-label">2026</span>
+                                </label>
+                                <label class="checkbox-item">
+                                    <input type="checkbox" class="chk-ano" value="2025" {% if ano_atual == 2025 %}checked{% endif %}>
+                                    <span class="chk-custom"></span>
+                                    <span class="chk-label">2025</span>
+                                </label>
+                                <label class="checkbox-item">
+                                    <input type="checkbox" class="chk-ano" value="2024">
+                                    <span class="chk-custom"></span>
+                                    <span class="chk-label">2024</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Filtro Multi-Seleção: Mês -->
+                    <div class="filter-group custom-multiselect" id="ms-container-mes">
+                        <label class="filter-label">Mês</label>
+                        <div class="multiselect-trigger" id="trigger-mes" tabindex="0" title="Clique para selecionar um ou mais meses">
+                            <span class="trigger-label" id="label-selected-meses">Out</span>
+                            <i data-lucide="chevron-down" class="dropdown-chevron"></i>
+                        </div>
+                        <div class="multiselect-dropdown dropdown-mes-grid hidden" id="dropdown-mes">
+                            <div class="dropdown-quick-bar">
+                                <button type="button" class="btn-quick" id="btn-quick-mes-todos">Todos</button>
+                                <button type="button" class="btn-quick" id="btn-quick-mes-atual">Mês Atual</button>
+                                <button type="button" class="btn-quick" id="btn-quick-mes-limpar">Limpar</button>
+                            </div>
+                            <div class="multiselect-options grid-3x4">
+                                <label class="checkbox-item"><input type="checkbox" class="chk-mes" value="1" {% if mes_atual == 1 %}checked{% endif %}><span class="chk-custom"></span><span class="chk-label">Jan</span></label>
+                                <label class="checkbox-item"><input type="checkbox" class="chk-mes" value="2" {% if mes_atual == 2 %}checked{% endif %}><span class="chk-custom"></span><span class="chk-label">Fev</span></label>
+                                <label class="checkbox-item"><input type="checkbox" class="chk-mes" value="3" {% if mes_atual == 3 %}checked{% endif %}><span class="chk-custom"></span><span class="chk-label">Mar</span></label>
+                                <label class="checkbox-item"><input type="checkbox" class="chk-mes" value="4" {% if mes_atual == 4 %}checked{% endif %}><span class="chk-custom"></span><span class="chk-label">Abr</span></label>
+                                <label class="checkbox-item"><input type="checkbox" class="chk-mes" value="5" {% if mes_atual == 5 %}checked{% endif %}><span class="chk-custom"></span><span class="chk-label">Mai</span></label>
+                                <label class="checkbox-item"><input type="checkbox" class="chk-mes" value="6" {% if mes_atual == 6 %}checked{% endif %}><span class="chk-custom"></span><span class="chk-label">Jun</span></label>
+                                <label class="checkbox-item"><input type="checkbox" class="chk-mes" value="7" {% if mes_atual == 7 %}checked{% endif %}><span class="chk-custom"></span><span class="chk-label">Jul</span></label>
+                                <label class="checkbox-item"><input type="checkbox" class="chk-mes" value="8" {% if mes_atual == 8 %}checked{% endif %}><span class="chk-custom"></span><span class="chk-label">Ago</span></label>
+                                <label class="checkbox-item"><input type="checkbox" class="chk-mes" value="9" {% if mes_atual == 9 %}checked{% endif %}><span class="chk-custom"></span><span class="chk-label">Set</span></label>
+                                <label class="checkbox-item"><input type="checkbox" class="chk-mes" value="10" {% if mes_atual == 10 %}checked{% endif %}><span class="chk-custom"></span><span class="chk-label">Out</span></label>
+                                <label class="checkbox-item"><input type="checkbox" class="chk-mes" value="11" {% if mes_atual == 11 %}checked{% endif %}><span class="chk-custom"></span><span class="chk-label">Nov</span></label>
+                                <label class="checkbox-item"><input type="checkbox" class="chk-mes" value="12" {% if mes_atual == 12 %}checked{% endif %}><span class="chk-custom"></span><span class="chk-label">Dez</span></label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Período de Dias (Slider / Inputs) -->
+                    <div class="filter-group slider-group">
+                        <label class="filter-label">Período: Dia 1 até <span id="label-dia-fim">{{ dia_hoje }}</span></label>
+                        <input type="range" id="slider-dias" min="1" max="{{ total_dias_mes }}" value="{{ dia_hoje }}" class="filter-slider">
+                    </div>
+
+                    <!-- Marca -->
+                    <div class="filter-group">
+                        <label class="filter-label">Marca</label>
+                        <select id="select-marca" class="filter-select">
+                            <option value="Todas" selected>Todas</option>
+                            <option value="MQ PRO">MQ PRO</option>
+                            <option value="PARLUX">PARLUX</option>
+                            <option value="FORCE BARB">FORCE BARBER</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="header-meta-info" id="header-meta-info" title="Atualização automática a cada 30 minutos">
+                    <div class="last-update" id="last-update">Última atualização: --:--:--</div>
+                    <div class="next-update" id="next-update">Próxima atualização em: 30:00</div>
+                </div>
+
+                <div class="server-badge" id="btn-manual-sync" title="Clique para sincronizar com o Sankhya agora" style="cursor: pointer;">
+                    <span class="badge-dot"></span>
+                    <span>Sankhya Direto</span>
+                </div>
+
+                <button type="button" id="btn-toggle-tv" class="btn-tv-mode" title="Alternar Modo TV / Tela Cheia">
+                    <i data-lucide="tv"></i>
+                    <span id="btn-tv-text">Modo TV</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Loading Overlay -->
+            <div id="loading-overlay" class="loading-overlay hidden">
+                <div class="spinner"></div>
+                <p>Consolidando faturamento e metas em tempo real...</p>
+            </div>
+
+            <!-- KPIs Executivos Nível Diretoria: Projeções por Canal & Consolidado -->
+            <section class="kpi-grid">
+                <!-- KPI 1: Projeção Total do Mês (Consolidado E-commerce) -->
+                <div class="kpi-card kpi-col-4">
+                    <div class="kpi-header">
+                        <span class="kpi-label">Projeção do Mês (Total)</span>
+                        <div class="kpi-icon-badge blue-bg">
+                            <i data-lucide="trending-up"></i>
+                        </div>
+                    </div>
+                    <div class="kpi-value-row">
+                        <span class="kpi-currency">R$</span>
+                        <span id="kpi-projecao" class="kpi-value">0,00</span>
+                    </div>
+                    <div class="kpi-footer">
+                        <span id="kpi-projecao-pct" class="badge-pill pill-blue">0.0% da Meta Total</span>
+                        <span id="kpi-meta-mes" class="kpi-subtext">Meta Mês: R$ 0,00</span>
+                    </div>
+                    <div class="kpi-comparatives">
+                        <div class="comp-row">
+                            <span class="comp-label"><span class="comp-tag">MoM</span> Mês Ant. Fechado:</span>
+                            <div class="comp-data">
+                                <span id="kpi-proj-mom-val" class="comp-val">R$ 0,00</span>
+                                <span id="kpi-proj-mom-badge" class="comp-badge neutral">0,0% vs M-1</span>
+                            </div>
+                        </div>
+                        <div class="comp-row">
+                            <span class="comp-label"><span class="comp-tag">YTD</span> Meta Acumulada:</span>
+                            <div class="comp-data">
+                                <span id="kpi-proj-ytd-val" class="comp-val">R$ 0,00</span>
+                                <span id="kpi-proj-ytd-badge" class="comp-badge neutral">0,0% Meta</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- KPI 2: Projeção Mercado Livre -->
+                <div class="kpi-card kpi-col-4">
+                    <div class="kpi-header">
+                        <span class="kpi-label">Projeção — Mercado Livre</span>
+                        <div class="kpi-icon-badge ml-bg">
+                            <i data-lucide="shopping-bag"></i>
+                        </div>
+                    </div>
+                    <div class="kpi-value-row">
+                        <span class="kpi-currency">R$</span>
+                        <span id="kpi-proj-ml" class="kpi-value">0,00</span>
+                    </div>
+                    <div class="kpi-footer">
+                        <span id="kpi-proj-pct-ml" class="badge-pill pill-blue">0.0% da Meta</span>
+                        <span id="kpi-meta-ml" class="kpi-subtext">Meta Mês: R$ 0,00</span>
+                    </div>
+                    <div class="kpi-comparatives">
+                        <div class="comp-row">
+                            <span class="comp-label"><span class="comp-tag">MoM</span> Mês Ant. Fechado:</span>
+                            <div class="comp-data">
+                                <span id="kpi-proj-mom-val-ml" class="comp-val">R$ 0,00</span>
+                                <span id="kpi-proj-mom-badge-ml" class="comp-badge neutral">0,0% vs M-1</span>
+                            </div>
+                        </div>
+                        <div class="comp-row">
+                            <span class="comp-label"><span class="comp-tag">YTD</span> Meta Acumulada:</span>
+                            <div class="comp-data">
+                                <span id="kpi-proj-ytd-val-ml" class="comp-val">R$ 0,00</span>
+                                <span id="kpi-proj-ytd-badge-ml" class="comp-badge neutral">0,0% Meta</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- KPI 3: Projeção Shopee -->
+                <div class="kpi-card kpi-col-4">
+                    <div class="kpi-header">
+                        <span class="kpi-label">Projeção — Shopee</span>
+                        <div class="kpi-icon-badge shopee-bg">
+                            <i data-lucide="shopping-cart"></i>
+                        </div>
+                    </div>
+                    <div class="kpi-value-row">
+                        <span class="kpi-currency">R$</span>
+                        <span id="kpi-proj-shopee" class="kpi-value">0,00</span>
+                    </div>
+                    <div class="kpi-footer">
+                        <span id="kpi-proj-pct-shopee" class="badge-pill pill-blue">0.0% da Meta</span>
+                        <span id="kpi-meta-shopee" class="kpi-subtext">Meta Mês: R$ 0,00</span>
+                    </div>
+                    <div class="kpi-comparatives">
+                        <div class="comp-row">
+                            <span class="comp-label"><span class="comp-tag">MoM</span> Mês Ant. Fechado:</span>
+                            <div class="comp-data">
+                                <span id="kpi-proj-mom-val-shopee" class="comp-val">R$ 0,00</span>
+                                <span id="kpi-proj-mom-badge-shopee" class="comp-badge neutral">0,0% vs M-1</span>
+                            </div>
+                        </div>
+                        <div class="comp-row">
+                            <span class="comp-label"><span class="comp-tag">YTD</span> Meta Acumulada:</span>
+                            <div class="comp-data">
+                                <span id="kpi-proj-ytd-val-shopee" class="comp-val">R$ 0,00</span>
+                                <span id="kpi-proj-ytd-badge-shopee" class="comp-badge neutral">0,0% Meta</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- KPI 4: Projeção VTEX (Loja Própria) -->
+                <div class="kpi-card kpi-col-4">
+                    <div class="kpi-header">
+                        <span class="kpi-label">Projeção — VTEX (Loja Própria)</span>
+                        <div class="kpi-icon-badge vtex-bg">
+                            <i data-lucide="globe"></i>
+                        </div>
+                    </div>
+                    <div class="kpi-value-row">
+                        <span class="kpi-currency">R$</span>
+                        <span id="kpi-proj-vtex" class="kpi-value">0,00</span>
+                    </div>
+                    <div class="kpi-footer">
+                        <span id="kpi-proj-pct-vtex" class="badge-pill pill-blue">0.0% da Meta</span>
+                        <span id="kpi-meta-vtex" class="kpi-subtext">Meta Mês: R$ 0,00</span>
+                    </div>
+                    <div class="kpi-comparatives">
+                        <div class="comp-row">
+                            <span class="comp-label"><span class="comp-tag">MoM</span> Mês Ant. Fechado:</span>
+                            <div class="comp-data">
+                                <span id="kpi-proj-mom-val-vtex" class="comp-val">R$ 0,00</span>
+                                <span id="kpi-proj-mom-badge-vtex" class="comp-badge neutral">0,0% vs M-1</span>
+                            </div>
+                        </div>
+                        <div class="comp-row">
+                            <span class="comp-label"><span class="comp-tag">YTD</span> Meta Acumulada:</span>
+                            <div class="comp-data">
+                                <span id="kpi-proj-ytd-val-vtex" class="comp-val">R$ 0,00</span>
+                                <span id="kpi-proj-ytd-badge-vtex" class="comp-badge neutral">0,0% Meta</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- KPI 5: Projeção Magalu -->
+                <div class="kpi-card kpi-col-3">
+                    <div class="kpi-header">
+                        <span class="kpi-label">Projeção — Magalu</span>
+                        <div class="kpi-icon-badge magalu-bg">
+                            <i data-lucide="store"></i>
+                        </div>
+                    </div>
+                    <div class="kpi-value-row">
+                        <span class="kpi-currency">R$</span>
+                        <span id="kpi-proj-magalu" class="kpi-value">0,00</span>
+                    </div>
+                    <div class="kpi-footer">
+                        <span id="kpi-proj-pct-magalu" class="badge-pill pill-blue">0.0% da Meta</span>
+                        <span id="kpi-meta-magalu" class="kpi-subtext">Meta Mês: R$ 0,00</span>
+                    </div>
+                    <div class="kpi-comparatives">
+                        <div class="comp-row">
+                            <span class="comp-label"><span class="comp-tag">MoM</span> Mês Ant. Fechado:</span>
+                            <div class="comp-data">
+                                <span id="kpi-proj-mom-val-magalu" class="comp-val">R$ 0,00</span>
+                                <span id="kpi-proj-mom-badge-magalu" class="comp-badge neutral">0,0% vs M-1</span>
+                            </div>
+                        </div>
+                        <div class="comp-row">
+                            <span class="comp-label"><span class="comp-tag">YTD</span> Meta Acumulada:</span>
+                            <div class="comp-data">
+                                <span id="kpi-proj-ytd-val-magalu" class="comp-val">R$ 0,00</span>
+                                <span id="kpi-proj-ytd-badge-magalu" class="comp-badge neutral">0,0% Meta</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- KPI 6: Projeção Parlux -->
+                <div class="kpi-card kpi-col-3">
+                    <div class="kpi-header">
+                        <span class="kpi-label">Projeção — Parlux</span>
+                        <div class="kpi-icon-badge parlux-bg">
+                            <i data-lucide="zap"></i>
+                        </div>
+                    </div>
+                    <div class="kpi-value-row">
+                        <span class="kpi-currency">R$</span>
+                        <span id="kpi-proj-parlux" class="kpi-value">0,00</span>
+                    </div>
+                    <div class="kpi-footer">
+                        <span id="kpi-proj-pct-parlux" class="badge-pill pill-blue">0.0% da Meta</span>
+                        <span id="kpi-meta-parlux" class="kpi-subtext">Meta Mês: R$ 0,00</span>
+                    </div>
+                    <div class="kpi-comparatives">
+                        <div class="comp-row">
+                            <span class="comp-label"><span class="comp-tag">MoM</span> Mês Ant. Fechado:</span>
+                            <div class="comp-data">
+                                <span id="kpi-proj-mom-val-parlux" class="comp-val">R$ 0,00</span>
+                                <span id="kpi-proj-mom-badge-parlux" class="comp-badge neutral">0,0% vs M-1</span>
+                            </div>
+                        </div>
+                        <div class="comp-row">
+                            <span class="comp-label"><span class="comp-tag">YTD</span> Meta Acumulada:</span>
+                            <div class="comp-data">
+                                <span id="kpi-proj-ytd-val-parlux" class="comp-val">R$ 0,00</span>
+                                <span id="kpi-proj-ytd-badge-parlux" class="comp-badge neutral">0,0% Meta</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- KPI 7: Devoluções -->
+                <div class="kpi-card kpi-col-3">
+                    <div class="kpi-header">
+                        <span class="kpi-label">Devoluções</span>
+                        <div class="kpi-icon-badge purple-bg">
+                            <i data-lucide="rotate-ccw"></i>
+                        </div>
+                    </div>
+                    <div class="kpi-value-row">
+                        <span id="kpi-devolucao-pct" class="kpi-value">0.0%</span>
+                        <span class="kpi-unit">taxa devoluções</span>
+                    </div>
+                    <div class="kpi-footer">
+                        <span class="kpi-subtext">Total Devolvido:</span>
+                        <span id="kpi-devolucao-vlr" class="highlight-text red">R$ 0,00</span>
+                    </div>
+                    <div class="kpi-comparatives">
+                        <div class="comp-row">
+                            <span class="comp-label"><span class="comp-tag">MoM</span> Mês Ant. (<span class="comp-dias">dias 1-6</span>):</span>
+                            <div class="comp-data">
+                                <span id="kpi-dev-mom-val" class="comp-val">0,0%</span>
+                                <span id="kpi-dev-mom-badge" class="comp-badge neutral">0,0 p.p.</span>
+                            </div>
+                        </div>
+                        <div class="comp-row">
+                            <span class="comp-label"><span class="comp-tag">YTD</span> Acumulado <span class="comp-ano">2026</span>:</span>
+                            <div class="comp-data">
+                                <span id="kpi-dev-ytd-val" class="comp-val">0,0%</span>
+                                <span id="kpi-dev-ytd-badge" class="comp-badge neutral">0,0 p.p.</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SEÇÃO DESTAQUE: OS 6 GRÁFICOS DIÁRIOS ACUMULADOS (MERCADO LIVRE, VTEX, SHOPEE, MAGALU, PARLUX, GERAL) -->
+            <section class="section-card">
+                <div class="section-header">
+                    <div class="section-title-group">
+                        <h2 class="section-title">Evolução Diária Acumulada: Meta vs Realizado</h2>
+                        <span class="section-subtitle">Curvas acumuladas dia a dia comparando o ritmo planejado contra o faturamento líquido faturado</span>
+                    </div>
+                    <div class="meta-legend">
+                        <span class="legend-item"><span class="dot green"></span> Meta Acumulada</span>
+                        <span class="legend-item"><span class="dot red"></span> Fat. Acumulado Atual</span>
+                        <span class="legend-item"><span class="dot blue"></span> Fat. Acum Mês ant.</span>
+                    </div>
+                </div>
+
+                <!-- Grid com os 6 cards de gráficos diários (Inicia Amplo com 2 por linha) -->
+                <div class="channels-charts-grid grid-2col" id="channels-charts-grid">
+                    <!-- 1. TOTAL E-COMMERCE -->
+                    <div class="canal-chart-card">
+                        <div class="canal-card-header">
+                            <div class="canal-title-group">
+                                <span class="canal-title">TOTAL E-COMMERCE</span>
+                                <button type="button" class="btn-zoom-chart" onclick="abrirModalCanal('GERAL')" title="Ampliar gráfico Total E-commerce">
+                                    <i data-lucide="maximize-2"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="canal-perf-strip">
+                            <div class="canal-perf-col">
+                                <div class="perf-row-title">
+                                    <span class="perf-tag">DIAS TRABALHADOS</span>
+                                    <span id="perf-badge-geral" class="perf-status-pill dentro">Dentro (+0%)</span>
+                                </div>
+                                <div class="perf-row-body">
+                                    <div class="perf-highlight">
+                                        <span class="perf-pct-main status-badge" id="perf-ating-geral">0.0%</span>
+                                        <span class="perf-pct-label">da meta</span>
+                                    </div>
+                                    <div class="perf-daily-metrics">
+                                        <span class="daily-item red-item" id="perf-venda-dia-geral">Venda/dia: <strong>R$ 0</strong></span>
+                                        <span class="daily-item green-item" id="perf-meta-dia-geral">Meta/dia: <strong>R$ 0</strong></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="canal-perf-col">
+                                <div class="perf-row-title">
+                                    <span class="perf-tag">PROJEÇÃO FECHAMENTO</span>
+                                    <span id="perf-proj-badge-geral" class="perf-status-pill dentro">Fecha em 0%</span>
+                                </div>
+                                <div class="perf-row-body">
+                                    <div class="perf-highlight">
+                                        <span class="perf-proj-main gold-text" id="perf-proj-val-geral">R$ 0</span>
+                                        <span class="perf-pct-label" id="perf-proj-pct-geral">0.0% da Meta Mês</span>
+                                    </div>
+                                    <div class="perf-daily-metrics">
+                                        <span class="daily-item" id="perf-meta-mes-geral">Meta Mês: <strong>R$ 0</strong></span>
+                                        <span class="daily-item" id="perf-gap-proj-geral">Gap: <strong>R$ 0</strong></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="canal-chart-container">
+                            <canvas id="chart-geral"></canvas>
+                        </div>
+                        <div class="canal-card-footer">
+                            <span id="foot-geral-ant" class="footer-val blue-text">Fat. Acum Mês ant.: R$ 0</span>
+                            <span id="foot-geral-fat" class="footer-val red-text">Fat: R$ 0</span>
+                            <span id="foot-geral-meta" class="footer-val green-text">Meta: R$ 0</span>
+                        </div>
+                    </div>
+
+                    <!-- 2. MERCADO LIVRE -->
+                    <div class="canal-chart-card">
+                        <div class="canal-card-header">
+                            <div class="canal-title-group">
+                                <span class="canal-title">MERCADO LIVRE</span>
+                                <button type="button" class="btn-zoom-chart" onclick="abrirModalCanal('MERCADO LIVRE')" title="Ampliar gráfico de Mercado Livre">
+                                    <i data-lucide="maximize-2"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="canal-perf-strip">
+                            <div class="canal-perf-col">
+                                <div class="perf-row-title">
+                                    <span class="perf-tag">DIAS TRABALHADOS</span>
+                                    <span id="perf-badge-ml" class="perf-status-pill fora">Fora (0%)</span>
+                                </div>
+                                <div class="perf-row-body">
+                                    <div class="perf-highlight">
+                                        <span class="perf-pct-main status-badge" id="perf-ating-ml">0.0%</span>
+                                        <span class="perf-pct-label">da meta</span>
+                                    </div>
+                                    <div class="perf-daily-metrics">
+                                        <span class="daily-item red-item" id="perf-venda-dia-ml">Venda/dia: <strong>R$ 0</strong></span>
+                                        <span class="daily-item green-item" id="perf-meta-dia-ml">Meta/dia: <strong>R$ 0</strong></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="canal-perf-col">
+                                <div class="perf-row-title">
+                                    <span class="perf-tag">PROJEÇÃO FECHAMENTO</span>
+                                    <span id="perf-proj-badge-ml" class="perf-status-pill fora">Fecha em 0%</span>
+                                </div>
+                                <div class="perf-row-body">
+                                    <div class="perf-highlight">
+                                        <span class="perf-proj-main gold-text" id="perf-proj-val-ml">R$ 0</span>
+                                        <span class="perf-pct-label" id="perf-proj-pct-ml">0.0% da Meta Mês</span>
+                                    </div>
+                                    <div class="perf-daily-metrics">
+                                        <span class="daily-item" id="perf-meta-mes-ml">Meta Mês: <strong>R$ 0</strong></span>
+                                        <span class="daily-item" id="perf-gap-proj-ml">Gap: <strong>R$ 0</strong></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="canal-chart-container">
+                            <canvas id="chart-ml"></canvas>
+                        </div>
+                        <div class="canal-card-footer">
+                            <span id="foot-ml-ant" class="footer-val blue-text">Fat. Acum Mês ant.: R$ 0</span>
+                            <span id="foot-ml-fat" class="footer-val red-text">Fat: R$ 0</span>
+                            <span id="foot-ml-meta" class="footer-val green-text">Meta: R$ 0</span>
+                        </div>
+                    </div>
+
+                    <!-- 3. VTEX -->
+                    <div class="canal-chart-card">
+                        <div class="canal-card-header">
+                            <div class="canal-title-group">
+                                <span class="canal-title">VTEX (LOJA PRÓPRIA)</span>
+                                <button type="button" class="btn-zoom-chart" onclick="abrirModalCanal('VTEX')" title="Ampliar gráfico de VTEX">
+                                    <i data-lucide="maximize-2"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="canal-perf-strip">
+                            <div class="canal-perf-col">
+                                <div class="perf-row-title">
+                                    <span class="perf-tag">DIAS TRABALHADOS</span>
+                                    <span id="perf-badge-vtex" class="perf-status-pill fora">Fora (0%)</span>
+                                </div>
+                                <div class="perf-row-body">
+                                    <div class="perf-highlight">
+                                        <span class="perf-pct-main status-badge" id="perf-ating-vtex">0.0%</span>
+                                        <span class="perf-pct-label">da meta</span>
+                                    </div>
+                                    <div class="perf-daily-metrics">
+                                        <span class="daily-item red-item" id="perf-venda-dia-vtex">Venda/dia: <strong>R$ 0</strong></span>
+                                        <span class="daily-item green-item" id="perf-meta-dia-vtex">Meta/dia: <strong>R$ 0</strong></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="canal-perf-col">
+                                <div class="perf-row-title">
+                                    <span class="perf-tag">PROJEÇÃO FECHAMENTO</span>
+                                    <span id="perf-proj-badge-vtex" class="perf-status-pill fora">Fecha em 0%</span>
+                                </div>
+                                <div class="perf-row-body">
+                                    <div class="perf-highlight">
+                                        <span class="perf-proj-main gold-text" id="perf-proj-val-vtex">R$ 0</span>
+                                        <span class="perf-pct-label" id="perf-proj-pct-vtex">0.0% da Meta Mês</span>
+                                    </div>
+                                    <div class="perf-daily-metrics">
+                                        <span class="daily-item" id="perf-meta-mes-vtex">Meta Mês: <strong>R$ 0</strong></span>
+                                        <span class="daily-item" id="perf-gap-proj-vtex">Gap: <strong>R$ 0</strong></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="canal-chart-container">
+                            <canvas id="chart-vtex"></canvas>
+                        </div>
+                        <div class="canal-card-footer">
+                            <span id="foot-vtex-ant" class="footer-val blue-text">Fat. Acum Mês ant.: R$ 0</span>
+                            <span id="foot-vtex-fat" class="footer-val red-text">Fat: R$ 0</span>
+                            <span id="foot-vtex-meta" class="footer-val green-text">Meta: R$ 0</span>
+                        </div>
+                    </div>
+
+                    <!-- 4. SHOPEE -->
+                    <div class="canal-chart-card">
+                        <div class="canal-card-header">
+                            <div class="canal-title-group">
+                                <span class="canal-title">SHOPEE</span>
+                                <button type="button" class="btn-zoom-chart" onclick="abrirModalCanal('SHOPEE')" title="Ampliar gráfico da Shopee">
+                                    <i data-lucide="maximize-2"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="canal-perf-strip">
+                            <div class="canal-perf-col">
+                                <div class="perf-row-title">
+                                    <span class="perf-tag">DIAS TRABALHADOS</span>
+                                    <span id="perf-badge-shopee" class="perf-status-pill dentro">Dentro (+0%)</span>
+                                </div>
+                                <div class="perf-row-body">
+                                    <div class="perf-highlight">
+                                        <span class="perf-pct-main status-badge" id="perf-ating-shopee">0.0%</span>
+                                        <span class="perf-pct-label">da meta</span>
+                                    </div>
+                                    <div class="perf-daily-metrics">
+                                        <span class="daily-item red-item" id="perf-venda-dia-shopee">Venda/dia: <strong>R$ 0</strong></span>
+                                        <span class="daily-item green-item" id="perf-meta-dia-shopee">Meta/dia: <strong>R$ 0</strong></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="canal-perf-col">
+                                <div class="perf-row-title">
+                                    <span class="perf-tag">PROJEÇÃO FECHAMENTO</span>
+                                    <span id="perf-proj-badge-shopee" class="perf-status-pill dentro">Fecha em 0%</span>
+                                </div>
+                                <div class="perf-row-body">
+                                    <div class="perf-highlight">
+                                        <span class="perf-proj-main gold-text" id="perf-proj-val-shopee">R$ 0</span>
+                                        <span class="perf-pct-label" id="perf-proj-pct-shopee">0.0% da Meta Mês</span>
+                                    </div>
+                                    <div class="perf-daily-metrics">
+                                        <span class="daily-item" id="perf-meta-mes-shopee">Meta Mês: <strong>R$ 0</strong></span>
+                                        <span class="daily-item" id="perf-gap-proj-shopee">Gap: <strong>R$ 0</strong></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="canal-chart-container">
+                            <canvas id="chart-shopee"></canvas>
+                        </div>
+                        <div class="canal-card-footer">
+                            <span id="foot-shopee-ant" class="footer-val blue-text">Fat. Acum Mês ant.: R$ 0</span>
+                            <span id="foot-shopee-fat" class="footer-val red-text">Fat: R$ 0</span>
+                            <span id="foot-shopee-meta" class="footer-val green-text">Meta: R$ 0</span>
+                        </div>
+                    </div>
+
+                    <!-- 5. MAGALU -->
+                    <div class="canal-chart-card">
+                        <div class="canal-card-header">
+                            <div class="canal-title-group">
+                                <span class="canal-title">MAGALU</span>
+                                <button type="button" class="btn-zoom-chart" onclick="abrirModalCanal('MAGALU')" title="Ampliar gráfico do Magalu">
+                                    <i data-lucide="maximize-2"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="canal-perf-strip">
+                            <div class="canal-perf-col">
+                                <div class="perf-row-title">
+                                    <span class="perf-tag">DIAS TRABALHADOS</span>
+                                    <span id="perf-badge-magalu" class="perf-status-pill fora">Fora (0%)</span>
+                                </div>
+                                <div class="perf-row-body">
+                                    <div class="perf-highlight">
+                                        <span class="perf-pct-main status-badge" id="perf-ating-magalu">0.0%</span>
+                                        <span class="perf-pct-label">da meta</span>
+                                    </div>
+                                    <div class="perf-daily-metrics">
+                                        <span class="daily-item red-item" id="perf-venda-dia-magalu">Venda/dia: <strong>R$ 0</strong></span>
+                                        <span class="daily-item green-item" id="perf-meta-dia-magalu">Meta/dia: <strong>R$ 0</strong></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="canal-perf-col">
+                                <div class="perf-row-title">
+                                    <span class="perf-tag">PROJEÇÃO FECHAMENTO</span>
+                                    <span id="perf-proj-badge-magalu" class="perf-status-pill fora">Fecha em 0%</span>
+                                </div>
+                                <div class="perf-row-body">
+                                    <div class="perf-highlight">
+                                        <span class="perf-proj-main gold-text" id="perf-proj-val-magalu">R$ 0</span>
+                                        <span class="perf-pct-label" id="perf-proj-pct-magalu">0.0% da Meta Mês</span>
+                                    </div>
+                                    <div class="perf-daily-metrics">
+                                        <span class="daily-item" id="perf-meta-mes-magalu">Meta Mês: <strong>R$ 0</strong></span>
+                                        <span class="daily-item" id="perf-gap-proj-magalu">Gap: <strong>R$ 0</strong></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="canal-chart-container">
+                            <canvas id="chart-magalu"></canvas>
+                        </div>
+                        <div class="canal-card-footer">
+                            <span id="foot-magalu-ant" class="footer-val blue-text">Fat. Acum Mês ant.: R$ 0</span>
+                            <span id="foot-magalu-fat" class="footer-val red-text">Fat: R$ 0</span>
+                            <span id="foot-magalu-meta" class="footer-val green-text">Meta: R$ 0</span>
+                        </div>
+                    </div>
+
+                    <!-- 6. PARLUX -->
+                    <div class="canal-chart-card">
+                        <div class="canal-card-header">
+                            <div class="canal-title-group">
+                                <span class="canal-title">PARLUX</span>
+                                <button type="button" class="btn-zoom-chart" onclick="abrirModalCanal('PARLUX')" title="Ampliar gráfico da Parlux">
+                                    <i data-lucide="maximize-2"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="canal-perf-strip">
+                            <div class="canal-perf-col">
+                                <div class="perf-row-title">
+                                    <span class="perf-tag">DIAS TRABALHADOS</span>
+                                    <span id="perf-badge-parlux" class="perf-status-pill fora">Fora (0%)</span>
+                                </div>
+                                <div class="perf-row-body">
+                                    <div class="perf-highlight">
+                                        <span class="perf-pct-main status-badge" id="perf-ating-parlux">0.0%</span>
+                                        <span class="perf-pct-label">da meta</span>
+                                    </div>
+                                    <div class="perf-daily-metrics">
+                                        <span class="daily-item red-item" id="perf-venda-dia-parlux">Venda/dia: <strong>R$ 0</strong></span>
+                                        <span class="daily-item green-item" id="perf-meta-dia-parlux">Meta/dia: <strong>R$ 0</strong></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="canal-perf-col">
+                                <div class="perf-row-title">
+                                    <span class="perf-tag">PROJEÇÃO FECHAMENTO</span>
+                                    <span id="perf-proj-badge-parlux" class="perf-status-pill fora">Fecha em 0%</span>
+                                </div>
+                                <div class="perf-row-body">
+                                    <div class="perf-highlight">
+                                        <span class="perf-proj-main gold-text" id="perf-proj-val-parlux">R$ 0</span>
+                                        <span class="perf-pct-label" id="perf-proj-pct-parlux">0.0% da Meta Mês</span>
+                                    </div>
+                                    <div class="perf-daily-metrics">
+                                        <span class="daily-item" id="perf-meta-mes-parlux">Meta Mês: <strong>R$ 0</strong></span>
+                                        <span class="daily-item" id="perf-gap-proj-parlux">Gap: <strong>R$ 0</strong></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="canal-chart-container">
+                            <canvas id="chart-parlux"></canvas>
+                        </div>
+                        <div class="canal-card-footer">
+                            <span id="foot-parlux-ant" class="footer-val blue-text">Fat. Acum Mês ant.: R$ 0</span>
+                            <span id="foot-parlux-fat" class="footer-val red-text">Fat: R$ 0</span>
+                            <span id="foot-parlux-meta" class="footer-val green-text">Meta: R$ 0</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Tabela Executiva Detalhada por Canal -->
+            <section class="section-card">
+                <div class="section-header">
+                    <div class="section-title-group">
+                        <h2 class="section-title">Quadro de Resultados por Canal no Período Selecionado</h2>
+                        <span class="section-subtitle">Valores deduzidos de frete e devoluções conforme regra oficial da Diretoria</span>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="channel-table">
+                        <thead>
+                            <tr>
+                                <th class="sortable" data-col="canal" title="Clique para ordenar por Canal">
+                                    <span class="th-content">Canal <i class="sort-icon"></i></span>
+                                </th>
+                                <th class="sortable text-right" data-col="devolucao" title="Clique para ordenar por Devoluções">
+                                    <span class="th-content">Devoluções <i class="sort-icon"></i></span>
+                                </th>
+                                <th class="sortable text-right" data-col="faturamento_liquido" title="Clique para ordenar por Faturamento">
+                                    <span class="th-content">Faturamento <i class="sort-icon"></i></span>
+                                </th>
+                                <th class="sortable text-right" data-col="meta_periodo" title="Clique para ordenar por Meta Período">
+                                    <span class="th-content">Meta Período <i class="sort-icon"></i></span>
+                                </th>
+                                <th class="sortable" data-col="atingimento_periodo_pct" title="Clique para ordenar por % Ating. Período">
+                                    <span class="th-content">% Ating. Período <i class="sort-icon"></i></span>
+                                </th>
+                                <th class="sortable text-right" data-col="meta_mes" title="Clique para ordenar por Meta Mês Total">
+                                    <span class="th-content">Meta Mês Total <i class="sort-icon"></i></span>
+                                </th>
+                                <th class="sortable text-right" data-col="projecao_mes" title="Clique para ordenar por Projeção Mês">
+                                    <span class="th-content">Projeção Mês <i class="sort-icon"></i></span>
+                                </th>
+                                <th class="sortable text-right" data-col="itens" title="Clique para ordenar por Quantidade de Itens">
+                                    <span class="th-content">Itens <i class="sort-icon"></i></span>
+                                </th>
+                                <th class="sortable text-right" data-col="ticket_medio" title="Clique para ordenar por Ticket Médio">
+                                    <span class="th-content">Ticket Médio <i class="sort-icon"></i></span>
+                                </th>
+                                <th class="sortable text-right" data-col="share_pct" title="Clique para ordenar por Share (%)">
+                                    <span class="th-content">Share (%) <i class="sort-icon"></i></span>
+                                </th>
+                                <th class="sortable text-right" data-col="share_ant_pct" title="Clique para ordenar por Share Mês Anterior (%)">
+                                    <span class="th-content">Share Mês Ant. (%) <i class="sort-icon"></i></span>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody id="canais-table-body">
+                            <!-- Preenchido via JS -->
+                        </tbody>
+                        <tfoot id="canais-table-foot">
+                            <!-- Linha total preenchida via JS -->
+                        </tfoot>
+                    </table>
+                </div>
+            </section>
+
+            <!-- SEÇÃO EXECUTIVA: FORMAS DE PAGAMENTO POR CANAL DE VENDA & GRÁFICO DE PARTICIPAÇÃO -->
+            <section class="section-card matrix-section payment-channel-section">
+                <div class="section-header">
+                    <div class="section-title-group">
+                        <h2 class="section-title">Formas de Pagamento por Canal de Venda</h2>
+                        <span class="section-subtitle">Detalhamento financeiro e participação percentual por método de pagamento</span>
+                    </div>
+                    <div class="matrix-controls">
+                        <div class="matrix-action-btns">
+                            <button id="btn-pay-expand-all" class="btn-sm-action" title="Expandir Todos os Canais">
+                                <i data-lucide="maximize-2"></i>
+                                <span>Expandir</span>
+                            </button>
+                            <button id="btn-pay-collapse-all" class="btn-sm-action" title="Recolher Todos os Canais">
+                                <i data-lucide="minimize-2"></i>
+                                <span>Recolher</span>
+                            </button>
+                        </div>
+                        <div class="matrix-search-box">
+                            <i data-lucide="search" class="search-icon"></i>
+                            <input type="text" id="input-search-pagamento" placeholder="Filtrar canal/forma...">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="payments-dual-layout">
+                    <!-- Coluna Esquerda: Tabela de Formas de Pagamento (SEM A COLUNA MODALIDADE / GATEWAY) -->
+                    <div class="payment-table-card">
+                        <div class="payment-table-container">
+                            <table class="matrix-table" id="table-pagamentos-canal">
+                                <thead>
+                                    <tr class="thead-group-row">
+                                        <th class="th-group-left" id="th-pay-periodo">CANAL / FORMA DE PAGAMENTO</th>
+                                        <th colspan="5" class="th-group-right">DESEMPENHO FINANCEIRO & PARTICIPAÇÃO</th>
+                                    </tr>
+                                    <tr class="thead-cols-row">
+                                        <th class="th-tree sortable" data-col="nome">
+                                            <span class="th-content">CANAL / FORMA DE PAGAMENTO <i class="sort-icon"></i></span>
+                                        </th>
+                                        <th class="text-right sortable" data-col="pedidos">
+                                            <span class="th-content">TRANSAÇÕES / PEDIDOS <i class="sort-icon"></i></span>
+                                        </th>
+                                        <th class="text-right sortable" data-col="valor">
+                                            <span class="th-content">VALOR FATURADO (R$) <i class="sort-icon"></i></span>
+                                        </th>
+                                        <th class="text-right sortable" data-col="ticket_medio">
+                                            <span class="th-content">TICKET MÉDIO <i class="sort-icon"></i></span>
+                                        </th>
+                                        <th class="text-right sortable" data-col="pct_canal">
+                                            <span class="th-content">% NO CANAL <i class="sort-icon"></i></span>
+                                        </th>
+                                        <th class="text-right sortable" data-col="pct_total">
+                                            <span class="th-content">% DO TOTAL GERAL <i class="sort-icon"></i></span>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody id="pagamentos-canal-tbody">
+                                    <!-- Preenchido dinamicamente via JS -->
+                                </tbody>
+                                <tfoot id="pagamentos-canal-tfoot">
+                                    <!-- Totalizador preenchido via JS -->
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Coluna Direita: Gráfico de Rosca / Doughnut Premium de Participação -->
+                    <div class="payment-chart-card">
+                        <div class="vtex-chart-top">
+                            <div class="vtex-chart-title-tag">
+                                <i data-lucide="pie-chart" class="chart-tag-icon"></i>
+                                <span>PARTICIPAÇÃO POR FORMA DE PAGAMENTO (%)</span>
+                            </div>
+                            <span class="vtex-modalidades-count" id="pay-modalidades-count">TOTAL GERAL</span>
+                        </div>
+                        <div class="payment-donut-container">
+                            <div class="vtex-pizza-wrapper">
+                                <canvas id="chart-pizza-pagamentos"></canvas>
+                            </div>
+                        </div>
+                        <div class="payment-chart-legend" id="payment-chart-legend">
+                            <!-- Preenchido dinamicamente via JS com resumo das formas -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Histórico Mensal 2026 -->
+            <section class="section-card">
+                <div class="section-header">
+                    <div class="section-title-group">
+                        <h2 class="section-title">Evolução Mensal — Histórico Consolidado</h2>
+                        <span class="section-subtitle">Acompanhamento mês a mês dos principais indicadores de vendas</span>
+                    </div>
+                </div>
+
+                <div class="history-charts-grid">
+                    <!-- 1. Quantidade de Itens Vendidos -->
+                    <div class="history-chart-card">
+                        <div class="history-card-header">
+                            <span class="history-chart-title">Quantidade de Itens Vendidos</span>
+                        </div>
+                        <div class="history-canvas-box">
+                            <canvas id="chart-hist-itens"></canvas>
+                        </div>
+                        <div class="history-card-footer">
+                            <span id="foot-hist-itens-total" class="footer-val green-text">Acumulado: 0</span>
+                            <span id="foot-hist-itens-atual" class="footer-val" style="color: #A0A0AA;">Mês Atual: 0</span>
+                        </div>
+                    </div>
+
+                    <!-- 2. Faturamento Líquido (R$) -->
+                    <div class="history-chart-card">
+                        <div class="history-card-header">
+                            <span class="history-chart-title">Faturamento Líquido (R$)</span>
+                        </div>
+                        <div class="history-canvas-box">
+                            <canvas id="chart-hist-fat"></canvas>
+                        </div>
+                        <div class="history-card-footer">
+                            <span id="foot-hist-fat-total" class="footer-val gold-text">Acumulado: R$ 0</span>
+                            <span id="foot-hist-fat-atual" class="footer-val" style="color: #A0A0AA;">Mês Atual: R$ 0</span>
+                        </div>
+                    </div>
+
+                    <!-- 3. Ticket Médio Líquido (R$) -->
+                    <div class="history-chart-card">
+                        <div class="history-card-header">
+                            <span class="history-chart-title">Ticket Médio Líquido (R$)</span>
+                        </div>
+                        <div class="history-canvas-box">
+                            <canvas id="chart-hist-ticket"></canvas>
+                        </div>
+                        <div class="history-card-footer">
+                            <span id="foot-hist-ticket-total" class="footer-val cyan-text">Médio Geral: R$ 0</span>
+                            <span id="foot-hist-ticket-atual" class="footer-val" style="color: #A0A0AA;">Mês Atual: R$ 0</span>
+                        </div>
+                    </div>
+
+                    <!-- 4. Devoluções Mensais (R$) -->
+                    <div class="history-chart-card">
+                        <div class="history-card-header">
+                            <span class="history-chart-title">Devoluções Mensais (R$)</span>
+                        </div>
+                        <div class="history-canvas-box">
+                            <canvas id="chart-hist-dev"></canvas>
+                        </div>
+                        <div class="history-card-footer">
+                            <span id="foot-hist-dev-total" class="footer-val red-text">Acumulado: R$ 0</span>
+                            <span id="foot-hist-dev-atual" class="footer-val" style="color: #A0A0AA;">Mês Atual: R$ 0</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SEÇÃO E-COMMERCE ANALYTICS: TAXA DE CONVERSÃO & PERFORMANCE DE CUPONS -->
+            <section class="section-card analytics-module-section">
+                <div class="section-header">
+                    <div class="section-title-group">
+                        <h2 class="section-title">E-commerce Analytics: Conversão & Performance de Cupons</h2>
+                        <span class="section-subtitle">Acompanhamento de sessões, taxa de conversão (Google Analytics) e eficácia de cupons promocionais (Checkout VTEX)</span>
+                    </div>
+                </div>
+
+                <div class="analytics-dual-grid">
+                    <!-- Bloco 1: Acompanhamento de Cupons Promocionais (VTEX) -->
+                    <div class="analytics-subcard">
+                        <div class="analytics-subcard-header">
+                            <div class="subcard-title-box">
+                                <span class="subcard-title">ACOMPANHAMENTO DE CUPONS</span>
+                                <span class="subcard-tag tag-vtex">Checkout VTEX</span>
+                            </div>
+                            <span class="subcard-total-badge" id="badge-total-cupons">Total: R$ 0,00</span>
+                        </div>
+
+                        <!-- 3 Mini KPIs de Cupons -->
+                        <div class="mini-kpis-row">
+                            <div class="mini-kpi-item">
+                                <span class="mini-kpi-label">Vendas c/ Cupom</span>
+                                <span class="mini-kpi-val green-text" id="kpi-cupom-com">R$ 0 (0%)</span>
+                            </div>
+                            <div class="mini-kpi-item">
+                                <span class="mini-kpi-label">Vendas Orgânicas</span>
+                                <span class="mini-kpi-val gold-text" id="kpi-cupom-sem">R$ 0 (0%)</span>
+                            </div>
+                            <div class="mini-kpi-item">
+                                <span class="mini-kpi-label">Cupom Campeão</span>
+                                <span class="mini-kpi-val highlight-text" id="kpi-cupom-top">-</span>
+                            </div>
+                        </div>
+
+                        <!-- Tabela de Cupons -->
+                        <div class="table-responsive cupons-table-container">
+                            <table class="matrix-table cupons-table" id="table-cupons">
+                                <thead>
+                                    <tr class="thead-group-row">
+                                        <th colspan="2" class="th-group-left">CHECKOUT VTEX — CUPONS</th>
+                                        <th colspan="2" class="th-group-right">DESEMPENHO</th>
+                                    </tr>
+                                    <tr class="thead-cols-row">
+                                        <th class="th-tree sortable" data-col="coupon" title="Ordenar por Cupom">
+                                            <span class="th-content">CUPOM <i class="sort-icon"></i></span>
+                                        </th>
+                                        <th class="sortable text-right" data-col="tt" title="Ordenar por Pedidos">
+                                            <span class="th-content">TT PEDIDOS <i class="sort-icon"></i></span>
+                                        </th>
+                                        <th class="sortable text-right" data-col="valor" title="Ordenar por Faturamento">
+                                            <span class="th-content">VALOR (R$) <i class="sort-icon"></i></span>
+                                        </th>
+                                        <th class="sortable text-right" data-col="pct" title="Ordenar por Share">
+                                            <span class="th-content">(%) SHARE <i class="sort-icon"></i></span>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody id="cupons-table-body">
+                                    <!-- Preenchido via JS -->
+                                </tbody>
+                                <tfoot id="cupons-table-foot">
+                                    <!-- Linha de Total Geral preenchida via JS -->
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Bloco 2: Taxa de Conversão Mensal & Sessões (Google Analytics) -->
+                    <div class="analytics-subcard">
+                        <div class="analytics-subcard-header">
+                            <div class="subcard-title-box">
+                                <span class="subcard-title">FUNIL & TAXA DE CONVERSÃO</span>
+                                <span class="subcard-tag tag-ga4">Google Analytics 4</span>
+                            </div>
+                            <span class="subcard-total-badge" id="badge-total-conversao">Média: 1,21%</span>
+                        </div>
+
+                        <!-- 3 Mini KPIs de Conversão -->
+                        <div class="mini-kpis-row">
+                            <div class="mini-kpi-item">
+                                <span class="mini-kpi-label">Total Sessões</span>
+                                <span class="mini-kpi-val" id="kpi-ga-sessoes">136.994</span>
+                            </div>
+                            <div class="mini-kpi-item">
+                                <span class="mini-kpi-label">Total Pedidos</span>
+                                <span class="mini-kpi-val" id="kpi-ga-pedidos">1.659</span>
+                            </div>
+                            <div class="mini-kpi-item">
+                                <span class="mini-kpi-label">Taxa Média</span>
+                                <span class="mini-kpi-val green-text" id="kpi-ga-taxa">1,21%</span>
+                            </div>
+                        </div>
+
+                        <!-- Gráfico Misto Combo: Sessões (Barras) + Taxa Conversão (Linha) -->
+                        <div class="analytics-chart-container">
+                            <canvas id="chart-analytics-conversao"></canvas>
+                        </div>
+
+                        <!-- Tabela de Conversão Mês a Mês -->
+                        <div class="table-responsive conversao-table-container">
+                            <table class="matrix-table conversao-table" id="table-conversao">
+                                <thead>
+                                    <tr class="thead-group-row">
+                                        <th colspan="2" class="th-group-left">GOOGLE ANALYTICS 4</th>
+                                        <th colspan="2" class="th-group-right">TAXA CONVERSÃO</th>
+                                    </tr>
+                                    <tr class="thead-cols-row">
+                                        <th class="sortable" data-col="mes_abrev" title="Ordenar por Mês">
+                                            <span class="th-content">MÊS <i class="sort-icon"></i></span>
+                                        </th>
+                                        <th class="sortable text-right" data-col="sessoes" title="Ordenar por Sessões">
+                                            <span class="th-content">SESSÕES <i class="sort-icon"></i></span>
+                                        </th>
+                                        <th class="sortable text-right" data-col="pedidos" title="Ordenar por Pedidos">
+                                            <span class="th-content">PEDIDOS <i class="sort-icon"></i></span>
+                                        </th>
+                                        <th class="sortable text-right" data-col="taxa_conversao" title="Ordenar por Taxa">
+                                            <span class="th-content">TAXA CONV. <i class="sort-icon"></i></span>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody id="conversao-table-body">
+                                    <!-- Preenchido via JS -->
+                                </tbody>
+                                <tfoot id="conversao-table-foot">
+                                    <!-- Linha de Total Geral preenchida via JS -->
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- DUAS MATRIZES LADO A LADO: CANAL & VENDEDOR -->
+            <div class="matrices-dual-grid">
+                <!-- MATRIZ 1: CATEGORIA E PRODUTO (SEM CANAL DE VENDAS) -->
+                <section class="section-card matrix-section matrix-half-card">
+                    <div class="section-header">
+                        <div class="section-title-group">
+                            <h2 class="section-title">Matriz: Categoria & Produto</h2>
+                            <span class="section-subtitle">Ranking consolidado de vendas e faturamento por produto e categoria</span>
+                        </div>
+                        <div class="matrix-controls">
+                            <div class="view-toggle-group">
+                                <button id="btn-view-ranking" class="toggle-btn active" title="Ranking direto dos produtos mais vendidos">
+                                    <i data-lucide="trophy"></i>
+                                    <span>Ranking Geral</span>
+                                </button>
+                                <button id="btn-view-categoria" class="toggle-btn" title="Agrupar produtos por Categoria">
+                                    <i data-lucide="layers"></i>
+                                    <span>Por Categoria</span>
+                                </button>
+                            </div>
+                            <div class="matrix-action-btns" id="matrix-prods-action-btns" style="display: none;">
+                                <button id="btn-expand-all" class="btn-sm-action" title="Expandir Todas as Categorias">
+                                    <i data-lucide="maximize-2"></i>
+                                    <span>Expandir</span>
+                                </button>
+                                <button id="btn-collapse-all" class="btn-sm-action" title="Recolher Todas as Categorias">
+                                    <i data-lucide="minimize-2"></i>
+                                    <span>Recolher</span>
+                                </button>
+                            </div>
+                            <div class="matrix-search-box">
+                                <i data-lucide="search" class="search-icon"></i>
+                                <input type="text" id="input-search-matriz" placeholder="Filtrar produto, SKU, categoria...">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive matrix-table-container">
+                        <table class="matrix-table" id="matrix-sales-table">
+                            <thead>
+                                <tr class="thead-group-row">
+                                    <th colspan="7" class="th-group-single" id="th-mes-nome">OUTUBRO (D1 ATÉ D6)</th>
+                                </tr>
+                                <tr class="thead-cols-row">
+                                    <th class="th-pos text-center sortable" data-col="rank" title="Posição no ranking e variação vs mês anterior">
+                                        <span class="th-content">POS <i class="sort-icon"></i></span>
+                                    </th>
+                                    <th class="th-tree sortable" data-col="nome">
+                                        <span class="th-content" id="th-matrix1-label">PRODUTO <i class="sort-icon"></i></span>
+                                    </th>
+                                    <th class="text-right sortable" data-col="qtd">
+                                        <span class="th-content">QTD <i class="sort-icon"></i></span>
+                                    </th>
+                                    <th class="text-right sortable" data-col="fat">
+                                        <span class="th-content">VLR. FAT <i class="sort-icon"></i></span>
+                                    </th>
+                                    <th class="text-right sortable" data-col="pct">
+                                        <span class="th-content">% <i class="sort-icon"></i></span>
+                                    </th>
+                                    <th class="text-right sortable" data-col="vlr_medio">
+                                        <span class="th-content">MÉDIO <i class="sort-icon"></i></span>
+                                    </th>
+                                    <th class="text-center sortable" data-col="evolucao_pct">
+                                        <span class="th-content">EVOL. M-1 <i class="sort-icon"></i></span>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody id="matrix-table-body">
+                                <!-- Preenchido dinamicamente via JS com hierarquia expansível -->
+                            </tbody>
+                            <tfoot id="matrix-table-foot">
+                                <!-- Linha de Total Geral preenchida via JS -->
+                            </tfoot>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- MATRIZ 2: VENDAS POR CONTA / VENDEDOR -->
+                <section class="section-card matrix-section matrix-half-card">
+                    <div class="section-header">
+                        <div class="section-title-group">
+                            <h2 class="section-title">Matriz: Conta / Vendedor & Produto</h2>
+                            <span class="section-subtitle">Visão detalhada por conta comercial (ML Full, Shopee, VTEX, etc.)</span>
+                        </div>
+                        <div class="matrix-controls">
+                            <div class="matrix-action-btns">
+                                <button id="btn-expand-all-vend" class="btn-sm-action" title="Expandir Todas as Contas">
+                                    <i data-lucide="maximize-2"></i>
+                                    <span>Expandir</span>
+                                </button>
+                                <button id="btn-collapse-all-vend" class="btn-sm-action" title="Recolher Todas as Contas">
+                                    <i data-lucide="minimize-2"></i>
+                                    <span>Recolher</span>
+                                </button>
+                            </div>
+                            <div class="matrix-search-box">
+                                <i data-lucide="search" class="search-icon"></i>
+                                <input type="text" id="input-search-vend" placeholder="Filtrar vendedor/produto...">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive matrix-table-container">
+                        <table class="matrix-table" id="matrix-vend-table">
+                            <thead>
+                                <tr class="thead-group-row">
+                                    <th colspan="7" class="th-group-single" id="th-mes-nome-vend">OUTUBRO (D1 ATÉ D6)</th>
+                                </tr>
+                                <tr class="thead-cols-row">
+                                    <th class="th-pos text-center" title="Posição no vendedor e evolução vs mês anterior">POS</th>
+                                    <th class="th-tree">CONTA / PRODUTO</th>
+                                    <th class="text-right">QTD</th>
+                                    <th class="text-right">VLR. FAT</th>
+                                    <th class="text-right">%</th>
+                                    <th class="text-right">MÉDIO</th>
+                                    <th class="text-center">EVOL. M-1</th>
+                                </tr>
+                            </thead>
+                            <tbody id="matrix-vend-body">
+                                <!-- Preenchido dinamicamente via JS -->
+                            </tbody>
+                            <tfoot id="matrix-vend-foot">
+                                <!-- Linha de Total Geral -->
+                            </tfoot>
+                        </table>
+                    </div>
+                </section>
+            </div>
+        </main>
+
+        <!-- Modal de Zoom / Detalhe do Canal -->
+        <div id="modal-canal-zoom" class="modal-backdrop hidden" onclick="if(event.target === this) fecharModalCanal()">
+            <div class="modal-card modal-canal-card">
+                <div class="modal-header">
+                    <div class="modal-title-group">
+                        <h3 id="modal-canal-title" class="modal-title">CANAL</h3>
+                        <span id="modal-canal-badge" class="status-badge">0%</span>
+                        <span id="modal-canal-subtitle" class="modal-subtitle">Acompanhamento diário com visualização de todos os dias</span>
+                    </div>
+                    <div class="modal-header-actions">
+                        <div class="modal-chart-tabs">
+                            <button type="button" class="btn-modal-tab active" id="tab-modal-acumulado" onclick="trocarModoModal('acumulado')">Curvas Acumuladas</button>
+                            <button type="button" class="btn-modal-tab" id="tab-modal-diario" onclick="trocarModoModal('diario')">Faturamento Diário</button>
+                        </div>
+                        <button type="button" class="btn-modal-close" onclick="fecharModalCanal()" title="Fechar (Esc)">
+                            <i data-lucide="x"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="modal-body">
+                    <div class="modal-chart-container">
+                        <canvas id="chart-modal-canvas"></canvas>
+                    </div>
+                    <div class="modal-canal-kpis" id="modal-canal-kpis">
+                        <!-- Preenchido dinamicamente via JS -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer Padrão MQ Professional -->
+        <footer class="app-footer">
+            <div class="footer-left">
+                <span class="status-dot-green"></span>
+                <span class="footer-status-text">Conectado ao Banco Oracle Sankhya</span>
+            </div>
+            <div class="footer-center">
+                <span class="footer-mq">MQ PROFESSIONAL</span>
+            </div>
+            <div class="footer-right">
+                <span class="footer-dev">Desenvolvido por <strong class="footer-dev-brand">BI MQ Hair Company</strong></span>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Scripts -->
+    <script src="/static/js/app.js?v=20261007_v6_donut_legend"></script>
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+</html>

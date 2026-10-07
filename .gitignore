@@ -1,0 +1,22 @@
+# Ambientes e segredos
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.log
+
+# Caches e arquivos temporários
+cache/
+scratch/
+scratch_*.py
+scratch_*.html
+scratch_*.js
+*.tmp
+
+# IDEs
+.vscode/
+.idea/
