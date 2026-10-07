@@ -1209,21 +1209,46 @@ def api_resumo():
             ]
         }
 
-        # 9. Acompanhamento de Cupons Promocionais (VTEX)
+        # 9. Acompanhamento de Cupons Promocionais (VTEX) com Comparativo M-1
         dfs_cup = []
+        dfs_cup_ant = []
         for a in anos:
             for m in meses:
                 df_c = carregar_cupons_vtex(ano=a, mes=m, dia_ini=dia_ini, dia_fim=dia_fim, force_refresh=force)
                 if not df_c.empty:
                     dfs_cup.append(df_c)
+                
+                # Mês Anterior (MoM Homólogo no mesmo intervalo de dias)
+                m_ant = 12 if m == 1 else m - 1
+                a_ant = a - 1 if m == 1 else a
+                df_c_ant = carregar_cupons_vtex(ano=a_ant, mes=m_ant, dia_ini=dia_ini, dia_fim=dia_fim, force_refresh=force)
+                if not df_c_ant.empty:
+                    dfs_cup_ant.append(df_c_ant)
+                    
         if dfs_cup:
             df_cup_concat = pd.concat(dfs_cup, ignore_index=True)
             df_cup = df_cup_concat.groupby("COUPON", as_index=False).agg({"TT": "sum", "VALOR": "sum"}).sort_values("VALOR", ascending=False)
         else:
             df_cup = pd.DataFrame(columns=["COUPON", "TT", "VALOR"])
-        
+            
         tot_cup_vlr = float(df_cup["VALOR"].sum()) if not df_cup.empty else 0.0
         tot_cup_tt = int(df_cup["TT"].sum()) if not df_cup.empty else 0
+        
+        # Mapa e Totais do Mês Anterior
+        cup_ant_map = {}
+        tot_cup_vlr_ant = 0.0
+        tot_cup_tt_ant = 0
+        if dfs_cup_ant:
+            df_cup_ant_concat = pd.concat(dfs_cup_ant, ignore_index=True)
+            df_cup_ant = df_cup_ant_concat.groupby("COUPON", as_index=False).agg({"TT": "sum", "VALOR": "sum"})
+            tot_cup_vlr_ant = float(df_cup_ant["VALOR"].sum()) if not df_cup_ant.empty else 0.0
+            tot_cup_tt_ant = int(df_cup_ant["TT"].sum()) if not df_cup_ant.empty else 0
+            for _, rant in df_cup_ant.iterrows():
+                k = str(rant["COUPON"]).upper().strip()
+                cup_ant_map[k] = {
+                    "valor": float(rant["VALOR"]),
+                    "tt": int(rant["TT"])
+                }
         
         cupons_lista = []
         vlr_com_cupom = 0.0
@@ -1241,6 +1266,16 @@ def api_resumo():
                 c_pct = round(c_vlr / tot_cup_vlr * 100, 2) if tot_cup_vlr > 0 else 0.0
                 
                 c_nome_upper = c_nome.upper().strip()
+                ant_data = cup_ant_map.get(c_nome_upper, {"valor": 0.0, "tt": 0})
+                vlr_ant = ant_data["valor"]
+                tt_ant = ant_data["tt"]
+                pct_ant = round(vlr_ant / tot_cup_vlr_ant * 100, 2) if tot_cup_vlr_ant > 0 else 0.0
+                
+                if vlr_ant > 0:
+                    evol_mom = round((c_vlr - vlr_ant) / vlr_ant * 100, 1)
+                else:
+                    evol_mom = None
+                
                 if c_nome_upper in ("(SEM CUPOM)", "SEM CUPOM", "VAZIO", "") or "SEM CUPOM" in c_nome_upper:
                     vlr_sem_cupom += c_vlr
                     tt_sem_cupom += c_tt
@@ -1255,7 +1290,11 @@ def api_resumo():
                     "coupon": c_nome,
                     "tt": c_tt,
                     "valor": round(c_vlr, 2),
-                    "pct": c_pct
+                    "pct": c_pct,
+                    "valor_ant": round(vlr_ant, 2),
+                    "tt_ant": tt_ant,
+                    "pct_ant": pct_ant,
+                    "evol_mom": evol_mom
                 })
                 
         cupons_resumo = {
@@ -1263,6 +1302,8 @@ def api_resumo():
             "subtitulo": "Cupons Promocionais Aplicados no Checkout VTEX",
             "total_pedidos": tot_cup_tt,
             "total_valor": round(tot_cup_vlr, 2),
+            "total_pedidos_ant": tot_cup_tt_ant,
+            "total_valor_ant": round(tot_cup_vlr_ant, 2),
             "vlr_com_cupom": round(vlr_com_cupom, 2),
             "pct_com_cupom": round(vlr_com_cupom / tot_cup_vlr * 100, 1) if tot_cup_vlr > 0 else 0.0,
             "vlr_sem_cupom": round(vlr_sem_cupom, 2),

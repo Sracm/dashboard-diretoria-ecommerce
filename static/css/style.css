@@ -3824,3 +3824,58 @@ span[id^="kpi-meta-"],
     text-shadow: 0 0 10px rgba(0, 230, 118, 0.3) !important;
     white-space: nowrap !important;
 }
+
+/* === Estilos de Comparativo M-1 para Tabela de Cupons === */
+.th-group-center {
+    text-align: center;
+    background: linear-gradient(90deg, rgba(203, 151, 39, 0.18) 0%, rgba(203, 151, 39, 0.12) 100%) !important;
+    border-left: 1px solid rgba(255, 255, 255, 0.08);
+    border-right: 1px solid rgba(255, 255, 255, 0.08);
+}
+.valor-ant-cell {
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 6px;
+    color: #CBD5E1;
+    font-size: 11px;
+}
+.cupom-evol-tag {
+    font-size: 9px;
+    font-weight: 700;
+    padding: 1px 5px;
+    border-radius: 4px;
+    line-height: 1.2;
+    display: inline-block;
+    white-space: nowrap;
+}
+.cupom-evol-tag.evol-up {
+    background: rgba(0, 230, 118, 0.15);
+    color: #00E676;
+    border: 1px solid rgba(0, 230, 118, 0.3);
+}
+.cupom-evol-tag.evol-down {
+    background: rgba(239, 83, 80, 0.15);
+    color: #EF5350;
+    border: 1px solid rgba(239, 83, 80, 0.3);
+}
+.cupom-evol-tag.evol-neu {
+    background: rgba(148, 163, 184, 0.15);
+    color: #94A3B8;
+}
+.cupom-evol-tag.evol-novo {
+    background: rgba(203, 151, 39, 0.18);
+    color: #FFE082;
+    border: 1px solid rgba(203, 151, 39, 0.35);
+}
+.share-percent-val.muted-val {
+    color: #94A3B8;
+}
+.share-bar-fill.fill-ant {
+    background: linear-gradient(90deg, #64748B, #94A3B8);
+}
+.tfoot-pct-pill.pill-muted {
+    background: rgba(148, 163, 184, 0.18);
+    color: #CBD5E1;
+    border: 1px solid rgba(148, 163, 184, 0.3);
+}

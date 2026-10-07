@@ -2473,7 +2473,7 @@ function renderizarTabelaCupons() {
     tbody.innerHTML = '';
 
     if (lista.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="4" class="text-center" style="padding: 24px; color: var(--text-muted);">Nenhum cupom registrado no período</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="6" class="text-center" style="padding: 24px; color: var(--text-muted);">Nenhum cupom registrado no período</td></tr>`;
         return;
     }
 
@@ -2490,6 +2490,11 @@ function renderizarTabelaCupons() {
             ? ((vlrOutros / currentCuponsData.total_valor) * 100) 
             : 0;
 
+        const vlrAntOutros = restantes.reduce((acc, it) => acc + (Number(it.valor_ant) || 0), 0);
+        const pctAntOutros = currentCuponsData.total_valor_ant > 0 
+            ? ((vlrAntOutros / currentCuponsData.total_valor_ant) * 100) 
+            : 0;
+
         const nomesRestantes = restantes.map(r => `${r.coupon} (${fmtInt(r.tt)})`).join(', ');
 
         itensExibicao = [
@@ -2499,6 +2504,9 @@ function renderizarTabelaCupons() {
                 tt: ttOutros,
                 valor: vlrOutros,
                 pct: pctOutros,
+                valor_ant: vlrAntOutros,
+                pct_ant: pctAntOutros,
+                evol_mom: vlrAntOutros > 0 ? ((vlrOutros - vlrAntOutros) / vlrAntOutros * 100) : null,
                 isOutros: true,
                 tooltip: nomesRestantes
             }
@@ -2523,6 +2531,18 @@ function renderizarTabelaCupons() {
 
         const titleAttr = item.tooltip ? `title="${item.tooltip}"` : '';
 
+        // Badge de Evolução MoM
+        let evolBadge = '';
+        if (item.evol_mom !== null && item.evol_mom !== undefined) {
+            const isPos = item.evol_mom > 0;
+            const isNeg = item.evol_mom < 0;
+            const cls = isPos ? 'evol-up' : (isNeg ? 'evol-down' : 'evol-neu');
+            const icon = isPos ? '▲ ' : (isNeg ? '▼ ' : '');
+            evolBadge = `<span class="cupom-evol-tag ${cls}" title="Variação MoM">${icon}${fmtPct(Math.abs(item.evol_mom))}</span>`;
+        } else if (item.valor_ant === 0 && item.valor > 0) {
+            evolBadge = `<span class="cupom-evol-tag evol-novo" title="Cupom novo no período">NOVO</span>`;
+        }
+
         tr.innerHTML = `
             <td>
                 <span class="${tagClass}" ${titleAttr}>${item.coupon}${starIcon}</span>
@@ -2534,6 +2554,20 @@ function renderizarTabelaCupons() {
                     <span class="share-percent-val ${isTop ? 'gold-val' : ''}">${fmtPct(item.pct)}</span>
                     <div class="share-bar-mini">
                         <div class="share-bar-fill ${isTop ? 'fill-gold' : (isSemCupom ? 'fill-slate' : (item.isOutros ? 'fill-muted' : 'fill-green'))}" style="width: ${Math.min(100, item.pct)}%;"></div>
+                    </div>
+                </div>
+            </td>
+            <td class="text-right num-valor-ant">
+                <div class="valor-ant-cell">
+                    <span>${item.valor_ant > 0 ? 'R$ ' + fmtMoeda(item.valor_ant) : '-'}</span>
+                    ${evolBadge}
+                </div>
+            </td>
+            <td class="text-right">
+                <div class="share-progress-wrapper">
+                    <span class="share-percent-val muted-val">${fmtPct(item.pct_ant || 0)}</span>
+                    <div class="share-bar-mini">
+                        <div class="share-bar-fill fill-ant" style="width: ${Math.min(100, item.pct_ant || 0)}%;"></div>
                     </div>
                 </div>
             </td>
@@ -2549,6 +2583,8 @@ function renderizarTabelaCupons() {
                 <td class="text-right" style="padding: 8px 12px; font-weight: 800;">${fmtInt(currentCuponsData.total_pedidos)}</td>
                 <td class="text-right" style="padding: 8px 12px; font-weight: 800; color: #FFE082;">R$ ${fmtMoeda(currentCuponsData.total_valor)}</td>
                 <td class="text-right" style="padding: 8px 12px; font-weight: 800;"><span class="tfoot-pct-pill">100,0%</span></td>
+                <td class="text-right" style="padding: 8px 12px; font-weight: 800; color: #94A3B8;">R$ ${fmtMoeda(currentCuponsData.total_valor_ant || 0)}</td>
+                <td class="text-right" style="padding: 8px 12px; font-weight: 800;"><span class="tfoot-pct-pill pill-muted">100,0%</span></td>
             </tr>
         `;
     }
