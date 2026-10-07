@@ -939,28 +939,42 @@
 
                 <div class="analytics-dual-grid">
                     <!-- Bloco 1: Acompanhamento de Cupons Promocionais (VTEX) -->
-                    <div class="analytics-subcard">
+                    <div class="analytics-subcard analytics-card-cupons">
                         <div class="analytics-subcard-header">
                             <div class="subcard-title-box">
-                                <span class="subcard-title">ACOMPANHAMENTO DE CUPONS</span>
-                                <span class="subcard-tag tag-vtex">Checkout VTEX</span>
+                                <div class="subcard-title-icon-box vtex-icon-box" title="Cupons Checkout VTEX">
+                                    <i data-lucide="ticket"></i>
+                                </div>
+                                <div>
+                                    <span class="subcard-title">ACOMPANHAMENTO DE CUPONS</span>
+                                    <span class="subcard-tag tag-vtex"><i data-lucide="tag" class="tag-icon"></i> Checkout VTEX</span>
+                                </div>
                             </div>
                             <span class="subcard-total-badge" id="badge-total-cupons">Total: R$ 0,00</span>
                         </div>
 
                         <!-- 3 Mini KPIs de Cupons -->
                         <div class="mini-kpis-row">
-                            <div class="mini-kpi-item">
-                                <span class="mini-kpi-label">Vendas c/ Cupom</span>
-                                <span class="mini-kpi-val green-text" id="kpi-cupom-com">R$ 0 (0%)</span>
+                            <div class="mini-kpi-item kpi-accent-green">
+                                <div class="mini-kpi-header">
+                                    <span class="mini-kpi-label">Vendas c/ Cupom</span>
+                                    <span class="mini-kpi-icon-pill icon-pill-green"><i data-lucide="percent"></i></span>
+                                </div>
+                                <span class="mini-kpi-val" id="kpi-cupom-com">R$ 0 (0%)</span>
                             </div>
-                            <div class="mini-kpi-item">
-                                <span class="mini-kpi-label">Vendas Orgânicas</span>
-                                <span class="mini-kpi-val gold-text" id="kpi-cupom-sem">R$ 0 (0%)</span>
+                            <div class="mini-kpi-item kpi-accent-cyan">
+                                <div class="mini-kpi-header">
+                                    <span class="mini-kpi-label">Vendas Orgânicas</span>
+                                    <span class="mini-kpi-icon-pill icon-pill-cyan"><i data-lucide="sparkles"></i></span>
+                                </div>
+                                <span class="mini-kpi-val" id="kpi-cupom-sem">R$ 0 (0%)</span>
                             </div>
-                            <div class="mini-kpi-item">
-                                <span class="mini-kpi-label">Cupom Campeão</span>
-                                <span class="mini-kpi-val highlight-text" id="kpi-cupom-top">-</span>
+                            <div class="mini-kpi-item kpi-accent-gold">
+                                <div class="mini-kpi-header">
+                                    <span class="mini-kpi-label">Cupom Campeão</span>
+                                    <span class="mini-kpi-icon-pill icon-pill-gold"><i data-lucide="award"></i></span>
+                                </div>
+                                <span class="mini-kpi-val" id="kpi-cupom-top">-</span>
                             </div>
                         </div>
 
@@ -998,28 +1012,42 @@
                     </div>
 
                     <!-- Bloco 2: Taxa de Conversão Mensal & Sessões (Google Analytics) -->
-                    <div class="analytics-subcard">
+                    <div class="analytics-subcard analytics-card-conversao">
                         <div class="analytics-subcard-header">
                             <div class="subcard-title-box">
-                                <span class="subcard-title">FUNIL & TAXA DE CONVERSÃO</span>
-                                <span class="subcard-tag tag-ga4">Google Analytics 4</span>
+                                <div class="subcard-title-icon-box ga4-icon-box" title="Funil Google Analytics 4">
+                                    <i data-lucide="trending-up"></i>
+                                </div>
+                                <div>
+                                    <span class="subcard-title">FUNIL & TAXA DE CONVERSÃO</span>
+                                    <span class="subcard-tag tag-ga4"><i data-lucide="bar-chart-2" class="tag-icon"></i> Google Analytics 4</span>
+                                </div>
                             </div>
-                            <span class="subcard-total-badge" id="badge-total-conversao">Média: 1,21%</span>
+                            <span class="subcard-total-badge badge-conversao-glow" id="badge-total-conversao">Média: 1,21%</span>
                         </div>
 
                         <!-- 3 Mini KPIs de Conversão -->
                         <div class="mini-kpis-row">
-                            <div class="mini-kpi-item">
-                                <span class="mini-kpi-label">Total Sessões</span>
+                            <div class="mini-kpi-item kpi-accent-blue">
+                                <div class="mini-kpi-header">
+                                    <span class="mini-kpi-label">Total Sessões</span>
+                                    <span class="mini-kpi-icon-pill icon-pill-blue"><i data-lucide="users"></i></span>
+                                </div>
                                 <span class="mini-kpi-val" id="kpi-ga-sessoes">136.994</span>
                             </div>
-                            <div class="mini-kpi-item">
-                                <span class="mini-kpi-label">Total Pedidos</span>
+                            <div class="mini-kpi-item kpi-accent-purple">
+                                <div class="mini-kpi-header">
+                                    <span class="mini-kpi-label">Total Pedidos</span>
+                                    <span class="mini-kpi-icon-pill icon-pill-purple"><i data-lucide="shopping-cart"></i></span>
+                                </div>
                                 <span class="mini-kpi-val" id="kpi-ga-pedidos">1.659</span>
                             </div>
-                            <div class="mini-kpi-item">
-                                <span class="mini-kpi-label">Taxa Média</span>
-                                <span class="mini-kpi-val green-text" id="kpi-ga-taxa">1,21%</span>
+                            <div class="mini-kpi-item kpi-accent-green">
+                                <div class="mini-kpi-header">
+                                    <span class="mini-kpi-label">Taxa Média</span>
+                                    <span class="mini-kpi-icon-pill icon-pill-green"><i data-lucide="target"></i></span>
+                                </div>
+                                <span class="mini-kpi-val" id="kpi-ga-taxa">1,21%</span>
                             </div>
                         </div>
 
@@ -1239,7 +1267,7 @@
     </div>
 
     <!-- Scripts -->
-    <script src="/static/js/app.js?v=25_v10_green_all"></script>
+    <script src="/static/js/app.js?v=26_cards_impact"></script>
     <script>
         lucide.createIcons();
     </script>

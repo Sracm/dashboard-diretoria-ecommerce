@@ -2280,26 +2280,31 @@ function renderizarGraficoPagamentos(data) {
 function renderizarCupons() {
     if (!currentCuponsData) return;
 
-    // 1. Atualiza Mini KPIs
+    // 1. Atualiza Mini KPIs com Formatação Rica
     const badgeTot = document.getElementById('badge-total-cupons');
     if (badgeTot) badgeTot.textContent = `Total: R$ ${fmtMoeda(currentCuponsData.total_valor)}`;
 
     const kpiCom = document.getElementById('kpi-cupom-com');
-    if (kpiCom) kpiCom.textContent = `R$ ${fmtMoeda(currentCuponsData.vlr_com_cupom)} (${fmtPct(currentCuponsData.pct_com_cupom)})`;
+    if (kpiCom) {
+        kpiCom.innerHTML = `R$ ${fmtMoeda(currentCuponsData.vlr_com_cupom)} <span class="mini-kpi-share share-green">(${fmtPct(currentCuponsData.pct_com_cupom)})</span>`;
+    }
 
     const kpiSem = document.getElementById('kpi-cupom-sem');
-    if (kpiSem) kpiSem.textContent = `R$ ${fmtMoeda(currentCuponsData.vlr_sem_cupom)} (${fmtPct(currentCuponsData.pct_sem_cupom)})`;
+    if (kpiSem) {
+        kpiSem.innerHTML = `R$ ${fmtMoeda(currentCuponsData.vlr_sem_cupom)} <span class="mini-kpi-share share-cyan">(${fmtPct(currentCuponsData.pct_sem_cupom)})</span>`;
+    }
 
     const kpiTop = document.getElementById('kpi-cupom-top');
     if (kpiTop) {
         if (currentCuponsData.top_cupom_nome && currentCuponsData.top_cupom_nome !== '-') {
-            kpiTop.textContent = `${currentCuponsData.top_cupom_nome} (R$ ${fmtMoedaZero(currentCuponsData.top_cupom_vlr)})`;
+            kpiTop.innerHTML = `<span class="top-cupom-name">${currentCuponsData.top_cupom_nome}</span> <span class="top-cupom-sub">(R$ ${fmtMoedaZero(currentCuponsData.top_cupom_vlr)})</span>`;
         } else {
             kpiTop.textContent = '-';
         }
     }
 
     renderizarTabelaCupons();
+    if (window.lucide) lucide.createIcons();
 }
 
 function renderizarTabelaCupons() {
@@ -2340,7 +2345,7 @@ function renderizarTabelaCupons() {
     }
 
     // Se houver mais de 10 cupons, exibe os 9 primeiros e agrupa os restantes em "Outros Cupons"
-    // Isso garante exatamente 10 linhas no corpo, harmonizando perfeitamente com a Tabela de Conversão ao lado (10 meses)
+    // Isso garante exatamente 10 linhas no corpo, harmonizando perfeitamente com a Tabela de Conversão ao lado
     let itensExibicao = lista;
     if (lista.length > 10) {
         const top9 = lista.slice(0, 9);
@@ -2373,28 +2378,29 @@ function renderizarTabelaCupons() {
         const isTop = !item.isOutros && item.coupon === currentCuponsData.top_cupom_nome && !isSemCupom;
 
         let tagClass = 'coupon-tag';
+        let starIcon = '';
         if (item.isOutros) {
             tagClass = 'coupon-tag outros-coupon';
         } else if (isTop) {
             tagClass = 'coupon-tag top-coupon';
+            starIcon = ' ⭐';
         } else if (isSemCupom) {
             tagClass = 'coupon-tag sem-cupom';
         }
 
-        const star = isTop ? ' ⭐' : '';
         const titleAttr = item.tooltip ? `title="${item.tooltip}"` : '';
 
         tr.innerHTML = `
             <td>
-                <span class="${tagClass}" ${titleAttr}>${item.coupon}${star}</span>
+                <span class="${tagClass}" ${titleAttr}>${item.coupon}${starIcon}</span>
             </td>
-            <td class="text-right" style="font-weight: 600;">${fmtInt(item.tt)}</td>
-            <td class="text-right" style="font-weight: 700; color: #FFFFFF;">R$ ${fmtMoeda(item.valor)}</td>
+            <td class="text-right num-pedidos">${fmtInt(item.tt)}</td>
+            <td class="text-right num-valor">R$ ${fmtMoeda(item.valor)}</td>
             <td class="text-right">
                 <div class="share-progress-wrapper">
-                    <span style="font-weight: 700; color: ${isTop ? 'var(--mq-gold-light)' : (item.isOutros ? 'var(--text-muted)' : '#E2E8F0')};">${fmtPct(item.pct)}</span>
+                    <span class="share-percent-val ${isTop ? 'gold-val' : ''}">${fmtPct(item.pct)}</span>
                     <div class="share-bar-mini">
-                        <div class="share-bar-fill" style="width: ${Math.min(100, item.pct)}%; background: ${isTop ? 'var(--mq-gold)' : (isSemCupom ? '#64748B' : (item.isOutros ? '#94A3B8' : '#00E676'))};"></div>
+                        <div class="share-bar-fill ${isTop ? 'fill-gold' : (isSemCupom ? 'fill-slate' : (item.isOutros ? 'fill-muted' : 'fill-green'))}" style="width: ${Math.min(100, item.pct)}%;"></div>
                     </div>
                 </div>
             </td>
@@ -2406,10 +2412,10 @@ function renderizarTabelaCupons() {
     if (tfoot) {
         tfoot.innerHTML = `
             <tr class="tfoot-total-row">
-                <td style="color: var(--mq-gold); font-weight: 800; padding: 7px 10px;">TOTAL GERAL</td>
-                <td class="text-right" style="padding: 7px 10px; font-weight: 800;">${fmtInt(currentCuponsData.total_pedidos)}</td>
-                <td class="text-right" style="padding: 7px 10px; font-weight: 800; color: var(--mq-gold);">R$ ${fmtMoeda(currentCuponsData.total_valor)}</td>
-                <td class="text-right" style="padding: 7px 10px; font-weight: 800;">100,0%</td>
+                <td style="padding: 8px 12px;"><span class="tfoot-glow-text">TOTAL GERAL</span></td>
+                <td class="text-right" style="padding: 8px 12px; font-weight: 800;">${fmtInt(currentCuponsData.total_pedidos)}</td>
+                <td class="text-right" style="padding: 8px 12px; font-weight: 800; color: #FFE082;">R$ ${fmtMoeda(currentCuponsData.total_valor)}</td>
+                <td class="text-right" style="padding: 8px 12px; font-weight: 800;"><span class="tfoot-pct-pill">100,0%</span></td>
             </tr>
         `;
     }
@@ -2421,20 +2427,21 @@ function renderizarTabelaCupons() {
 function renderizarConversao() {
     if (!currentConversaoData) return;
 
-    // 1. Atualiza Mini KPIs
+    // 1. Atualiza Mini KPIs com Formatação Rica
     const badgeTot = document.getElementById('badge-total-conversao');
     if (badgeTot) badgeTot.textContent = `Média: ${fmtPct(currentConversaoData.totais.taxa_conversao_media)}`;
 
     const kpiSess = document.getElementById('kpi-ga-sessoes');
-    if (kpiSess) kpiSess.textContent = fmtInt(currentConversaoData.totais.total_sessoes);
+    if (kpiSess) kpiSess.innerHTML = `<span class="val-cyan">${fmtInt(currentConversaoData.totais.total_sessoes)}</span>`;
 
     const kpiPed = document.getElementById('kpi-ga-pedidos');
-    if (kpiPed) kpiPed.textContent = fmtInt(currentConversaoData.totais.total_pedidos);
+    if (kpiPed) kpiPed.innerHTML = `<span class="val-purple">${fmtInt(currentConversaoData.totais.total_pedidos)}</span>`;
 
     const kpiTaxa = document.getElementById('kpi-ga-taxa');
-    if (kpiTaxa) kpiTaxa.textContent = fmtPct(currentConversaoData.totais.taxa_conversao_media);
+    if (kpiTaxa) kpiTaxa.innerHTML = `<span class="val-green-glow">${fmtPct(currentConversaoData.totais.taxa_conversao_media)}</span>`;
 
     renderizarTabelaConversao();
+    if (window.lucide) lucide.createIcons();
 }
 
 function renderizarTabelaConversao() {
@@ -2477,24 +2484,21 @@ function renderizarTabelaConversao() {
     lista.forEach(item => {
         const tr = document.createElement('tr');
         let badgeClass = 'conv-badge media';
-        let badgeDot = '🟡';
         if (item.taxa_conversao >= 1.4) {
             badgeClass = 'conv-badge alta';
-            badgeDot = '🟢';
         } else if (item.taxa_conversao < 1.0) {
             badgeClass = 'conv-badge baixa';
-            badgeDot = '🔴';
         }
 
         tr.innerHTML = `
-            <td style="font-weight: 700; color: #FFFFFF; text-transform: uppercase;">
-                ${item.mes_abrev}
+            <td class="col-mes-name">
+                <span class="mes-pill">${item.mes_abrev}</span>
             </td>
-            <td class="text-right" style="font-weight: 600; color: #E2E8F0;">${fmtInt(item.sessoes)}</td>
-            <td class="text-right" style="font-weight: 700; color: #FFFFFF;">${fmtInt(item.pedidos)}</td>
+            <td class="text-right num-sessoes">${fmtInt(item.sessoes)}</td>
+            <td class="text-right num-pedidos">${fmtInt(item.pedidos)}</td>
             <td class="text-right">
                 <span class="${badgeClass}">
-                    <span>${badgeDot}</span>
+                    <span class="status-indicator-dot"></span>
                     <span>${item.taxa_conversao.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}%</span>
                 </span>
             </td>
@@ -2506,12 +2510,13 @@ function renderizarTabelaConversao() {
     if (tfoot) {
         tfoot.innerHTML = `
             <tr class="tfoot-total-row">
-                <td style="color: var(--mq-gold); font-weight: 800; padding: 7px 10px;">MÉDIA ANUAL</td>
-                <td class="text-right" style="padding: 7px 10px; font-weight: 800;">${fmtInt(currentConversaoData.totais.total_sessoes)}</td>
-                <td class="text-right" style="padding: 7px 10px; font-weight: 800;">${fmtInt(currentConversaoData.totais.total_pedidos)}</td>
-                <td class="text-right" style="padding: 7px 10px; font-weight: 800;">
-                    <span class="conv-badge alta" style="border-color: var(--mq-gold); color: var(--mq-gold); padding: 2px 6px; font-size: 11px;">
-                        ${fmtPct(currentConversaoData.totais.taxa_conversao_media)}
+                <td style="padding: 8px 12px;"><span class="tfoot-glow-text">MÉDIA ANUAL</span></td>
+                <td class="text-right" style="padding: 8px 12px; font-weight: 800; color: #BAE6FD;">${fmtInt(currentConversaoData.totais.total_sessoes)}</td>
+                <td class="text-right" style="padding: 8px 12px; font-weight: 800;">${fmtInt(currentConversaoData.totais.total_pedidos)}</td>
+                <td class="text-right" style="padding: 8px 12px; font-weight: 800;">
+                    <span class="conv-badge alta gold-summary-badge">
+                        <span class="status-indicator-dot"></span>
+                        <span>${fmtPct(currentConversaoData.totais.taxa_conversao_media)}</span>
                     </span>
                 </td>
             </tr>
@@ -2548,21 +2553,26 @@ function renderizarGraficoConversao() {
                     label: 'Taxa Conversão (%)',
                     data: dataTaxas,
                     borderColor: '#00E676',
-                    backgroundColor: '#00E676',
-                    borderWidth: 2.5,
-                    pointBackgroundColor: '#00E676',
-                    pointRadius: 4,
-                    pointHoverRadius: 6,
-                    tension: 0.3,
+                    backgroundColor: 'rgba(0, 230, 118, 0.08)',
+                    fill: true,
+                    borderWidth: 3,
+                    pointBackgroundColor: '#FFFFFF',
+                    pointBorderColor: '#00E676',
+                    pointBorderWidth: 2.5,
+                    pointRadius: 5,
+                    pointHoverRadius: 7.5,
+                    tension: 0.35,
                     yAxisID: 'yTaxa'
                 },
                 {
                     type: 'bar',
                     label: 'Sessões',
                     data: dataSessoes,
-                    backgroundColor: 'rgba(0, 90, 158, 0.65)',
-                    hoverBackgroundColor: 'rgba(0, 90, 158, 0.9)',
-                    borderRadius: 4,
+                    backgroundColor: 'rgba(14, 165, 233, 0.75)',
+                    hoverBackgroundColor: 'rgba(56, 189, 248, 0.95)',
+                    borderColor: 'rgba(56, 189, 248, 0.45)',
+                    borderWidth: 1,
+                    borderRadius: { topLeft: 5, topRight: 5, bottomLeft: 0, bottomRight: 0 },
                     yAxisID: 'ySessoes'
                 }
             ]
@@ -2579,41 +2589,44 @@ function renderizarGraficoConversao() {
                     display: true,
                     position: 'top',
                     labels: {
-                        color: '#E2E8F0',
-                        font: { family: 'Montserrat', size: 10, weight: '600' },
-                        boxWidth: 12,
-                        padding: 10
+                        color: '#F1F5F9',
+                        font: { family: 'Montserrat', size: 10.5, weight: '700' },
+                        boxWidth: 14,
+                        padding: 12
                     }
                 },
                 tooltip: {
-                    backgroundColor: '#1E1E24',
-                    titleColor: '#CB9727',
+                    backgroundColor: 'rgba(18, 19, 28, 0.96)',
+                    titleColor: '#FFD700',
                     bodyColor: '#FFFFFF',
-                    borderColor: 'rgba(255, 255, 255, 0.1)',
+                    borderColor: 'rgba(203, 151, 39, 0.4)',
                     borderWidth: 1,
-                    padding: 10,
+                    padding: 12,
+                    cornerRadius: 8,
+                    titleFont: { family: 'Montserrat', size: 12, weight: '800' },
+                    bodyFont: { family: 'Montserrat', size: 11, weight: '600' },
                     callbacks: {
                         label: function(context) {
                             if (context.dataset.type === 'line') {
-                                return ` Taxa Conversão: ${context.raw.toFixed(2)}%`;
+                                return `  Taxa Conversão: ${context.raw.toFixed(2)}%`;
                             }
-                            return ` Sessões: ${context.raw.toLocaleString('pt-BR')}`;
+                            return `  Sessões: ${context.raw.toLocaleString('pt-BR')}`;
                         }
                     }
                 }
             },
             scales: {
                 x: {
-                    grid: { color: 'rgba(255, 255, 255, 0.04)' },
-                    ticks: { color: '#888894', font: { family: 'Montserrat', size: 9, weight: '700' } }
+                    grid: { color: 'rgba(255, 255, 255, 0.03)' },
+                    ticks: { color: '#94A3B8', font: { family: 'Montserrat', size: 9.5, weight: '700' } }
                 },
                 ySessoes: {
                     type: 'linear',
                     position: 'left',
-                    grid: { color: 'rgba(255, 255, 255, 0.04)' },
+                    grid: { color: 'rgba(255, 255, 255, 0.03)' },
                     ticks: {
-                        color: '#64B5F6',
-                        font: { family: 'Montserrat', size: 9 },
+                        color: '#38BDF8',
+                        font: { family: 'Montserrat', size: 9.5, weight: '600' },
                         callback: (v) => (v >= 1000 ? (v / 1000).toFixed(0) + 'k' : v)
                     },
                     title: {
@@ -2626,11 +2639,11 @@ function renderizarGraficoConversao() {
                     grid: { drawOnChartArea: false },
                     ticks: {
                         color: '#00E676',
-                        font: { family: 'Montserrat', size: 9 },
+                        font: { family: 'Montserrat', size: 9.5, weight: '700' },
                         callback: (v) => v.toFixed(1) + '%'
                     },
-                    suggestedMin: 0.5,
-                    suggestedMax: 2.2,
+                    suggestedMin: 0.4,
+                    suggestedMax: 2.3,
                     title: {
                         display: false
                     }
