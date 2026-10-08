@@ -1225,7 +1225,7 @@ def api_resumo():
                 if not df_c_ant.empty:
                     dfs_cup_ant.append(df_c_ant)
                     
-        # Mapeamento consolidado de categorias por cupom
+        # Mapeamento consolidado de categorias por cupom (Mês Atual)
         cat_consolidada_map = {}
         for df_c_item in dfs_cup:
             if "CATEGORIAS" in df_c_item.columns:
@@ -1239,6 +1239,21 @@ def api_resumo():
                             cat_consolidada_map[cp_name][cat_nome] = {"valor": 0.0, "pedidos": 0}
                         cat_consolidada_map[cp_name][cat_nome]["valor"] += float(c_dict.get("valor", 0))
                         cat_consolidada_map[cp_name][cat_nome]["pedidos"] += int(c_dict.get("pedidos", 0))
+
+        # Mapeamento consolidado de categorias por cupom (Mês Anterior M-1)
+        cat_consolidada_map_ant = {}
+        for df_c_item_ant in dfs_cup_ant:
+            if "CATEGORIAS" in df_c_item_ant.columns:
+                for _, r_cup in df_c_item_ant.iterrows():
+                    cp_name = str(r_cup["COUPON"]).upper().strip()
+                    if cp_name not in cat_consolidada_map_ant:
+                        cat_consolidada_map_ant[cp_name] = {}
+                    for c_dict in r_cup.get("CATEGORIAS", []):
+                        cat_nome = str(c_dict.get("categoria", "OUTROS"))
+                        if cat_nome not in cat_consolidada_map_ant[cp_name]:
+                            cat_consolidada_map_ant[cp_name][cat_nome] = {"valor": 0.0, "pedidos": 0}
+                        cat_consolidada_map_ant[cp_name][cat_nome]["valor"] += float(c_dict.get("valor", 0))
+                        cat_consolidada_map_ant[cp_name][cat_nome]["pedidos"] += int(c_dict.get("pedidos", 0))
 
         if dfs_cup:
             df_cup_concat = pd.concat(dfs_cup, ignore_index=True)
@@ -1301,29 +1316,50 @@ def api_resumo():
                         top_cupom_vlr = c_vlr
                         top_cupom_nome = c_nome
                     
-                # Busca categorias detalhadas do cupom
+                # Busca categorias detalhadas do cupom (com dados de Mês e M-1)
                 c_cats_dict = cat_consolidada_map.get(c_nome_upper, {})
+                c_cats_dict_ant = cat_consolidada_map_ant.get(c_nome_upper, {})
                 tot_c_cats = sum(v["valor"] for v in c_cats_dict.values())
+                tot_c_cats_ant = sum(v["valor"] for v in c_cats_dict_ant.values())
+
                 c_categorias = []
                 for cat_k, cat_v in sorted(c_cats_dict.items(), key=lambda x: x[1]["valor"], reverse=True):
-                    pct_cat = round(cat_v["valor"] / tot_c_cats * 100, 1) if tot_c_cats > 0 else 0.0
+                    vlr_cat = round(cat_v["valor"], 2)
+                    ped_cat = cat_v["pedidos"]
+                    pct_cat = round(cat_v["valor"] / tot_c_cats * 100, 2) if tot_c_cats > 0 else 0.0
+
+                    ant_info = c_cats_dict_ant.get(cat_k, {"valor": 0.0, "pedidos": 0})
+                    vlr_cat_ant = round(ant_info["valor"], 2)
+                    ped_cat_ant = ant_info["pedidos"]
+                    pct_cat_ant = round(vlr_cat_ant / tot_c_cats_ant * 100, 2) if tot_c_cats_ant > 0 else 0.0
+
+                    diff_vlr_cat = round(vlr_cat - vlr_cat_ant, 2)
+                    diff_share_cat = round(pct_cat - pct_cat_ant, 2)
+
                     c_categorias.append({
                         "categoria": cat_k,
-                        "valor": round(cat_v["valor"], 2),
-                        "pedidos": cat_v["pedidos"],
-                        "pct": pct_cat
+                        "pedidos": ped_cat,
+                        "valor": vlr_cat,
+                        "valor_ant": vlr_cat_ant,
+                        "pedidos_ant": ped_cat_ant,
+                        "diff_valor": diff_vlr_cat,
+                        "pct": pct_cat,
+                        "pct_ant": pct_cat_ant,
+                        "diff_share": diff_share_cat
                     })
 
-                # Comparativo do Share: Mês Atual vs M-1 (em pontos percentuais)
+                # Comparativos: Mês vs M-1
+                diff_valor = round(c_vlr - vlr_ant, 2)
                 diff_share = round(c_pct - pct_ant, 2)
 
                 cupons_lista.append({
                     "coupon": c_nome,
                     "tt": c_tt,
                     "valor": round(c_vlr, 2),
-                    "pct": c_pct,
                     "valor_ant": round(vlr_ant, 2),
                     "tt_ant": tt_ant,
+                    "diff_valor": diff_valor,
+                    "pct": c_pct,
                     "pct_ant": pct_ant,
                     "diff_share": diff_share,
                     "evol_mom": evol_mom,

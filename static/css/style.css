@@ -4125,3 +4125,231 @@ span[id^="kpi-meta-"],
     color: #94A3B8;
     border: 1px solid rgba(148, 163, 184, 0.25);
 }
+
+
+/* ==========================================================================
+   Tabela de Cupons VTEX - Layout Executivo Fixo 8 Colunas Sem Barra de Rolagem
+   ========================================================================== */
+.cupons-table-container {
+    overflow-x: hidden !important;
+    overflow-y: visible !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+.cupons-table {
+    width: 100% !important;
+    table-layout: fixed !important;
+    border-collapse: collapse !important;
+    margin: 0 !important;
+}
+
+.cupons-table th,
+.cupons-table td {
+    padding: 6px 3px !important;
+    font-size: 11px !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    box-sizing: border-box !important;
+    vertical-align: middle !important;
+}
+
+.cupons-table thead tr.thead-group-row th {
+    padding: 6px 4px !important;
+    font-size: 9.5px !important;
+    letter-spacing: 0.6px !important;
+    text-align: center !important;
+}
+
+.cupons-table thead tr.thead-group-row th.th-group-left {
+    text-align: left !important;
+    padding-left: 8px !important;
+}
+
+.cupons-table thead tr.thead-cols-row th {
+    padding: 5px 2px !important;
+    font-size: 8.5px !important;
+    letter-spacing: 0.2px !important;
+}
+
+.cupons-table thead tr.thead-cols-row th .th-content {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+}
+
+.cupons-table thead tr.thead-cols-row th .sort-icon {
+    font-size: 7.5px;
+}
+
+/* Coluna 1: Nome do Cupom e Botão de Expansão */
+.cupom-cell-flex {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    max-width: 100%;
+    overflow: hidden;
+}
+
+.btn-toggle-cupom {
+    background: none;
+    border: none;
+    padding: 0;
+    margin: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+    font: inherit;
+    color: inherit;
+    max-width: calc(100% - 24px);
+    overflow: hidden;
+}
+
+.coupon-tag {
+    display: inline-block !important;
+    padding: 2px 6px !important;
+    font-size: 10px !important;
+    max-width: 110px !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+    border-radius: 4px !important;
+    vertical-align: middle;
+}
+
+.badge-cat-count {
+    display: inline-block !important;
+    font-size: 8.5px !important;
+    font-weight: 800 !important;
+    padding: 1px 4px !important;
+    border-radius: 8px !important;
+    background: rgba(255, 255, 255, 0.06) !important;
+    color: #94A3B8 !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    cursor: pointer;
+    line-height: 1.1;
+    flex-shrink: 0;
+}
+
+.badge-cat-count:hover {
+    background: rgba(203, 151, 39, 0.2) !important;
+    color: #FFE082 !important;
+    border-color: rgba(203, 151, 39, 0.4) !important;
+}
+
+.chevron-arrow {
+    font-size: 7.5px !important;
+    color: #94A3B8;
+    transition: transform 0.2s ease, color 0.2s ease;
+    user-select: none;
+    flex-shrink: 0;
+}
+
+.chevron-arrow.rotated {
+    transform: rotate(90deg);
+    color: var(--mq-gold, #CB9727) !important;
+}
+
+/* Sub-linhas de Categorias Perfeitamente Alinhadas nas 8 Colunas */
+.cupom-cat-tr {
+    background: rgba(255, 255, 255, 0.018) !important;
+    border-left: 3px solid rgba(203, 151, 39, 0.45) !important;
+    transition: background 0.15s ease !important;
+}
+
+.cupom-cat-tr:hover {
+    background: rgba(203, 151, 39, 0.08) !important;
+}
+
+.cat-indent-cell {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding-left: 12px;
+    max-width: 100%;
+    overflow: hidden;
+}
+
+.cat-tree-branch {
+    color: var(--mq-gold, #CB9727);
+    font-size: 10px;
+    font-weight: 800;
+    flex-shrink: 0;
+}
+
+.cat-name-label {
+    font-size: 10px;
+    font-weight: 700;
+    color: #E2E8F0;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.cat-ped, .cat-val, .cat-val-ant, .cat-share, .cat-share-ant {
+    font-size: 10.5px !important;
+}
+
+.cat-val {
+    color: #CBD5E1 !important;
+    font-weight: 600 !important;
+}
+
+.cat-val-ant {
+    color: #64748B !important;
+}
+
+.cat-share {
+    color: #E2E8F0 !important;
+    font-weight: 700 !important;
+}
+
+/* Badges de Diferença MoM */
+.diff-tag {
+    font-size: 8.5px !important;
+    font-weight: 800 !important;
+    padding: 1px 4px !important;
+    border-radius: 3px !important;
+    line-height: 1.15 !important;
+    display: inline-block !important;
+    white-space: nowrap !important;
+}
+
+.diff-tag.diff-up,
+.diff-tag.diff-up-mini {
+    background: rgba(0, 200, 83, 0.15) !important;
+    color: #00E676 !important;
+    border: 1px solid rgba(0, 200, 83, 0.3) !important;
+}
+
+.diff-tag.diff-down,
+.diff-tag.diff-down-mini {
+    background: rgba(239, 83, 80, 0.15) !important;
+    color: #EF5350 !important;
+    border: 1px solid rgba(239, 83, 80, 0.3) !important;
+}
+
+.diff-tag.diff-neu,
+.diff-tag.diff-neu-mini {
+    background: rgba(148, 163, 184, 0.12) !important;
+    color: #94A3B8 !important;
+    border: 1px solid rgba(148, 163, 184, 0.22) !important;
+}
+
+.diff-tag.diff-novo,
+.diff-tag.diff-novo-mini {
+    background: rgba(203, 151, 39, 0.18) !important;
+    color: #FFE082 !important;
+    border: 1px solid rgba(203, 151, 39, 0.35) !important;
+}
+
+/* Rodapé Totalizador (tfoot) */
+.cupons-table tfoot td {
+    padding: 7px 3px !important;
+    font-size: 11px !important;
+}

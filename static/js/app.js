@@ -2474,12 +2474,11 @@ function renderizarTabelaCupons() {
     tbody.innerHTML = '';
 
     if (lista.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="7" class="text-center" style="padding: 24px; color: var(--text-muted);">Nenhum cupom registrado no período</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="8" class="text-center" style="padding: 24px; color: var(--text-muted);">Nenhum cupom registrado no período</td></tr>`;
         return;
     }
 
     // Se houver mais de 10 cupons, exibe os 9 primeiros e agrupa os restantes em "Outros Cupons"
-    // Isso garante exatamente 10 linhas no corpo, harmonizando perfeitamente com a Tabela de Conversão ao lado
     let itensExibicao = lista;
     if (lista.length > 10) {
         const top9 = lista.slice(0, 9);
@@ -2487,37 +2486,48 @@ function renderizarTabelaCupons() {
 
         const ttOutros = restantes.reduce((acc, it) => acc + (Number(it.tt) || 0), 0);
         const vlrOutros = restantes.reduce((acc, it) => acc + (Number(it.valor) || 0), 0);
+        const vlrAntOutros = restantes.reduce((acc, it) => acc + (Number(it.valor_ant) || 0), 0);
         const pctOutros = currentCuponsData.total_valor > 0 
             ? ((vlrOutros / currentCuponsData.total_valor) * 100) 
             : 0;
-
-        const vlrAntOutros = restantes.reduce((acc, it) => acc + (Number(it.valor_ant) || 0), 0);
         const pctAntOutros = currentCuponsData.total_valor_ant > 0 
             ? ((vlrAntOutros / currentCuponsData.total_valor_ant) * 100) 
             : 0;
 
-        // Consolidação das categorias de todos os cupons em 'Outros'
+        // Consolidação das categorias de todos os cupons em 'Outros' com dados de M-1
         const catOutrosMap = {};
         restantes.forEach(r => {
             (r.categorias || []).forEach(c => {
                 const cNome = c.categoria || 'OUTROS';
                 if (!catOutrosMap[cNome]) {
-                    catOutrosMap[cNome] = { valor: 0.0, pedidos: 0 };
+                    catOutrosMap[cNome] = { valor: 0.0, pedidos: 0, valor_ant: 0.0, pedidos_ant: 0 };
                 }
                 catOutrosMap[cNome].valor += Number(c.valor) || 0;
                 catOutrosMap[cNome].pedidos += Number(c.pedidos) || 0;
+                catOutrosMap[cNome].valor_ant += Number(c.valor_ant) || 0;
+                catOutrosMap[cNome].pedidos_ant += Number(c.pedidos_ant) || 0;
             });
         });
         const totCatOutros = Object.values(catOutrosMap).reduce((acc, c) => acc + c.valor, 0);
+        const totCatOutrosAnt = Object.values(catOutrosMap).reduce((acc, c) => acc + c.valor_ant, 0);
         const catOutrosLista = Object.entries(catOutrosMap)
             .sort((a, b) => b[1].valor - a[1].valor)
-            .map(([cat, info]) => ({
-                categoria: cat,
-                valor: Number(info.valor.toFixed(2)),
-                pedidos: info.pedidos,
-                pct: totCatOutros > 0 ? Number((info.valor / totCatOutros * 100).toFixed(1)) : 0.0
-            }));
+            .map(([cat, info]) => {
+                const pctCat = totCatOutros > 0 ? Number((info.valor / totCatOutros * 100).toFixed(2)) : 0.0;
+                const pctCatAnt = totCatOutrosAnt > 0 ? Number((info.valor_ant / totCatOutrosAnt * 100).toFixed(2)) : 0.0;
+                return {
+                    categoria: cat,
+                    pedidos: info.pedidos,
+                    valor: Number(info.valor.toFixed(2)),
+                    valor_ant: Number(info.valor_ant.toFixed(2)),
+                    diff_valor: Number((info.valor - info.valor_ant).toFixed(2)),
+                    pct: pctCat,
+                    pct_ant: pctCatAnt,
+                    diff_share: Number((pctCat - pctCatAnt).toFixed(2))
+                };
+            });
 
+        const diffVlrOutros = Number((vlrOutros - vlrAntOutros).toFixed(2));
         const diffShareOutros = Number((pctOutros - pctAntOutros).toFixed(2));
         const nomesRestantes = restantes.map(r => `${r.coupon} (${fmtInt(r.tt)})`).join(', ');
 
@@ -2527,8 +2537,9 @@ function renderizarTabelaCupons() {
                 coupon: `Outros (${restantes.length} cupons)`,
                 tt: ttOutros,
                 valor: vlrOutros,
-                pct: pctOutros,
                 valor_ant: vlrAntOutros,
+                diff_valor: diffVlrOutros,
+                pct: pctOutros,
                 pct_ant: pctAntOutros,
                 diff_share: diffShareOutros,
                 evol_mom: vlrAntOutros > 0 ? ((vlrOutros - vlrAntOutros) / vlrAntOutros * 100) : null,
@@ -2559,36 +2570,42 @@ function renderizarTabelaCupons() {
 
         const titleAttr = item.tooltip ? `title="${item.tooltip}"` : '';
 
-        // Badge de Evolução MoM do Faturamento
-        let evolBadge = '';
-        if (item.evol_mom !== null && item.evol_mom !== undefined) {
-            const isPos = item.evol_mom > 0;
-            const isNeg = item.evol_mom < 0;
-            const cls = isPos ? 'evol-up' : (isNeg ? 'evol-down' : 'evol-neu');
-            const icon = isPos ? '▲ ' : (isNeg ? '▼ ' : '');
-            evolBadge = `<span class="cupom-evol-tag ${cls}" title="Variação de Faturamento MoM">${icon}${fmtPct(Math.abs(item.evol_mom))}</span>`;
-        } else if (item.valor_ant === 0 && item.valor > 0) {
-            evolBadge = `<span class="cupom-evol-tag evol-novo" title="Cupom novo no período">NOVO</span>`;
-        }
-
-        // Badge de Comparativo de Share (Mês Atual vs M-1 com setas e cores)
-        let diffShareBadge = '';
+        // Badge de Diferença de Valor (R$ MoM)
+        let diffValorBadge = '';
         if (item.valor_ant === 0 && item.valor > 0) {
-            diffShareBadge = `<span class="cupom-diff-tag diff-novo" title="Cupom novo (sem share em M-1)">NOVO</span>`;
-        } else if (item.diff_share !== null && item.diff_share !== undefined) {
-            const diffVal = Number(item.diff_share);
-            if (diffVal > 0) {
-                diffShareBadge = `<span class="cupom-diff-tag diff-up" title="Ganho de Share vs M-1: +${fmtPct(diffVal)} p.p.">▲ +${fmtPct(diffVal)}</span>`;
-            } else if (diffVal < 0) {
-                diffShareBadge = `<span class="cupom-diff-tag diff-down" title="Queda de Share vs M-1: ${fmtPct(diffVal)} p.p.">▼ ${fmtPct(Math.abs(diffVal))}</span>`;
+            diffValorBadge = `<span class="diff-tag diff-novo" title="Cupom novo no período">NOVO</span>`;
+        } else if (item.diff_valor !== null && item.diff_valor !== undefined) {
+            const dv = Number(item.diff_valor);
+            if (dv > 0) {
+                diffValorBadge = `<span class="diff-tag diff-up" title="+R$ ${fmtMoeda(dv)}">+R$ ${fmtMoedaZero(dv)} ▲</span>`;
+            } else if (dv < 0) {
+                diffValorBadge = `<span class="diff-tag diff-down" title="-R$ ${fmtMoeda(Math.abs(dv))}">-R$ ${fmtMoedaZero(Math.abs(dv))} ▼</span>`;
             } else {
-                diffShareBadge = `<span class="cupom-diff-tag diff-neu" title="Share estável vs M-1">0,0%</span>`;
+                diffValorBadge = `<span class="diff-tag diff-neu">R$ 0</span>`;
             }
         } else {
-            diffShareBadge = `<span class="cupom-diff-tag diff-neu">-</span>`;
+            diffValorBadge = `<span class="diff-tag diff-neu">-</span>`;
+        }
+
+        // Badge de Diferença de Share (p.p. MoM)
+        let diffShareBadge = '';
+        if (item.valor_ant === 0 && item.valor > 0) {
+            diffShareBadge = `<span class="diff-tag diff-novo" title="Cupom novo no período">NOVO</span>`;
+        } else if (item.diff_share !== null && item.diff_share !== undefined) {
+            const ds = Number(item.diff_share);
+            if (ds > 0) {
+                diffShareBadge = `<span class="diff-tag diff-up" title="+${fmtPct(ds)} p.p.">+${fmtPct(ds)} ▲</span>`;
+            } else if (ds < 0) {
+                diffShareBadge = `<span class="diff-tag diff-down" title="-${fmtPct(Math.abs(ds))} p.p.">-${fmtPct(Math.abs(ds))} ▼</span>`;
+            } else {
+                diffShareBadge = `<span class="diff-tag diff-neu">0,0%</span>`;
+            }
+        } else {
+            diffShareBadge = `<span class="diff-tag diff-neu">-</span>`;
         }
 
         tr.className = `cupom-row ${isExpanded ? 'cupom-row-expanded' : ''}`;
+        tr.setAttribute('data-coupon', item.coupon);
         tr.innerHTML = `
             <td>
                 <div class="cupom-cell-flex">
@@ -2596,89 +2613,75 @@ function renderizarTabelaCupons() {
                         <span class="chevron-arrow ${isExpanded ? 'rotated' : ''}">▶</span>
                         <span class="${tagClass}" ${titleAttr}>${item.coupon}${starIcon}</span>
                     </button>
-                    ${catCount > 0 ? `<span class="badge-cat-count" data-coupon="${item.coupon}" title="${catCount} categorias de produtos vendidas">${catCount} cat.</span>` : ''}
+                    ${catCount > 0 ? `<span class="badge-cat-count" data-coupon="${item.coupon}" title="${catCount} categorias de produtos">${catCount}</span>` : ''}
                 </div>
             </td>
-            <td class="text-right num-pedidos">${fmtInt(item.tt)}</td>
-            <td class="text-right num-valor">R$ ${fmtMoeda(item.valor)}</td>
-            <td class="text-right">
-                <div class="share-progress-wrapper">
-                    <span class="share-percent-val ${isTop ? 'gold-val' : ''}">${fmtPct(item.pct)}</span>
-                    <div class="share-bar-mini">
-                        <div class="share-bar-fill ${isTop ? 'fill-gold' : (isSemCupom ? 'fill-slate' : (item.isOutros ? 'fill-muted' : 'fill-green'))}" style="width: ${Math.min(100, item.pct)}%;"></div>
-                    </div>
-                </div>
-            </td>
-            <td class="text-right num-valor-ant">
-                <div class="valor-ant-cell">
-                    <span>${item.valor_ant > 0 ? 'R$ ' + fmtMoeda(item.valor_ant) : '-'}</span>
-                    ${evolBadge}
-                </div>
-            </td>
-            <td class="text-right">
-                <div class="share-progress-wrapper">
-                    <span class="share-percent-val muted-val">${fmtPct(item.pct_ant || 0)}</span>
-                    <div class="share-bar-mini">
-                        <div class="share-bar-fill fill-ant" style="width: ${Math.min(100, item.pct_ant || 0)}%;"></div>
-                    </div>
-                </div>
-            </td>
-            <td class="text-right num-diff-share">
-                ${diffShareBadge}
-            </td>
+            <td class="text-right num-col">${fmtInt(item.tt)}</td>
+            <td class="text-right num-col num-valor">R$ ${fmtMoeda(item.valor)}</td>
+            <td class="text-right num-col num-valor-ant">${item.valor_ant > 0 ? 'R$ ' + fmtMoeda(item.valor_ant) : '-'}</td>
+            <td class="text-right num-col num-diff-valor">${diffValorBadge}</td>
+            <td class="text-right num-col num-share ${isTop ? 'gold-val' : ''}">${fmtPct(item.pct)}</td>
+            <td class="text-right num-col num-share-ant muted-val">${item.valor_ant > 0 ? fmtPct(item.pct_ant) : '-'}</td>
+            <td class="text-right num-col num-diff-share">${diffShareBadge}</td>
         `;
         tbody.appendChild(tr);
 
-        // Se expandido, renderiza a sub-linha com as categorias de vendas
-        if (isExpanded) {
-            const trSub = document.createElement('tr');
-            trSub.className = 'cupom-sub-tr';
-            const catsList = item.categorias || [];
+        // Se o cupom estiver expandido, insere as linhas de categorias com as 8 colunas perfeitamente alinhadas
+        if (isExpanded && item.categorias && item.categorias.length > 0) {
+            item.categorias.forEach(cat => {
+                const trCat = document.createElement('tr');
+                trCat.className = 'cupom-cat-tr';
+                trCat.setAttribute('data-parent-coupon', item.coupon);
 
-            let subHtml = `
-                <td colspan="7" class="cupom-sub-td">
-                    <div class="cupom-sub-panel">
-                        <div class="cupom-sub-header">
-                            <div class="sub-header-left">
-                                <span class="sub-header-icon">📂</span>
-                                <span class="sub-header-title">Categorias de Vendas — <strong class="sub-header-cupom-name">${item.coupon}</strong></span>
-                            </div>
-                            <div class="sub-header-meta">
-                                <span>${catsList.length} ${catsList.length === 1 ? 'categoria encontrada' : 'categorias encontradas'}</span>
-                            </div>
+                let catDiffValBadge = '';
+                if (cat.valor_ant === 0 && cat.valor > 0) {
+                    catDiffValBadge = `<span class="diff-tag diff-novo-mini">NOVO</span>`;
+                } else if (cat.diff_valor !== null && cat.diff_valor !== undefined) {
+                    const cdv = Number(cat.diff_valor);
+                    if (cdv > 0) {
+                        catDiffValBadge = `<span class="diff-tag diff-up-mini" title="+R$ ${fmtMoeda(cdv)}">+R$ ${fmtMoedaZero(cdv)} ▲</span>`;
+                    } else if (cdv < 0) {
+                        catDiffValBadge = `<span class="diff-tag diff-down-mini" title="-R$ ${fmtMoeda(Math.abs(cdv))}">-R$ ${fmtMoedaZero(Math.abs(cdv))} ▼</span>`;
+                    } else {
+                        catDiffValBadge = `<span class="diff-tag diff-neu-mini">R$ 0</span>`;
+                    }
+                } else {
+                    catDiffValBadge = `<span class="diff-tag diff-neu-mini">-</span>`;
+                }
+
+                let catDiffShareBadge = '';
+                if (cat.valor_ant === 0 && cat.valor > 0) {
+                    catDiffShareBadge = `<span class="diff-tag diff-novo-mini">NOVO</span>`;
+                } else if (cat.diff_share !== null && cat.diff_share !== undefined) {
+                    const cds = Number(cat.diff_share);
+                    if (cds > 0) {
+                        catDiffShareBadge = `<span class="diff-tag diff-up-mini">+${fmtPct(cds)} ▲</span>`;
+                    } else if (cds < 0) {
+                        catDiffShareBadge = `<span class="diff-tag diff-down-mini">-${fmtPct(Math.abs(cds))} ▼</span>`;
+                    } else {
+                        catDiffShareBadge = `<span class="diff-tag diff-neu-mini">0,0%</span>`;
+                    }
+                } else {
+                    catDiffShareBadge = `<span class="diff-tag diff-neu-mini">-</span>`;
+                }
+
+                trCat.innerHTML = `
+                    <td class="cat-cell-name">
+                        <div class="cat-indent-cell">
+                            <span class="cat-tree-branch">↳</span>
+                            <span class="cat-name-label" title="${cat.categoria}">${cat.categoria}</span>
                         </div>
-            `;
-
-            if (catsList.length > 0) {
-                subHtml += `<div class="cupom-sub-cats-grid">`;
-                catsList.forEach((cat, idxCat) => {
-                    subHtml += `
-                        <div class="cupom-cat-pill-card">
-                            <div class="cat-pill-header">
-                                <span class="cat-pill-name" title="${cat.categoria}">${cat.categoria}</span>
-                                <span class="cat-pill-pct">${fmtPct(cat.pct)}</span>
-                            </div>
-                            <div class="cat-pill-bar">
-                                <div class="cat-pill-fill fill-cat-${idxCat % 5}" style="width: ${Math.min(100, cat.pct)}%;"></div>
-                            </div>
-                            <div class="cat-pill-footer">
-                                <span class="cat-pill-ped">${fmtInt(cat.pedidos)} ped.</span>
-                                <span class="cat-pill-vlr">R$ ${fmtMoeda(cat.valor)}</span>
-                            </div>
-                        </div>
-                    `;
-                });
-                subHtml += `</div>`;
-            } else {
-                subHtml += `<div class="cupom-sub-empty">Nenhuma categoria identificada para este cupom no período.</div>`;
-            }
-
-            subHtml += `
-                    </div>
-                </td>
-            `;
-            trSub.innerHTML = subHtml;
-            tbody.appendChild(trSub);
+                    </td>
+                    <td class="text-right num-col cat-ped">${fmtInt(cat.pedidos)}</td>
+                    <td class="text-right num-col cat-val">R$ ${fmtMoeda(cat.valor)}</td>
+                    <td class="text-right num-col cat-val-ant">${cat.valor_ant > 0 ? 'R$ ' + fmtMoeda(cat.valor_ant) : '-'}</td>
+                    <td class="text-right num-col cat-diff-val">${catDiffValBadge}</td>
+                    <td class="text-right num-col cat-share">${fmtPct(cat.pct)}</td>
+                    <td class="text-right num-col cat-share-ant muted-val">${cat.valor_ant > 0 ? fmtPct(cat.pct_ant) : '-'}</td>
+                    <td class="text-right num-col cat-diff-share">${catDiffShareBadge}</td>
+                `;
+                tbody.appendChild(trCat);
+            });
         }
     });
 
@@ -2699,15 +2702,26 @@ function renderizarTabelaCupons() {
 
     const tfoot = document.getElementById('cupons-table-foot');
     if (tfoot) {
+        const diffTotalVlr = Number((currentCuponsData.total_valor - (currentCuponsData.total_valor_ant || 0)).toFixed(2));
+        let totalDiffVlrBadge = '';
+        if (diffTotalVlr > 0) {
+            totalDiffVlrBadge = `<span class="diff-tag diff-up">+R$ ${fmtMoedaZero(diffTotalVlr)} ▲</span>`;
+        } else if (diffTotalVlr < 0) {
+            totalDiffVlrBadge = `<span class="diff-tag diff-down">-R$ ${fmtMoedaZero(Math.abs(diffTotalVlr))} ▼</span>`;
+        } else {
+            totalDiffVlrBadge = `<span class="diff-tag diff-neu">R$ 0</span>`;
+        }
+
         tfoot.innerHTML = `
             <tr class="tfoot-total-row">
-                <td style="padding: 8px 12px;"><span class="tfoot-glow-text">TOTAL GERAL</span></td>
-                <td class="text-right" style="padding: 8px 12px; font-weight: 800;">${fmtInt(currentCuponsData.total_pedidos)}</td>
-                <td class="text-right" style="padding: 8px 12px; font-weight: 800; color: #FFE082;">R$ ${fmtMoeda(currentCuponsData.total_valor)}</td>
-                <td class="text-right" style="padding: 8px 12px; font-weight: 800;"><span class="tfoot-pct-pill">100,0%</span></td>
-                <td class="text-right" style="padding: 8px 12px; font-weight: 800; color: #94A3B8;">R$ ${fmtMoeda(currentCuponsData.total_valor_ant || 0)}</td>
-                <td class="text-right" style="padding: 8px 12px; font-weight: 800;"><span class="tfoot-pct-pill pill-muted">100,0%</span></td>
-                <td class="text-right" style="padding: 8px 12px; font-weight: 800;"><span class="tfoot-pct-pill pill-neutral">0,0%</span></td>
+                <td style="padding: 6px 4px;"><span class="tfoot-glow-text">TOTAL GERAL</span></td>
+                <td class="text-right num-col" style="padding: 6px 4px; font-weight: 800;">${fmtInt(currentCuponsData.total_pedidos)}</td>
+                <td class="text-right num-col" style="padding: 6px 4px; font-weight: 800; color: #FFE082;">R$ ${fmtMoeda(currentCuponsData.total_valor)}</td>
+                <td class="text-right num-col" style="padding: 6px 4px; font-weight: 800; color: #94A3B8;">${currentCuponsData.total_valor_ant > 0 ? 'R$ ' + fmtMoeda(currentCuponsData.total_valor_ant) : '-'}</td>
+                <td class="text-right num-col" style="padding: 6px 4px; font-weight: 800;">${totalDiffVlrBadge}</td>
+                <td class="text-right num-col" style="padding: 6px 4px; font-weight: 800;"><span class="tfoot-pct-pill">100,0%</span></td>
+                <td class="text-right num-col" style="padding: 6px 4px; font-weight: 800;"><span class="tfoot-pct-pill pill-muted">100,0%</span></td>
+                <td class="text-right num-col" style="padding: 6px 4px; font-weight: 800;"><span class="tfoot-pct-pill pill-neutral">0,0%</span></td>
             </tr>
         `;
     }
