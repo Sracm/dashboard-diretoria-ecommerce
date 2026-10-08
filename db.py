@@ -249,8 +249,9 @@ def carregar_pedidos_vtex_mes(ano: int, mes: int, force_refresh: bool = False) -
             mtime = os.path.getmtime(disk_file)
             if now_ts - mtime < ttl:
                 df = pd.read_pickle(disk_file)
-                _MEMORY_CACHE[cache_key] = (df.copy(), mtime)
-                return df.copy()
+                if "CATEGORIA" in df.columns:
+                    _MEMORY_CACHE[cache_key] = (df.copy(), mtime)
+                    return df.copy()
         except Exception:
             pass
             
@@ -260,16 +261,22 @@ def carregar_pedidos_vtex_mes(ano: int, mes: int, force_refresh: bool = False) -
     dt_fim = f"{ano+1}-01-01" if mes == 12 else f"{ano}-{mes+1:02d}-01"
     sql = f"""
     SELECT 
-        PEDIDO_VTEX,
-        CREATION_DATE,
-        TO_NUMBER(TO_CHAR(CREATION_DATE, 'DD')) AS DIA,
-        NVL(FORMA_PAGAMENTO, 'Outros') AS FORMA_PAGAMENTO,
-        NVL(UPPER(TRIM(COUPON)), '(Sem Cupom)') AS COUPON,
-        TOTAL_VALUE
-    FROM VMQ_VTEXPED_MKT_POWERBI
-    WHERE CREATION_DATE >= TO_DATE('{dt_ini}', 'YYYY-MM-DD')
-      AND CREATION_DATE < TO_DATE('{dt_fim}', 'YYYY-MM-DD')
-      AND STATUS = 'Faturado'
+        v.PEDIDO_VTEX,
+        v.CREATION_DATE,
+        TO_NUMBER(TO_CHAR(v.CREATION_DATE, 'DD')) AS DIA,
+        NVL(v.FORMA_PAGAMENTO, 'Outros') AS FORMA_PAGAMENTO,
+        NVL(UPPER(TRIM(v.COUPON)), '(Sem Cupom)') AS COUPON,
+        v.TOTAL_VALUE,
+        v.QUANTITY,
+        v.SKU_SELLING_PRICE,
+        (v.QUANTITY * v.SKU_SELLING_PRICE) AS VALOR_ITEM,
+        NVL(G.DESCRGRUPOPROD, 'OUTROS') AS CATEGORIA
+    FROM VMQ_VTEXPED_MKT_POWERBI v
+    LEFT JOIN TGFPRO P ON P.REFERENCIA = v.REFERENCE_CODE
+    LEFT JOIN TGFGRU G ON G.CODGRUPOPROD = (CASE WHEN LENGTH(TO_CHAR(P.codgrupoprod))=7 THEN RPAD(SUBSTR(TO_CHAR(P.codgrupoprod),1,4),7,'0') ELSE RPAD(SUBSTR(TO_CHAR(P.codgrupoprod),1,5),8,'0') END)
+    WHERE v.CREATION_DATE >= TO_DATE('{dt_ini}', 'YYYY-MM-DD')
+      AND v.CREATION_DATE < TO_DATE('{dt_fim}', 'YYYY-MM-DD')
+      AND v.STATUS = 'Faturado'
     """
     conn = get_oracle_connection()
     try:
@@ -319,12 +326,12 @@ def carregar_formas_pagamento_vtex(ano: int, mes: int, dia_ini: int = 1, dia_fim
 
 def carregar_cupons_vtex(ano: int = 2026, mes: int = 10, dia_ini: int = 1, dia_fim: int = 31, force_refresh: bool = False) -> pd.DataFrame:
     """
-    Carrega os cupons promocionais utilizados nos pedidos VTEX faturados.
+    Carrega os cupons promocionais utilizados nos pedidos VTEX faturados com detalhamento de categorias.
     Instantâneo: Agrupamento em memória usando Pandas e regra oficial do Power BI.
     """
     df_raw = carregar_pedidos_vtex_mes(ano, mes, force_refresh=force_refresh)
     if df_raw.empty:
-        return pd.DataFrame(columns=["COUPON", "TT", "VALOR"])
+        return pd.DataFrame(columns=["COUPON", "TT", "VALOR", "CATEGORIAS"])
         
     _, max_d = calendar.monthrange(ano, mes)
     d_fim = min(max_d, max(dia_ini, dia_fim))
@@ -332,9 +339,9 @@ def carregar_cupons_vtex(ano: int = 2026, mes: int = 10, dia_ini: int = 1, dia_f
     # Filtro de intervalo de dias em memória (0ms)
     df_f = df_raw[(df_raw["DIA"] >= dia_ini) & (df_raw["DIA"] <= d_fim)]
     if df_f.empty:
-        return pd.DataFrame(columns=["COUPON", "TT", "VALOR"])
+        return pd.DataFrame(columns=["COUPON", "TT", "VALOR", "CATEGORIAS"])
         
-    # Agrupa por pedido e cupom para evitar duplicações
+    # Agrupa por pedido e cupom para evitar duplicações no valor total
     ped_cup = df_f.groupby(["PEDIDO_VTEX", "COUPON"], as_index=False).agg(
         VALOR_PEDIDO=("TOTAL_VALUE", "max")
     )
@@ -342,6 +349,30 @@ def carregar_cupons_vtex(ano: int = 2026, mes: int = 10, dia_ini: int = 1, dia_f
         TT=("PEDIDO_VTEX", "nunique"),
         VALOR=("VALOR_PEDIDO", "sum")
     ).sort_values("VALOR", ascending=False)
+    
+    # Agrupamento de categorias de produtos por cupom
+    if "CATEGORIA" in df_f.columns and "VALOR_ITEM" in df_f.columns:
+        cat_grp = df_f.groupby(["COUPON", "CATEGORIA"], as_index=False).agg(
+            VALOR_CAT=("VALOR_ITEM", "sum"),
+            PEDIDOS_CAT=("PEDIDO_VTEX", "nunique")
+        )
+        cat_map = {}
+        for coupon, sub in cat_grp.groupby("COUPON"):
+            tot_sub = float(sub["VALOR_CAT"].sum())
+            sub_sorted = sub.sort_values("VALOR_CAT", ascending=False)
+            cat_map[coupon] = [
+                {
+                    "categoria": str(row["CATEGORIA"]),
+                    "valor": round(float(row["VALOR_CAT"]), 2),
+                    "pedidos": int(row["PEDIDOS_CAT"]),
+                    "pct": round(float(row["VALOR_CAT"]) / tot_sub * 100, 1) if tot_sub > 0 else 0.0
+                }
+                for _, row in sub_sorted.iterrows()
+            ]
+        df_res["CATEGORIAS"] = df_res["COUPON"].map(lambda c: cat_map.get(c, []))
+    else:
+        df_res["CATEGORIAS"] = [[] for _ in range(len(df_res))]
+        
     return df_res
 
 

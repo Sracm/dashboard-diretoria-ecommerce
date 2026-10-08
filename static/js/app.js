@@ -24,6 +24,7 @@ let currentCanaisSort = {
 
 // Variáveis de Estado para E-commerce Analytics & Cupons
 let currentCuponsData = null;
+let expandedCupons = new Set();
 let currentCuponsSort = { col: 'valor', dir: 'desc' };
 let currentConversaoData = null;
 let currentConversaoSort = { col: 'mes_abrev', dir: 'asc' };
@@ -2473,7 +2474,7 @@ function renderizarTabelaCupons() {
     tbody.innerHTML = '';
 
     if (lista.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="6" class="text-center" style="padding: 24px; color: var(--text-muted);">Nenhum cupom registrado no período</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="7" class="text-center" style="padding: 24px; color: var(--text-muted);">Nenhum cupom registrado no período</td></tr>`;
         return;
     }
 
@@ -2495,6 +2496,29 @@ function renderizarTabelaCupons() {
             ? ((vlrAntOutros / currentCuponsData.total_valor_ant) * 100) 
             : 0;
 
+        // Consolidação das categorias de todos os cupons em 'Outros'
+        const catOutrosMap = {};
+        restantes.forEach(r => {
+            (r.categorias || []).forEach(c => {
+                const cNome = c.categoria || 'OUTROS';
+                if (!catOutrosMap[cNome]) {
+                    catOutrosMap[cNome] = { valor: 0.0, pedidos: 0 };
+                }
+                catOutrosMap[cNome].valor += Number(c.valor) || 0;
+                catOutrosMap[cNome].pedidos += Number(c.pedidos) || 0;
+            });
+        });
+        const totCatOutros = Object.values(catOutrosMap).reduce((acc, c) => acc + c.valor, 0);
+        const catOutrosLista = Object.entries(catOutrosMap)
+            .sort((a, b) => b[1].valor - a[1].valor)
+            .map(([cat, info]) => ({
+                categoria: cat,
+                valor: Number(info.valor.toFixed(2)),
+                pedidos: info.pedidos,
+                pct: totCatOutros > 0 ? Number((info.valor / totCatOutros * 100).toFixed(1)) : 0.0
+            }));
+
+        const diffShareOutros = Number((pctOutros - pctAntOutros).toFixed(2));
         const nomesRestantes = restantes.map(r => `${r.coupon} (${fmtInt(r.tt)})`).join(', ');
 
         itensExibicao = [
@@ -2506,7 +2530,9 @@ function renderizarTabelaCupons() {
                 pct: pctOutros,
                 valor_ant: vlrAntOutros,
                 pct_ant: pctAntOutros,
+                diff_share: diffShareOutros,
                 evol_mom: vlrAntOutros > 0 ? ((vlrOutros - vlrAntOutros) / vlrAntOutros * 100) : null,
+                categorias: catOutrosLista,
                 isOutros: true,
                 tooltip: nomesRestantes
             }
@@ -2517,6 +2543,8 @@ function renderizarTabelaCupons() {
         const tr = document.createElement('tr');
         const isSemCupom = !item.isOutros && (item.coupon.includes('SEM CUPOM') || item.coupon === '(SEM CUPOM)');
         const isTop = !item.isOutros && item.coupon === currentCuponsData.top_cupom_nome && !isSemCupom;
+        const isExpanded = expandedCupons.has(item.coupon);
+        const catCount = (item.categorias && item.categorias.length) || 0;
 
         let tagClass = 'coupon-tag';
         let starIcon = '';
@@ -2531,21 +2559,45 @@ function renderizarTabelaCupons() {
 
         const titleAttr = item.tooltip ? `title="${item.tooltip}"` : '';
 
-        // Badge de Evolução MoM
+        // Badge de Evolução MoM do Faturamento
         let evolBadge = '';
         if (item.evol_mom !== null && item.evol_mom !== undefined) {
             const isPos = item.evol_mom > 0;
             const isNeg = item.evol_mom < 0;
             const cls = isPos ? 'evol-up' : (isNeg ? 'evol-down' : 'evol-neu');
             const icon = isPos ? '▲ ' : (isNeg ? '▼ ' : '');
-            evolBadge = `<span class="cupom-evol-tag ${cls}" title="Variação MoM">${icon}${fmtPct(Math.abs(item.evol_mom))}</span>`;
+            evolBadge = `<span class="cupom-evol-tag ${cls}" title="Variação de Faturamento MoM">${icon}${fmtPct(Math.abs(item.evol_mom))}</span>`;
         } else if (item.valor_ant === 0 && item.valor > 0) {
             evolBadge = `<span class="cupom-evol-tag evol-novo" title="Cupom novo no período">NOVO</span>`;
         }
 
+        // Badge de Comparativo de Share (Mês Atual vs M-1 com setas e cores)
+        let diffShareBadge = '';
+        if (item.valor_ant === 0 && item.valor > 0) {
+            diffShareBadge = `<span class="cupom-diff-tag diff-novo" title="Cupom novo (sem share em M-1)">NOVO</span>`;
+        } else if (item.diff_share !== null && item.diff_share !== undefined) {
+            const diffVal = Number(item.diff_share);
+            if (diffVal > 0) {
+                diffShareBadge = `<span class="cupom-diff-tag diff-up" title="Ganho de Share vs M-1: +${fmtPct(diffVal)} p.p.">▲ +${fmtPct(diffVal)}</span>`;
+            } else if (diffVal < 0) {
+                diffShareBadge = `<span class="cupom-diff-tag diff-down" title="Queda de Share vs M-1: ${fmtPct(diffVal)} p.p.">▼ ${fmtPct(Math.abs(diffVal))}</span>`;
+            } else {
+                diffShareBadge = `<span class="cupom-diff-tag diff-neu" title="Share estável vs M-1">0,0%</span>`;
+            }
+        } else {
+            diffShareBadge = `<span class="cupom-diff-tag diff-neu">-</span>`;
+        }
+
+        tr.className = `cupom-row ${isExpanded ? 'cupom-row-expanded' : ''}`;
         tr.innerHTML = `
             <td>
-                <span class="${tagClass}" ${titleAttr}>${item.coupon}${starIcon}</span>
+                <div class="cupom-cell-flex">
+                    <button type="button" class="btn-toggle-cupom ${isExpanded ? 'active' : ''}" data-coupon="${item.coupon}" title="Clique para expandir/recolher as categorias de vendas deste cupom">
+                        <span class="chevron-arrow ${isExpanded ? 'rotated' : ''}">▶</span>
+                        <span class="${tagClass}" ${titleAttr}>${item.coupon}${starIcon}</span>
+                    </button>
+                    ${catCount > 0 ? `<span class="badge-cat-count" data-coupon="${item.coupon}" title="${catCount} categorias de produtos vendidas">${catCount} cat.</span>` : ''}
+                </div>
             </td>
             <td class="text-right num-pedidos">${fmtInt(item.tt)}</td>
             <td class="text-right num-valor">R$ ${fmtMoeda(item.valor)}</td>
@@ -2571,8 +2623,78 @@ function renderizarTabelaCupons() {
                     </div>
                 </div>
             </td>
+            <td class="text-right num-diff-share">
+                ${diffShareBadge}
+            </td>
         `;
         tbody.appendChild(tr);
+
+        // Se expandido, renderiza a sub-linha com as categorias de vendas
+        if (isExpanded) {
+            const trSub = document.createElement('tr');
+            trSub.className = 'cupom-sub-tr';
+            const catsList = item.categorias || [];
+
+            let subHtml = `
+                <td colspan="7" class="cupom-sub-td">
+                    <div class="cupom-sub-panel">
+                        <div class="cupom-sub-header">
+                            <div class="sub-header-left">
+                                <span class="sub-header-icon">📂</span>
+                                <span class="sub-header-title">Categorias de Vendas — <strong class="sub-header-cupom-name">${item.coupon}</strong></span>
+                            </div>
+                            <div class="sub-header-meta">
+                                <span>${catsList.length} ${catsList.length === 1 ? 'categoria encontrada' : 'categorias encontradas'}</span>
+                            </div>
+                        </div>
+            `;
+
+            if (catsList.length > 0) {
+                subHtml += `<div class="cupom-sub-cats-grid">`;
+                catsList.forEach((cat, idxCat) => {
+                    subHtml += `
+                        <div class="cupom-cat-pill-card">
+                            <div class="cat-pill-header">
+                                <span class="cat-pill-name" title="${cat.categoria}">${cat.categoria}</span>
+                                <span class="cat-pill-pct">${fmtPct(cat.pct)}</span>
+                            </div>
+                            <div class="cat-pill-bar">
+                                <div class="cat-pill-fill fill-cat-${idxCat % 5}" style="width: ${Math.min(100, cat.pct)}%;"></div>
+                            </div>
+                            <div class="cat-pill-footer">
+                                <span class="cat-pill-ped">${fmtInt(cat.pedidos)} ped.</span>
+                                <span class="cat-pill-vlr">R$ ${fmtMoeda(cat.valor)}</span>
+                            </div>
+                        </div>
+                    `;
+                });
+                subHtml += `</div>`;
+            } else {
+                subHtml += `<div class="cupom-sub-empty">Nenhuma categoria identificada para este cupom no período.</div>`;
+            }
+
+            subHtml += `
+                    </div>
+                </td>
+            `;
+            trSub.innerHTML = subHtml;
+            tbody.appendChild(trSub);
+        }
+    });
+
+    // Listeners de clique para expandir/recolher categorias
+    tbody.querySelectorAll('.btn-toggle-cupom, .badge-cat-count').forEach(elem => {
+        elem.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const cp = elem.getAttribute('data-coupon');
+            if (!cp) return;
+            if (expandedCupons.has(cp)) {
+                expandedCupons.delete(cp);
+            } else {
+                expandedCupons.add(cp);
+            }
+            renderizarTabelaCupons();
+        });
     });
 
     const tfoot = document.getElementById('cupons-table-foot');
@@ -2585,6 +2707,7 @@ function renderizarTabelaCupons() {
                 <td class="text-right" style="padding: 8px 12px; font-weight: 800;"><span class="tfoot-pct-pill">100,0%</span></td>
                 <td class="text-right" style="padding: 8px 12px; font-weight: 800; color: #94A3B8;">R$ ${fmtMoeda(currentCuponsData.total_valor_ant || 0)}</td>
                 <td class="text-right" style="padding: 8px 12px; font-weight: 800;"><span class="tfoot-pct-pill pill-muted">100,0%</span></td>
+                <td class="text-right" style="padding: 8px 12px; font-weight: 800;"><span class="tfoot-pct-pill pill-neutral">0,0%</span></td>
             </tr>
         `;
     }
