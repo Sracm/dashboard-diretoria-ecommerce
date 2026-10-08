@@ -4353,3 +4353,55 @@ span[id^="kpi-meta-"],
     padding: 7px 3px !important;
     font-size: 11px !important;
 }
+
+
+/* ==========================================================================
+   Ajuste Fino: Exibição Completa Sem Cortar o Nome do Cupom
+   ========================================================================== */
+.cupons-table td:first-child,
+.cupons-table th:first-child {
+    overflow: visible !important;
+}
+
+.cupom-cell-flex {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 5px !important;
+    max-width: none !important;
+    white-space: nowrap !important;
+}
+
+.btn-toggle-cupom {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 4px !important;
+    max-width: none !important;
+    overflow: visible !important;
+    white-space: nowrap !important;
+}
+
+.coupon-tag {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 4px !important;
+    padding: 2px 7px !important;
+    font-size: 10.5px !important;
+    font-weight: 700 !important;
+    max-width: none !important;
+    width: auto !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
+    white-space: nowrap !important;
+}
+
+.badge-cat-count {
+    display: inline-block !important;
+    font-size: 8.5px !important;
+    font-weight: 800 !important;
+    padding: 1px 4px !important;
+    border-radius: 8px !important;
+    background: rgba(255, 255, 255, 0.08) !important;
+    color: #94A3B8 !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    flex-shrink: 0 !important;
+}
