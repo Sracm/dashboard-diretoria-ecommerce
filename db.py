@@ -19,6 +19,45 @@ os.makedirs(Config.CACHE_DIR, exist_ok=True)
 _MEMORY_CACHE = {}
 
 
+import pymysql
+
+def get_mariadb_connection():
+    """Conexão com o banco central MariaDB de alta performance."""
+    return pymysql.connect(
+        host=Config.MARIADB_HOST,
+        port=Config.MARIADB_PORT,
+        user=Config.MARIADB_USER,
+        password=Config.MARIADB_PASSWORD,
+        database=Config.MARIADB_DB,
+        charset="utf8mb4",
+        autocommit=True
+    )
+
+def obter_ultima_atualizacao():
+    """Retorna os dados da última execução bem-sucedida do ETL."""
+    try:
+        conn = get_mariadb_connection()
+        with conn.cursor() as cur:
+            cur.execute("""
+                SELECT fim, status, linhas_vendas, linhas_pedidos 
+                FROM etl_status 
+                WHERE status = 'sucesso' 
+                ORDER BY id DESC LIMIT 1;
+            """)
+            row = cur.fetchone()
+            if row and row[0]:
+                return {
+                    "timestamp": row[0].strftime("%d/%m/%Y %H:%M:%S"),
+                    "data_iso": row[0].isoformat(),
+                    "status": row[1],
+                    "linhas_vendas": row[2],
+                    "linhas_pedidos": row[3]
+                }
+        conn.close()
+    except Exception as e:
+        print(f"[MARIADB ERRO] obter_ultima_atualizacao: {e}")
+    return None
+
 def get_oracle_connection():
     """Cria conexão no modo thin (nativo, sem necessidade do Oracle Instant Client)."""
     conn = oracledb.connect(
@@ -135,6 +174,39 @@ def carregar_vendas_ecommerce(ano: int, mes: int = None, force_refresh: bool = F
             except Exception:
                 pass
             return df_concatenado.copy()
+
+    # 2.5 BUSCA DIRETA NO MARIADB (ecommerce_performance):
+    try:
+        conn_m = get_mariadb_connection()
+        try:
+            sql_m = """
+                SELECT nunota AS NUNOTA, dtentsai AS DTENTSAI, dtneg AS DTNEG,
+                       ano AS ANO, mes AS MES, dia AS DIA,
+                       codtipoper AS CODTIPOPER, codemp AS CODEMP, codvend AS CODVEND,
+                       vendedor AS VENDEDOR, marca AS MARCA, grupo AS GRUPO,
+                       codprod AS CODPROD, produto AS PRODUTO, sku_mq AS SKU_MQ,
+                       canal AS CANAL, valorvenda AS VALORVENDA, qtdvendida AS QTDVENDIDA,
+                       custoger AS CUSTOGER, frete AS FRETE, valordevolucao AS VALORDEVOLUCAO,
+                       fat_liquido AS FAT_LIQUIDO, rastreio_pedido AS RASTREIO_PEDIDO
+                FROM ecom_vendas_data
+                WHERE ano = %s
+            """
+            params_m = [ano]
+            if mes is not None:
+                sql_m += " AND mes = %s"
+                params_m.append(mes)
+            df_m = pd.read_sql(sql_m, conn_m, params=params_m)
+            if not df_m.empty:
+                # Converte tipos numéricos
+                for c in ['VALORVENDA', 'QTDVENDIDA', 'CUSTOGER', 'FRETE', 'VALORDEVOLUCAO', 'FAT_LIQUIDO']:
+                    if c in df_m.columns:
+                        df_m[c] = pd.to_numeric(df_m[c], errors='coerce').fillna(0.0)
+                _MEMORY_CACHE[cache_key] = (df_m.copy(), now_ts)
+                return df_m.copy()
+        finally:
+            conn_m.close()
+    except Exception as e_m:
+        print(f"[MARIADB] Vendas indisponível, usando fallback Oracle: {e_m}")
 
     # Determina filtros de data para query SQL
     if mes is not None:
@@ -255,6 +327,28 @@ def carregar_pedidos_vtex_mes(ano: int, mes: int, force_refresh: bool = False) -
         except Exception:
             pass
             
+    # 2.5 BUSCA DIRETA NO MARIADB (ecom_pedidos_vtex):
+    try:
+        conn_m = get_mariadb_connection()
+        try:
+            sql_mv = """
+                SELECT pedido_vtex AS PEDIDO_VTEX, creation_date AS CREATION_DATE,
+                       dia AS DIA, forma_pagamento AS FORMA_PAGAMENTO,
+                       coupon AS COUPON, total_value AS TOTAL_VALUE,
+                       quantity AS QUANTITY, valor_item AS VALOR_ITEM,
+                       categoria AS CATEGORIA
+                FROM ecom_pedidos_vtex
+                WHERE ano = %s AND mes = %s
+            """
+            df_mv = pd.read_sql(sql_mv, conn_m, params=[ano, mes])
+            if not df_mv.empty:
+                _MEMORY_CACHE[cache_key] = (df_mv.copy(), now_ts)
+                return df_mv.copy()
+        finally:
+            conn_m.close()
+    except Exception as e_mv:
+        print(f"[MARIADB] Pedidos VTEX indisponível, usando fallback Oracle: {e_mv}")
+
     # 3. Busca no Oracle se não estiver em cache
     _, max_d = calendar.monthrange(ano, mes)
     dt_ini = f"{ano}-{mes:02d}-01"

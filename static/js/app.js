@@ -580,11 +580,16 @@ function atualizarDisplayTemporizador() {
     }
 }
 
-function registrarUltimaAtualizacao() {
+function registrarUltimaAtualizacao(metaETL = null) {
     const lastUpdateEl = document.getElementById('last-update');
     if (lastUpdateEl) {
-        const agora = new Date();
-        lastUpdateEl.textContent = `Última atualização: ${agora.toLocaleTimeString('pt-BR')}`;
+        if (metaETL && metaETL.timestamp) {
+            lastUpdateEl.textContent = `Última carga: ${metaETL.timestamp}`;
+            lastUpdateEl.title = `Dados sincronizados via MariaDB (${metaETL.linhas_vendas ? metaETL.linhas_vendas.toLocaleString('pt-BR') : ''} vendas)`;
+        } else {
+            const agora = new Date();
+            lastUpdateEl.textContent = `Atualizado: ${agora.toLocaleTimeString('pt-BR')}`;
+        }
     }
     nextUpdateSeconds = REFRESH_INTERVAL_SECONDS;
     atualizarDisplayTemporizador();

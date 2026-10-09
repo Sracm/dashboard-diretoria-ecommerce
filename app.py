@@ -19,7 +19,7 @@ from metas_ecommerce_2026 import (
     get_metas_mes,
     get_resumo_anual
 )
-from db import carregar_vendas_ecommerce, carregar_formas_pagamento_vtex, carregar_cupons_vtex
+from db import carregar_vendas_ecommerce, carregar_formas_pagamento_vtex, carregar_cupons_vtex, obter_ultima_atualizacao
 from analytics_data import get_analytics_conversao
 
 app = Flask(__name__)
@@ -1454,13 +1454,22 @@ def api_resumo():
             "grafico_pizza_canais": grafico_pizza_canais,
             "cupons_resumo": cupons_resumo,
             "analytics_conversao": analytics_conversao,
-            "pagamentos_por_canal": pagamentos_por_canal
+            "pagamentos_por_canal": pagamentos_por_canal,
+            "ultima_atualizacao": obter_ultima_atualizacao()
         })
         
     except Exception as e:
         import traceback
         traceback.print_exc()
         return jsonify({"status": "error", "message": str(e)}), 500
+
+
+@app.route("/api/ultima_atualizacao")
+def api_ultima_atualizacao():
+    dados = obter_ultima_atualizacao()
+    if dados:
+        return jsonify({"status": "success", "data": dados})
+    return jsonify({"status": "empty", "data": None})
 
 
 @app.route("/health")
