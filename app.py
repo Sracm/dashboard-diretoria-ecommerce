@@ -1481,6 +1481,73 @@ def health():
     })
 
 
+
+
+# ═══════════════════════════════════════════════════════════════════════════
+# ROTINAS DE SINCRONIZAÇÃO MARIADB (BACKGROUND)
+# ═══════════════════════════════════════════════════════════════════════════
+import threading
+
+sync_state = {
+    "is_running": False,
+    "last_result": None,
+    "last_run": None,
+    "error": None
+}
+
+def _executar_etl_background():
+    global sync_state
+    try:
+        from etl.atualizar_dados import executar_etl
+        print("[ETL BACKGROUND] Iniciando atualização de vendas e VTEX Sankhya -> MariaDB...")
+        executar_etl()
+        sync_state["is_running"] = False
+        sync_state["last_result"] = "sucesso"
+        sync_state["last_run"] = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+        sync_state["error"] = None
+        # Limpar cache de memória para o dashboard carregar dados frescos
+        from db import limpar_cache_geral
+        limpar_cache_geral()
+        print("[ETL BACKGROUND] Concluído com sucesso e caches renovados.")
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        sync_state["is_running"] = False
+        sync_state["last_result"] = "erro"
+        sync_state["error"] = str(e)
+        print(f"[ETL BACKGROUND] Erro na execução: {e}")
+
+@app.route("/api/sincronizar", methods=["POST", "GET"])
+def rota_sincronizar():
+    global sync_state
+    if sync_state["is_running"]:
+        return jsonify({
+            "status": "already_running",
+            "message": "Sincronização já está em andamento no servidor.",
+            "sync_state": sync_state
+        })
+    
+    sync_state["is_running"] = True
+    sync_state["last_result"] = None
+    sync_state["error"] = None
+    t = threading.Thread(target=_executar_etl_background, daemon=True)
+    t.start()
+    return jsonify({
+        "status": "started",
+        "message": "Sincronização iniciada com sucesso em segundo plano.",
+        "sync_state": sync_state
+    })
+
+@app.route("/api/sincronizar/status")
+def rota_sincronizar_status():
+    global sync_state
+    ult = obter_ultima_atualizacao()
+    return jsonify({
+        "status": "success",
+        "sync_state": sync_state,
+        "ultima_atualizacao": ult
+    })
+
 if __name__ == "__main__":
     print(f"Iniciando Dashboard E-commerce na porta {Config.PORT}...")
     app.run(host=Config.HOST, port=Config.PORT, debug=Config.DEBUG)

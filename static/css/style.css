@@ -4405,3 +4405,79 @@ span[id^="kpi-meta-"],
     border: 1px solid rgba(255, 255, 255, 0.15) !important;
     flex-shrink: 0 !important;
 }
+
+
+/* Container e Botão de Sincronização MariaDB */
+.header-sync-container {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.btn-sync-mariadb {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(200, 160, 89, 0.12);
+    border: 1px solid rgba(200, 160, 89, 0.35);
+    color: var(--mq-gold, #c8a059);
+    padding: 5px 12px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    font-family: 'Montserrat', sans-serif;
+    letter-spacing: 0.3px;
+    outline: none;
+}
+
+.btn-sync-mariadb:hover {
+    background: rgba(200, 160, 89, 0.25);
+    border-color: var(--mq-gold, #c8a059);
+    box-shadow: 0 0 12px rgba(200, 160, 89, 0.2);
+    transform: translateY(-1px);
+}
+
+.btn-sync-mariadb:disabled,
+.btn-sync-mariadb.is-syncing {
+    opacity: 0.75;
+    cursor: wait;
+    transform: none;
+    background: rgba(200, 160, 89, 0.18);
+    border-color: rgba(200, 160, 89, 0.5);
+}
+
+.btn-sync-mariadb.is-syncing i {
+    animation: spin 1s linear infinite;
+}
+
+.btn-sync-mariadb i {
+    width: 14px;
+    height: 14px;
+}
+
+/* Toast de Notificação de Sync */
+.sync-toast {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: #1e1e24;
+    border: 1px solid var(--mq-gold, #c8a059);
+    color: #ffffff;
+    padding: 12px 18px;
+    border-radius: 8px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+    font-size: 12px;
+    font-family: 'Montserrat', sans-serif;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    animation: slideInToast 0.3s ease-out;
+}
+
+@keyframes slideInToast {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}

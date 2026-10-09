@@ -480,3 +480,19 @@ if __name__ == "__main__":
     print("\nTestando formas de pagamento VTEX:")
     df_p = carregar_formas_pagamento_vtex(2026, 10, 1, 5, force_refresh=True)
     print(df_p)
+
+
+def limpar_cache_geral():
+    """Limpa cache em memória e em disco para forçar leitura atualizada do MariaDB."""
+    global _MEMORY_CACHE
+    _MEMORY_CACHE.clear()
+    try:
+        for f in os.listdir(Config.CACHE_DIR):
+            if f.endswith(".pkl"):
+                try:
+                    os.remove(os.path.join(Config.CACHE_DIR, f))
+                except Exception:
+                    pass
+    except Exception:
+        pass
+    print("[CACHE] Cache em memória e disco limpo com sucesso.")

@@ -133,6 +133,7 @@ function ajustarLimitesDias(forcarDiaAtual = false) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+    initSyncButton();
     atualizarLabelsDropdowns();
     ajustarLimitesDias(true);
     setupEventListeners();
@@ -2962,4 +2963,95 @@ function renderizarGraficoConversao() {
             }
         }
     });
+}
+
+
+// ═══════════════════════════════════════════════════════════════════════════
+// SINCRONIZAÇÃO MARIADB ON-DEMAND (COM FEEDBACK VISUAL E POLLING)
+// ═══════════════════════════════════════════════════════════════════════════
+function initSyncButton() {
+    const btnSync = document.getElementById('btnSyncMariaDB');
+    if (!btnSync) return;
+
+    btnSync.addEventListener('click', async () => {
+        if (btnSync.disabled) return;
+
+        const iconSync = document.getElementById('iconSync');
+        const textSync = document.getElementById('textSync');
+
+        btnSync.disabled = true;
+        btnSync.classList.add('is-syncing');
+        if (textSync) textSync.textContent = 'Sincronizando...';
+
+        showToast('Sincronização com Oracle Sankhya iniciada em segundo plano...', 'info');
+
+        try {
+            const resp = await fetch('/api/sincronizar', { method: 'POST' });
+            const data = await resp.json();
+
+            // Inicia polling de status
+            const pollInterval = setInterval(async () => {
+                try {
+                    const stResp = await fetch('/api/sincronizar/status');
+                    const stData = await stResp.json();
+                    
+                    if (stData && stData.sync_state && !stData.sync_state.is_running) {
+                        clearInterval(pollInterval);
+                        btnSync.disabled = false;
+                        btnSync.classList.remove('is-syncing');
+                        if (textSync) textSync.textContent = 'Sincronizar';
+
+                        if (stData.sync_state.last_result === 'sucesso') {
+                            showToast('Dados sincronizados com sucesso no MariaDB!', 'success');
+                            if (stData.ultima_atualizacao) {
+                                registrarUltimaAtualizacao(stData.ultima_atualizacao);
+                            }
+                            // Recarrega o dashboard com dados novos
+                            carregarDados(true);
+                        } else {
+                            showToast('Aviso: Falha na sincronização. Verifique os logs.', 'error');
+                        }
+                    }
+                } catch (pollErr) {
+                    console.error('Erro ao verificar status do sync:', pollErr);
+                }
+            }, 3000);
+
+            // Timeout de segurança para reabilitar botão após 2.5 min
+            setTimeout(() => {
+                clearInterval(pollInterval);
+                btnSync.disabled = false;
+                btnSync.classList.remove('is-syncing');
+                if (textSync) textSync.textContent = 'Sincronizar';
+            }, 150000);
+
+        } catch (e) {
+            console.error('Erro ao solicitar sincronização:', e);
+            btnSync.disabled = false;
+            btnSync.classList.remove('is-syncing');
+            if (textSync) textSync.textContent = 'Sincronizar';
+            showToast('Erro ao iniciar sincronização.', 'error');
+        }
+    });
+}
+
+function showToast(message, type = 'info') {
+    const existing = document.querySelector('.sync-toast');
+    if (existing) existing.remove();
+
+    const toast = document.createElement('div');
+    toast.className = 'sync-toast';
+    const icon = type === 'success' ? 'check-circle' : (type === 'error' ? 'alert-triangle' : 'info');
+    toast.innerHTML = `<i data-lucide="${icon}"></i><span>${message}</span>`;
+    document.body.appendChild(toast);
+    
+    if (window.lucide) {
+        window.lucide.createIcons();
+    }
+
+    setTimeout(() => {
+        toast.style.transition = 'opacity 0.5s ease';
+        toast.style.opacity = '0';
+        setTimeout(() => toast.remove(), 500);
+    }, 4500);
 }
