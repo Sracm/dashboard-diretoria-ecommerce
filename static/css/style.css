@@ -1436,18 +1436,30 @@ body {
 /* Histórico Mensal 2026 */
 .history-charts-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 16px;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 20px;
+}
+
+@media (max-width: 992px) {
+    .history-charts-grid {
+        grid-template-columns: 1fr !important;
+    }
 }
 
 .history-chart-card {
     background: var(--mq-surface);
-    border: 1px solid rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: var(--radius-md);
-    padding: 16px;
+    padding: 18px 20px;
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+    transition: border-color 0.2s ease, transform 0.2s ease;
+}
+
+.history-chart-card:hover {
+    border-color: rgba(203, 151, 39, 0.35);
 }
 
 .history-chart-title {
@@ -1482,7 +1494,7 @@ body {
 
 .history-canvas-box {
     position: relative;
-    height: 260px;
+    height: 290px;
     width: 100%;
 }
 
@@ -3620,7 +3632,7 @@ canvas {
     }
 
     .canal-chart-container {
-        height: 220px;
+        height: 260px;
     }
 
     .perf-highlight {
@@ -3674,7 +3686,7 @@ canvas {
     }
 
     .canal-chart-container {
-        height: 195px;
+        height: 250px;
     }
 
     .canal-chart-card {
@@ -3799,8 +3811,8 @@ body.tv-mode .canal-chart-container {
 }
 
 body.tv-mode .history-charts-grid {
-    grid-template-columns: repeat(4, 1fr) !important;
-    gap: 14px;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 20px;
 }
 
 body.tv-mode .matrices-dual-grid {
@@ -4480,4 +4492,38 @@ span[id^="kpi-meta-"],
 @keyframes slideInToast {
     from { transform: translateY(20px); opacity: 0; }
     to { transform: translateY(0); opacity: 1; }
+}
+
+/* Executive Legend Pill for History Charts */
+.history-legend-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    font-size: 10px;
+    font-weight: 700;
+    color: #94A3B8;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    padding: 3px 9px;
+    border-radius: 12px;
+    letter-spacing: 0.3px;
+}
+
+.history-legend-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.history-legend-line {
+    display: inline-block;
+    width: 12px;
+    height: 2.5px;
+    border-radius: 2px;
+}
+
+.history-legend-line.dashed {
+    border-top: 2px dashed #94A3B8;
+    height: 0;
+    width: 12px;
 }

@@ -86,8 +86,8 @@ def extrair_vendas_oracle(conn_oracle, dt_ini: str, dt_fim: str) -> pd.DataFrame
         CAB.CODVEND,
         VEN.APELIDO AS VENDEDOR,
         CASE 
-            WHEN GRU.DESCRGRUPOPROD LIKE '%PARLUX%' THEN 'PARLUX' 
-            ELSE 'MQ' 
+            WHEN UPPER(PRO.MARCA) LIKE '%PARLUX%' OR UPPER(GRU.DESCRGRUPOPROD) LIKE '%PARLUX%' THEN 'PARLUX' 
+            ELSE UPPER(NVL(PRO.MARCA, 'MQ')) 
         END AS MARCA,
         GRU.DESCRGRUPOPROD AS GRUPO,
         ITE.CODPROD,

@@ -202,6 +202,10 @@ def carregar_vendas_ecommerce(ano: int, mes: int = None, force_refresh: bool = F
                     if c in df_m.columns:
                         df_m[c] = pd.to_numeric(df_m[c], errors='coerce').fillna(0.0)
                 _MEMORY_CACHE[cache_key] = (df_m.copy(), now_ts)
+                try:
+                    df_m.to_pickle(disk_file)
+                except Exception as e_d:
+                    print(f"[CACHE DISCO] Aviso ao salvar {disk_file}: {e_d}")
                 return df_m.copy()
         finally:
             conn_m.close()
@@ -239,7 +243,10 @@ def carregar_vendas_ecommerce(ano: int, mes: int = None, force_refresh: bool = F
         (SELECT G.DESCRGRUPOPROD FROM TGFGRU G WHERE G.CODGRUPOPROD = CASE WHEN LENGTH(TO_CHAR(PRO.codgrupoprod))=7 THEN RPAD(SUBSTR(TO_CHAR(PRO.codgrupoprod),1,1),7,'0') ELSE RPAD(SUBSTR(TO_CHAR(PRO.codgrupoprod),1,2),8,'0') END) AS GRUPO_GERAL,
         (SELECT G.DESCRGRUPOPROD FROM TGFGRU G WHERE G.CODGRUPOPROD = CASE WHEN LENGTH(TO_CHAR(PRO.codgrupoprod))=7 THEN RPAD(SUBSTR(TO_CHAR(PRO.codgrupoprod),1,4),7,'0') ELSE RPAD(SUBSTR(TO_CHAR(PRO.codgrupoprod),1,5),8,'0') END) AS GRUPO_SINTETICO,
         GRU.DESCRGRUPOPROD AS GRUPO_ANALITICO,
-        UPPER(PRO.MARCA) AS MARCA,
+        CASE 
+            WHEN UPPER(PRO.MARCA) LIKE '%PARLUX%' OR UPPER(GRU.DESCRGRUPOPROD) LIKE '%PARLUX%' THEN 'PARLUX' 
+            ELSE UPPER(NVL(PRO.MARCA, 'MQ')) 
+        END AS MARCA,
         ITE.CODPROD,
         PRO.DESCRPROD AS PRODUTO,
         PRO.REFERENCIA AS SKU_MQ,
@@ -269,11 +276,26 @@ def carregar_vendas_ecommerce(ano: int, mes: int = None, force_refresh: bool = F
       AND CAB.DTENTSAI <= TO_DATE('{dt_fim}','DD/MM/YYYY')
     """
     
-    conn = get_oracle_connection()
     try:
-        df = pd.read_sql(sql, conn)
-    finally:
-        conn.close()
+        conn = get_oracle_connection()
+        try:
+            df = pd.read_sql(sql, conn)
+        finally:
+            conn.close()
+    except Exception as e_ora:
+        print(f"[ERRO ORACLE] Vendas: {e_ora}")
+        if os.path.exists(disk_file):
+            try:
+                return pd.read_pickle(disk_file)
+            except Exception:
+                pass
+        df = pd.DataFrame(columns=[
+            'CODEMP', 'EMPRESA', 'NUNOTA', 'DTNEG', 'DTENTSAI', 'DIA', 'MES', 'ANO',
+            'UF', 'CIDADE', 'VENDEDOR', 'CODVEND', 'CODPARC', 'NOMEPARC', 'DESCROPER',
+            'BONIFICACAO', 'TIPMOV', 'GRUPO_GERAL', 'GRUPO_SINTETICO', 'GRUPO_ANALITICO',
+            'MARCA', 'CODPROD', 'PRODUTO', 'SKU_MQ', 'VALORVENDA', 'QTDVENDIDA',
+            'CUSTOGER', 'FRETE', 'VALORDEVOLUCAO', 'RASTREIO_PEDIDO', 'CANAL', 'FAT_LIQUIDO'
+        ])
         
     # Classificação do canal e Faturamento Líquido (regra DAX: Venda - Frete - Devolução)
     if not df.empty:
@@ -372,9 +394,12 @@ def carregar_pedidos_vtex_mes(ano: int, mes: int, force_refresh: bool = False) -
       AND v.CREATION_DATE < TO_DATE('{dt_fim}', 'YYYY-MM-DD')
       AND v.STATUS = 'Faturado'
     """
-    conn = get_oracle_connection()
     try:
-        df = pd.read_sql(sql, conn)
+        conn = get_oracle_connection()
+        try:
+            df = pd.read_sql(sql, conn)
+        finally:
+            conn.close()
     except Exception as e:
         print(f"[ERRO ORACLE] Pedidos VTEX: {e}")
         if os.path.exists(disk_file):
@@ -382,9 +407,7 @@ def carregar_pedidos_vtex_mes(ano: int, mes: int, force_refresh: bool = False) -
                 return pd.read_pickle(disk_file)
             except Exception:
                 pass
-        df = pd.DataFrame(columns=["PEDIDO_VTEX", "CREATION_DATE", "DIA", "FORMA_PAGAMENTO", "COUPON", "TOTAL_VALUE"])
-    finally:
-        conn.close()
+        df = pd.DataFrame(columns=["PEDIDO_VTEX", "CREATION_DATE", "DIA", "FORMA_PAGAMENTO", "COUPON", "TOTAL_VALUE", "QUANTITY", "VALOR_ITEM", "CATEGORIA"])
         
     _MEMORY_CACHE[cache_key] = (df.copy(), now_ts)
     try:

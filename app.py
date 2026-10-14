@@ -102,6 +102,11 @@ def api_resumo():
         if dfs_meses:
             df_concat = pd.concat(dfs_meses, ignore_index=True)
             df = df_concat[df_concat["CANAL"].isin(CANAIS_OFICIAIS)].copy()
+            if not df.empty:
+                if "GRUPO_SINTETICO" not in df.columns:
+                    df["GRUPO_SINTETICO"] = df["GRUPO"] if "GRUPO" in df.columns else "OUTROS"
+                if "SKU_MQ" not in df.columns:
+                    df["SKU_MQ"] = ""
         else:
             df = pd.DataFrame()
             
@@ -119,14 +124,21 @@ def api_resumo():
         else:
             df_periodo = df.copy()
 
+        # df_kpis para KPIs consolidados gerais: se visão geral (Todos os canais e Todas as marcas),
+        # exclui PARLUX conforme diretriz da Diretoria de E-commerce (Parlux tem meta e acompanhamento à parte)
+        if (not canal_filtro or canal_filtro == "Todos") and (not marca_filtro or marca_filtro == "Todas"):
+            df_kpis = df_periodo[df_periodo["CANAL"] != "PARLUX"].copy() if not df_periodo.empty else pd.DataFrame()
+        else:
+            df_kpis = df_periodo.copy()
+
         # 2. Cálculos Totais do Período (Regra DAX Exata: Faturamento Líquido = Venda - Frete - Devolução)
-        venda_bruta_total = float(df_periodo["VALORVENDA"].sum()) if not df_periodo.empty else 0.0
-        frete_total = float(df_periodo["FRETE"].sum()) if not df_periodo.empty else 0.0
-        devolucao_total = float(df_periodo["VALORDEVOLUCAO"].sum()) if not df_periodo.empty else 0.0
+        venda_bruta_total = float(df_kpis["VALORVENDA"].sum()) if not df_kpis.empty else 0.0
+        frete_total = float(df_kpis["FRETE"].sum()) if not df_kpis.empty else 0.0
+        devolucao_total = float(df_kpis["VALORDEVOLUCAO"].sum()) if not df_kpis.empty else 0.0
         fat_liquido_total = venda_bruta_total - frete_total - devolucao_total
         
-        qtd_itens_total = int(df_periodo["QTDVENDIDA"].sum()) if not df_periodo.empty else 0
-        qtd_pedidos_total = int(df_periodo["NUNOTA"].nunique()) if not df_periodo.empty else 0
+        qtd_itens_total = int(df_kpis["QTDVENDIDA"].sum()) if not df_kpis.empty else 0
+        qtd_pedidos_total = int(df_kpis["NUNOTA"].nunique()) if not df_kpis.empty else 0
         ticket_medio = round(fat_liquido_total / qtd_itens_total, 2) if qtd_itens_total > 0 else 0.0
         pct_devolucao = round((devolucao_total / venda_bruta_total * 100), 2) if venda_bruta_total > 0 else 0.0
 
@@ -169,6 +181,11 @@ def api_resumo():
         if dfs_ant:
             df_ant_concat = pd.concat(dfs_ant, ignore_index=True)
             df_ant = df_ant_concat[df_ant_concat["CANAL"].isin(CANAIS_OFICIAIS)].copy()
+            if not df_ant.empty:
+                if "GRUPO_SINTETICO" not in df_ant.columns:
+                    df_ant["GRUPO_SINTETICO"] = df_ant["GRUPO"] if "GRUPO" in df_ant.columns else "OUTROS"
+                if "SKU_MQ" not in df_ant.columns:
+                    df_ant["SKU_MQ"] = "" 
             if marca_filtro and marca_filtro != "Todas":
                 df_ant = df_ant[df_ant["MARCA"] == marca_filtro.upper()].copy()
             if canal_filtro and canal_filtro != "Todos":
@@ -182,22 +199,44 @@ def api_resumo():
         else:
             df_ant_periodo = pd.DataFrame()
             
-        vb_ant_periodo = float(df_ant_periodo["VALORVENDA"].sum()) if not df_ant_periodo.empty else 0.0
-        fr_ant_periodo = float(df_ant_periodo["FRETE"].sum()) if not df_ant_periodo.empty else 0.0
-        dv_ant_periodo = float(df_ant_periodo["VALORDEVOLUCAO"].sum()) if not df_ant_periodo.empty else 0.0
+        if (not canal_filtro or canal_filtro == "Todos") and (not marca_filtro or marca_filtro == "Todas"):
+            df_ant_kpis = df_ant_periodo[df_ant_periodo["CANAL"] != "PARLUX"].copy() if not df_ant_periodo.empty else pd.DataFrame()
+            df_ant_cheio_kpis = df_ant[df_ant["CANAL"] != "PARLUX"].copy() if not df_ant.empty else pd.DataFrame()
+        else:
+            df_ant_kpis = df_ant_periodo.copy()
+            df_ant_cheio_kpis = df_ant.copy()
+
+        vb_ant_periodo = float(df_ant_kpis["VALORVENDA"].sum()) if not df_ant_kpis.empty else 0.0
+        fr_ant_periodo = float(df_ant_kpis["FRETE"].sum()) if not df_ant_kpis.empty else 0.0
+        dv_ant_periodo = float(df_ant_kpis["VALORDEVOLUCAO"].sum()) if not df_ant_kpis.empty else 0.0
         fat_ant_periodo = vb_ant_periodo - fr_ant_periodo - dv_ant_periodo
-        itens_ant_periodo = int(df_ant_periodo["QTDVENDIDA"].sum()) if not df_ant_periodo.empty else 0
+        itens_ant_periodo = int(df_ant_kpis["QTDVENDIDA"].sum()) if not df_ant_kpis.empty else 0
         dev_pct_ant_periodo = round((dv_ant_periodo / vb_ant_periodo * 100), 2) if vb_ant_periodo > 0 else 0.0
         ticket_medio_ant_periodo = round(fat_ant_periodo / itens_ant_periodo, 2) if itens_ant_periodo > 0 else 0.0
+
+        # Se o canal teve vendas no mês anterior fechado mas o período homologo ficou zerado (ex: Magalu no período 1..dia_fim):
+        if fat_ant_periodo == 0.0 and not df_ant_cheio_kpis.empty:
+            vb_ant_cheio_k = float(df_ant_cheio_kpis["VALORVENDA"].sum())
+            fr_ant_cheio_k = float(df_ant_cheio_kpis["FRETE"].sum())
+            dv_ant_cheio_k = float(df_ant_cheio_kpis["VALORDEVOLUCAO"].sum())
+            fat_cheio_k = vb_ant_cheio_k - fr_ant_cheio_k - dv_ant_cheio_k
+            if fat_cheio_k > 0:
+                vb_ant_periodo = vb_ant_cheio_k
+                fr_ant_periodo = fr_ant_cheio_k
+                dv_ant_periodo = dv_ant_cheio_k
+                fat_ant_periodo = fat_cheio_k
+                itens_ant_periodo = int(df_ant_cheio_kpis["QTDVENDIDA"].sum())
+                dev_pct_ant_periodo = round((dv_ant_periodo / vb_ant_periodo * 100), 2) if vb_ant_periodo > 0 else 0.0
+                ticket_medio_ant_periodo = round(fat_ant_periodo / itens_ant_periodo, 2) if itens_ant_periodo > 0 else 0.0
 
         diff_fat_mom_pct = round((fat_liquido_total - fat_ant_periodo) / fat_ant_periodo * 100, 1) if fat_ant_periodo > 0 else 0.0
         diff_itens_mom_pct = round((qtd_itens_total - itens_ant_periodo) / itens_ant_periodo * 100, 1) if itens_ant_periodo > 0 else 0.0
         diff_dev_mom_pp = round(pct_devolucao - dev_pct_ant_periodo, 2)
 
         # Mês anterior total fechado para comparativo de Projeção
-        vb_ant_cheio = float(df_ant["VALORVENDA"].sum()) if not df_ant.empty else 0.0
-        fr_ant_cheio = float(df_ant["FRETE"].sum()) if not df_ant.empty else 0.0
-        dv_ant_cheio = float(df_ant["VALORDEVOLUCAO"].sum()) if not df_ant.empty else 0.0
+        vb_ant_cheio = float(df_ant_cheio_kpis["VALORVENDA"].sum()) if not df_ant_cheio_kpis.empty else 0.0
+        fr_ant_cheio = float(df_ant_cheio_kpis["FRETE"].sum()) if not df_ant_cheio_kpis.empty else 0.0
+        dv_ant_cheio = float(df_ant_cheio_kpis["VALORDEVOLUCAO"].sum()) if not df_ant_cheio_kpis.empty else 0.0
         fat_ant_mes_cheio = vb_ant_cheio - fr_ant_cheio - dv_ant_cheio
         diff_proj_mom_pct = round((projecao_mes - fat_ant_mes_cheio) / fat_ant_mes_cheio * 100, 1) if fat_ant_mes_cheio > 0 else 0.0
 
@@ -210,12 +249,16 @@ def api_resumo():
             df_ano_filt = df_ano_filt[df_ano_filt["MARCA"] == marca_filtro.upper()]
         if canal_filtro and canal_filtro != "Todos" and not df_ano_filt.empty:
             df_ano_filt = df_ano_filt[df_ano_filt["CANAL"] == canal_filtro.upper()]
+        elif (not canal_filtro or canal_filtro == "Todos") and (not marca_filtro or marca_filtro == "Todas") and not df_ano_filt.empty:
+            df_ano_filt = df_ano_filt[df_ano_filt["CANAL"] != "PARLUX"]
 
         df_ano_ant_filt = df_ano_ant_total[df_ano_ant_total["CANAL"].isin(CANAIS_OFICIAIS)].copy() if not df_ano_ant_total.empty else pd.DataFrame()
         if marca_filtro and marca_filtro != "Todas" and not df_ano_ant_filt.empty:
             df_ano_ant_filt = df_ano_ant_filt[df_ano_ant_filt["MARCA"] == marca_filtro.upper()]
         if canal_filtro and canal_filtro != "Todos" and not df_ano_ant_filt.empty:
             df_ano_ant_filt = df_ano_ant_filt[df_ano_ant_filt["CANAL"] == canal_filtro.upper()]
+        elif (not canal_filtro or canal_filtro == "Todos") and (not marca_filtro or marca_filtro == "Todas") and not df_ano_ant_filt.empty:
+            df_ano_ant_filt = df_ano_ant_filt[df_ano_ant_filt["CANAL"] != "PARLUX"]
 
         mes_corte = max(meses)
         dia_corte = dia_fim
@@ -297,6 +340,12 @@ def api_resumo():
                 fat_d_ant = float(fat_ant_dia_map.get(d, 0.0))
                 soma_ant += fat_d_ant
                 acum_fat_ant_list.append(round(soma_ant, 2))
+
+            # Se o canal teve vendas no mês anterior mas o intervalo homologo ficou em 0 (ex: MAGALU):
+            fat_ant_cheio_c = float(df_c_ant["FAT_LIQUIDO"].sum()) if df_c_ant is not None and not df_c_ant.empty else 0.0
+            if soma_ant == 0.0 and fat_ant_cheio_c > 0.0:
+                soma_ant = fat_ant_cheio_c
+                acum_fat_ant_list = [round((fat_ant_cheio_c / dia_fim) * d, 2) for d in range(1, dia_fim + 1)]
                 
             ating_c_periodo = round((soma_real / soma_meta * 100), 1) if soma_meta > 0 else 0.0
             fat_dia_c = round(soma_real / dias_no_periodo, 2) if dias_no_periodo > 0 else 0.0
@@ -342,11 +391,11 @@ def api_resumo():
             soma_meta_g += meta_dia_d
             acum_meta_geral_list.append(round(soma_meta_g, 2))
             
-            fat_dia_d = sum(graficos_canais[c]["acumulado_fat"][d-1] - (graficos_canais[c]["acumulado_fat"][d-2] if d > 1 else 0) for c in CANAIS_OFICIAIS)
+            fat_dia_d = sum(graficos_canais[c]["acumulado_fat"][d-1] - (graficos_canais[c]["acumulado_fat"][d-2] if d > 1 else 0) for c in CANAIS_OFICIAIS if c != "PARLUX")
             soma_fat_g += fat_dia_d
             acum_fat_geral_list.append(round(soma_fat_g, 2))
 
-            fat_ant_dia_d = sum(graficos_canais[c]["acumulado_fat_ant"][d-1] - (graficos_canais[c]["acumulado_fat_ant"][d-2] if d > 1 else 0) for c in CANAIS_OFICIAIS)
+            fat_ant_dia_d = sum(graficos_canais[c]["acumulado_fat_ant"][d-1] - (graficos_canais[c]["acumulado_fat_ant"][d-2] if d > 1 else 0) for c in CANAIS_OFICIAIS if c != "PARLUX")
             soma_ant_g += fat_ant_dia_d
             acum_fat_ant_geral_list.append(round(soma_ant_g, 2))
             
@@ -484,16 +533,23 @@ def api_resumo():
                 "ating_meta_ytd_pct": ating_meta_ytd_c
             }
 
-        # 5. Histórico Mensal 2026 com Comparativo de Mês Anterior (M-1)
+        # 5. Histórico Mensal 2026 com Comparativo YoY (2025) e Mês Anterior (M-1)
         # Reutiliza o DataFrame do ano já carregado no YTD (zero overhead de I/O)
         df_ano = df_ano_total.copy() if not df_ano_total.empty else pd.DataFrame()
+        df_ano_ant = df_ano_ant_total.copy() if not df_ano_ant_total.empty else pd.DataFrame()
         historico_mensal = []
         if not df_ano.empty:
             df_ano_canais = df_ano[df_ano["CANAL"].isin(CANAIS_OFICIAIS)].copy()
+            df_ano_ant_canais = df_ano_ant[df_ano_ant["CANAL"].isin(CANAIS_OFICIAIS)].copy() if not df_ano_ant.empty else pd.DataFrame()
+
             if marca_filtro and marca_filtro != "Todas":
                 df_ano_canais = df_ano_canais[df_ano_canais["MARCA"] == marca_filtro.upper()]
+                if not df_ano_ant_canais.empty:
+                    df_ano_ant_canais = df_ano_ant_canais[df_ano_ant_canais["MARCA"] == marca_filtro.upper()]
             if canal_filtro and canal_filtro != "Todos":
                 df_ano_canais = df_ano_canais[df_ano_canais["CANAL"] == canal_filtro.upper()]
+                if not df_ano_ant_canais.empty:
+                    df_ano_ant_canais = df_ano_ant_canais[df_ano_ant_canais["CANAL"] == canal_filtro.upper()]
 
             # Dados de Dezembro do ano anterior para M-1 de Janeiro
             df_dez_ant = carregar_vendas_ecommerce(ano=ano-1, mes=12, force_refresh=False)
@@ -504,8 +560,10 @@ def api_resumo():
                 if canal_filtro and canal_filtro != "Todos":
                     df_dez_ant = df_dez_ant[df_dez_ant["CANAL"] == canal_filtro.upper()]
             
-            # Pré-agrupamento por mês do ano (zero filtragens repetidas)
+            # Pré-agrupamento por mês do ano 2026 (zero filtragens repetidas)
             mes_agg_map = df_ano_canais.groupby("MES")[["VALORVENDA", "FRETE", "VALORDEVOLUCAO", "QTDVENDIDA"]].sum().to_dict('index')
+            # Pré-agrupamento por mês do ano 2025 (ano anterior)
+            mes_agg_map_ant = df_ano_ant_canais.groupby("MES")[["VALORVENDA", "FRETE", "VALORDEVOLUCAO", "QTDVENDIDA"]].sum().to_dict('index') if not df_ano_ant_canais.empty else {}
             
             for m_num in range(1, 11): # Jan até Outubro
                 # Se for o mês corrente (Outubro), compara até o dia atual selecionado (dia_fim)
@@ -521,6 +579,21 @@ def api_resumo():
                     fr_p = float(df_prev["FRETE"].sum()) if not df_prev.empty else 0.0
                     dv_p = float(df_prev["VALORDEVOLUCAO"].sum()) if not df_prev.empty else 0.0
                     it_p = int(df_prev["QTDVENDIDA"].sum()) if not df_prev.empty else 0
+
+                    if vb_p == 0.0:
+                        df_prev_cheio = df_ano_canais[df_ano_canais["MES"] == 9]
+                        if not df_prev_cheio.empty:
+                            vb_p = float(df_prev_cheio["VALORVENDA"].sum())
+                            fr_p = float(df_prev_cheio["FRETE"].sum())
+                            dv_p = float(df_prev_cheio["VALORDEVOLUCAO"].sum())
+                            it_p = int(df_prev_cheio["QTDVENDIDA"].sum())
+
+                    # 2025 (Outubro até dia_fim para comparação like-for-like perfeita)
+                    df_25 = df_ano_ant_canais[(df_ano_ant_canais["MES"] == m_num) & (df_ano_ant_canais["DIA"] <= dia_fim)] if not df_ano_ant_canais.empty else pd.DataFrame()
+                    vb_25 = float(df_25["VALORVENDA"].sum()) if not df_25.empty else 0.0
+                    fr_25 = float(df_25["FRETE"].sum()) if not df_25.empty else 0.0
+                    dv_25 = float(df_25["VALORDEVOLUCAO"].sum()) if not df_25.empty else 0.0
+                    it_25 = int(df_25["QTDVENDIDA"].sum()) if not df_25.empty else 0
                 else:
                     m_data = mes_agg_map.get(m_num, {})
                     vb_m = float(m_data.get("VALORVENDA", 0.0))
@@ -540,16 +613,30 @@ def api_resumo():
                         dv_p = float(p_data.get("VALORDEVOLUCAO", 0.0))
                         it_p = int(p_data.get("QTDVENDIDA", 0))
 
+                    m25_data = mes_agg_map_ant.get(m_num, {})
+                    vb_25 = float(m25_data.get("VALORVENDA", 0.0))
+                    fr_25 = float(m25_data.get("FRETE", 0.0))
+                    dv_25 = float(m25_data.get("VALORDEVOLUCAO", 0.0))
+                    it_25 = int(m25_data.get("QTDVENDIDA", 0))
+
                 fl_m = vb_m - fr_m - dv_m
                 tm_m = round(fl_m / it_m, 2) if it_m > 0 else 0.0
 
                 fl_p = vb_p - fr_p - dv_p
                 tm_p = round(fl_p / it_p, 2) if it_p > 0 else 0.0
 
+                fl_25 = vb_25 - fr_25 - dv_25
+                tm_25 = round(fl_25 / it_25, 2) if it_25 > 0 else 0.0
+
                 var_fl = round(((fl_m - fl_p) / fl_p * 100), 1) if fl_p > 0 else 0.0
                 var_it = round(((it_m - it_p) / it_p * 100), 1) if it_p > 0 else 0.0
                 var_tm = round(((tm_m - tm_p) / tm_p * 100), 1) if tm_p > 0 else 0.0
                 var_dv = round(((dv_m - dv_p) / dv_p * 100), 1) if dv_p > 0 else 0.0
+
+                var_fl_25 = round(((fl_m - fl_25) / fl_25 * 100), 1) if fl_25 > 0 else 0.0
+                var_it_25 = round(((it_m - it_25) / it_25 * 100), 1) if it_25 > 0 else 0.0
+                var_tm_25 = round(((tm_m - tm_25) / tm_25 * 100), 1) if tm_25 > 0 else 0.0
+                var_dv_25 = round(((dv_m - dv_25) / dv_25 * 100), 1) if dv_25 > 0 else 0.0
 
                 historico_mensal.append({
                     "mes": m_num,
@@ -558,21 +645,31 @@ def api_resumo():
                     "faturamento": round(fl_m, 2),
                     "faturamento_ant": round(fl_p, 2),
                     "faturamento_diff_pct": var_fl,
+                    "faturamento_2025": round(fl_25, 2),
+                    "faturamento_diff_2025_pct": var_fl_25,
                     "itens": it_m,
                     "itens_ant": it_p,
                     "itens_diff_pct": var_it,
+                    "itens_2025": it_25,
+                    "itens_diff_2025_pct": var_it_25,
                     "ticket_medio": tm_m,
                     "ticket_medio_ant": tm_p,
                     "ticket_medio_diff_pct": var_tm,
+                    "ticket_medio_2025": tm_25,
+                    "ticket_medio_diff_2025_pct": var_tm_25,
                     "devolucoes": round(dv_m, 2),
                     "devolucoes_ant": round(dv_p, 2),
-                    "devolucoes_diff_pct": var_dv
+                    "devolucoes_diff_pct": var_dv,
+                    "devolucoes_2025": round(dv_25, 2),
+                    "devolucoes_diff_2025_pct": var_dv_25
                 })
 
         # 6. Produtos Mais Vendidos no Geral (Consolidado E-commerce - Sem Canal de Vendas)
         df_curr_mat = df_periodo.copy()
         if not df_ant.empty:
             df_prev_mat = df_ant[(df_ant["DIA"] >= dia_ini) & (df_ant["DIA"] <= dia_fim)].copy()
+            if df_prev_mat.empty and not df_ant.empty:
+                df_prev_mat = df_ant.copy()
         else:
             df_prev_mat = df_curr_mat.iloc[0:0].copy()
 
@@ -1495,12 +1592,15 @@ sync_state = {
     "error": None
 }
 
-def _executar_etl_background():
+def _executar_etl_background(ano=None, mes=None):
     global sync_state
     try:
         from etl.atualizar_dados import executar_etl
-        print("[ETL BACKGROUND] Iniciando atualização de vendas e VTEX Sankhya -> MariaDB...")
-        executar_etl()
+        agora = datetime.now()
+        ano_alvo = ano or agora.year
+        mes_alvo = mes or agora.month
+        print(f"[ETL BACKGROUND] Iniciando atualização rápida Sankhya -> MariaDB para {mes_alvo:02d}/{ano_alvo}...")
+        executar_etl(ano=ano_alvo, mes=mes_alvo)
         sync_state["is_running"] = False
         sync_state["last_result"] = "sucesso"
         sync_state["last_run"] = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
@@ -1508,7 +1608,7 @@ def _executar_etl_background():
         # Limpar cache de memória para o dashboard carregar dados frescos
         from db import limpar_cache_geral
         limpar_cache_geral()
-        print("[ETL BACKGROUND] Concluído com sucesso e caches renovados.")
+        print(f"[ETL BACKGROUND] Concluído com sucesso para {mes_alvo:02d}/{ano_alvo} e caches renovados.")
     except Exception as e:
         import traceback
         traceback.print_exc()
@@ -1527,10 +1627,13 @@ def rota_sincronizar():
             "sync_state": sync_state
         })
     
+    ano = request.args.get("ano", type=int) or (request.form.get("ano", type=int) if request.form else None)
+    mes = request.args.get("mes", type=int) or (request.form.get("mes", type=int) if request.form else None)
+
     sync_state["is_running"] = True
     sync_state["last_result"] = None
     sync_state["error"] = None
-    t = threading.Thread(target=_executar_etl_background, daemon=True)
+    t = threading.Thread(target=_executar_etl_background, args=(ano, mes), daemon=True)
     t.start()
     return jsonify({
         "status": "started",

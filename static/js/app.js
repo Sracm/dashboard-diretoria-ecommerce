@@ -3,6 +3,27 @@
  * Controle Executivo de Metas & Realizado Diário (Faturamento Líquido)
  */
 
+// ==========================================================================
+// Helper de formatação monetária limpa para eixos de gráficos
+// ==========================================================================
+function fmtEixoMoeda(v) {
+    if (v === null || v === undefined) return '';
+    if (v === 0) return 'R$ 0';
+    const abs = Math.abs(v);
+    if (abs >= 1000000) {
+        const m = v / 1000000;
+        return 'R$ ' + (m % 1 === 0 ? m.toFixed(0) : m.toFixed(1).replace('.', ',')) + 'M';
+    }
+    if (abs >= 1000) {
+        const k = v / 1000;
+        return 'R$ ' + (k % 1 === 0 ? k.toFixed(0) : k.toFixed(1).replace('.', ',')) + 'k';
+    }
+    return 'R$ ' + v;
+}
+if (typeof window !== 'undefined') {
+    window.fmtEixoMoeda = fmtEixoMoeda;
+}
+
 let chartInstances = {};
 let currentMatrizData = null;
 let currentParams = null;
@@ -582,16 +603,18 @@ function atualizarDisplayTemporizador() {
 }
 
 function registrarUltimaAtualizacao(metaETL = null) {
-    const lastUpdateEl = document.getElementById('last-update');
-    if (lastUpdateEl) {
-        if (metaETL && metaETL.timestamp) {
-            lastUpdateEl.textContent = `Última carga: ${metaETL.timestamp}`;
-            lastUpdateEl.title = `Dados sincronizados via MariaDB (${metaETL.linhas_vendas ? metaETL.linhas_vendas.toLocaleString('pt-BR') : ''} vendas)`;
-        } else {
-            const agora = new Date();
-            lastUpdateEl.textContent = `Atualizado: ${agora.toLocaleTimeString('pt-BR')}`;
+    const lastUpdateEls = document.querySelectorAll('.last-update, #last-update');
+    const agora = new Date();
+    const texto = (metaETL && metaETL.timestamp) 
+        ? `Atualizado: ${metaETL.timestamp}` 
+        : `Atualizado: ${agora.toLocaleTimeString('pt-BR')}`;
+    
+    lastUpdateEls.forEach(el => {
+        el.textContent = texto;
+        if (metaETL && metaETL.linhas_vendas) {
+            el.title = `Dados sincronizados via MariaDB (${metaETL.linhas_vendas.toLocaleString('pt-BR')} vendas)`;
         }
-    }
+    });
     nextUpdateSeconds = REFRESH_INTERVAL_SECONDS;
     atualizarDisplayTemporizador();
 }
@@ -850,12 +873,10 @@ function renderizarSeisGraficos(graficos) {
             chartInstances[c.canvasId].destroy();
         }
 
-        const totalPontos = info.labels ? info.labels.length : 0;
-        // Quando visualizado o mês todo (>12 dias), removemos as bolinhas estáticas que
-        // embolavam as 3 curvas em um bloco ilegível. No hover, o ponto do dia acende com brilho.
-        const isMesLongo = totalPontos > 12;
-        const pRadius = isMesLongo ? 0 : 2.5;
-        const pRadiusFat = isMesLongo ? 0 : 3;
+                const totalPontos = info.labels ? info.labels.length : 0;
+        // Marcadores executivos refinados (estilo anel com núcleo de alto contraste e borda na cor da métrica)
+        const pRadius = totalPontos > 25 ? 2.5 : 3.5;
+        const pRadiusFat = totalPontos > 25 ? 3 : 4.5;
 
         const ctx = canvas.getContext('2d');
         chartInstances[c.canvasId] = new Chart(ctx, {
@@ -869,11 +890,15 @@ function renderizarSeisGraficos(graficos) {
                         borderColor: '#00E676',
                         backgroundColor: 'transparent',
                         borderWidth: 2,
-                        pointBackgroundColor: '#00E676',
-                        pointBorderColor: '#FFFFFF',
-                        pointBorderWidth: 1.5,
+                        pointStyle: 'circle',
+                        pointBackgroundColor: '#FFFFFF',
+                        pointBorderColor: '#00E676',
+                        pointBorderWidth: 2,
                         pointRadius: pRadius,
-                        pointHoverRadius: 6,
+                        pointHoverRadius: 7,
+                        pointHoverBackgroundColor: '#00E676',
+                        pointHoverBorderColor: '#FFFFFF',
+                        pointHoverBorderWidth: 2,
                         tension: 0.1
                     },
                     {
@@ -882,11 +907,15 @@ function renderizarSeisGraficos(graficos) {
                         borderColor: '#2979FF',
                         backgroundColor: 'transparent',
                         borderWidth: 2,
-                        pointBackgroundColor: '#2979FF',
-                        pointBorderColor: '#FFFFFF',
-                        pointBorderWidth: 1.5,
+                        pointStyle: 'circle',
+                        pointBackgroundColor: '#0F1117',
+                        pointBorderColor: '#2979FF',
+                        pointBorderWidth: 2,
                         pointRadius: pRadius,
-                        pointHoverRadius: 6,
+                        pointHoverRadius: 7,
+                        pointHoverBackgroundColor: '#2979FF',
+                        pointHoverBorderColor: '#FFFFFF',
+                        pointHoverBorderWidth: 2,
                         borderDash: [4, 4],
                         tension: 0.1
                     },
@@ -896,11 +925,15 @@ function renderizarSeisGraficos(graficos) {
                         borderColor: '#FF5252',
                         backgroundColor: 'rgba(255, 82, 82, 0.08)',
                         borderWidth: 2.5,
-                        pointBackgroundColor: '#FF5252',
-                        pointBorderColor: '#FFFFFF',
-                        pointBorderWidth: 2,
+                        pointStyle: 'circle',
+                        pointBackgroundColor: '#FFFFFF',
+                        pointBorderColor: '#FF5252',
+                        pointBorderWidth: 2.2,
                         pointRadius: pRadiusFat,
-                        pointHoverRadius: 7,
+                        pointHoverRadius: 8,
+                        pointHoverBackgroundColor: '#FF5252',
+                        pointHoverBorderColor: '#FFFFFF',
+                        pointHoverBorderWidth: 2.2,
                         fill: true,
                         tension: 0.1
                     }
@@ -947,28 +980,37 @@ function renderizarSeisGraficos(graficos) {
                         }
                     }
                 },
+                layout: {
+                    padding: {
+                        left: 4,
+                        right: 12,
+                        top: 10,
+                        bottom: 6
+                    }
+                },
                 scales: {
                     x: {
                         grid: {
                             color: (context) => {
                                 if (context.index !== undefined && (context.index + 1) % 5 === 0) {
-                                    return 'rgba(255, 255, 255, 0.09)';
+                                    return 'rgba(255, 255, 255, 0.08)';
                                 }
                                 return 'rgba(255, 255, 255, 0.025)';
                             },
                             drawTicks: false
                         },
                         ticks: {
-                            autoSkip: false, // EXIBE TODOS OS DIAS (1 a 31) SEM PULAR NENHUM DIA!
-                            maxRotation: isMesLongo ? 45 : 0,
-                            minRotation: isMesLongo ? 45 : 0,
-                            color: '#9E9EA8',
+                            autoSkip: totalPontos > 22,
+                            maxTicksLimit: totalPontos > 22 ? 16 : totalPontos,
+                            maxRotation: 0,
+                            minRotation: 0,
+                            color: '#94A3B8',
                             font: {
                                 family: 'Montserrat',
-                                size: totalPontos > 26 ? 8 : (totalPontos > 15 ? 8.5 : 9.5),
+                                size: totalPontos > 20 ? 8.5 : 9.5,
                                 weight: '600'
                             },
-                            padding: 2,
+                            padding: 6,
                             callback: function(val, index) {
                                 const lbl = this.getLabelForValue(val);
                                 return lbl ? String(lbl).replace(/^D/i, '') : val;
@@ -976,11 +1018,17 @@ function renderizarSeisGraficos(graficos) {
                         }
                     },
                     y: {
-                        grid: { color: 'rgba(255, 255, 255, 0.04)' },
+                        beginAtZero: true,
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.04)',
+                            drawTicks: false
+                        },
                         ticks: {
-                            color: '#666672',
-                            font: { family: 'Montserrat', size: 9 },
-                            callback: (v) => 'R$ ' + (v >= 1000 ? (v / 1000).toFixed(0) + 'k' : v)
+                            maxTicksLimit: 5,
+                            color: '#94A3B8',
+                            font: { family: 'Montserrat', size: 9.5, weight: '600' },
+                            padding: 8,
+                            callback: (v) => fmtEixoMoeda(v)
                         }
                     }
                 }
@@ -1132,11 +1180,12 @@ function renderizarModalCanal(canalKey, modo) {
                         borderColor: '#00E676',
                         backgroundColor: 'transparent',
                         borderWidth: 2.5,
-                        pointBackgroundColor: '#00E676',
-                        pointBorderColor: '#FFFFFF',
-                        pointBorderWidth: 1.5,
-                        pointRadius: totalPontos > 20 ? 1 : 3,
-                        pointHoverRadius: 7,
+                        pointStyle: 'circle',
+                        pointBackgroundColor: '#FFFFFF',
+                        pointBorderColor: '#00E676',
+                        pointBorderWidth: 2,
+                        pointRadius: totalPontos > 20 ? 2.5 : 4,
+                        pointHoverRadius: 7.5,
                         tension: 0.1
                     },
                     {
@@ -1145,11 +1194,12 @@ function renderizarModalCanal(canalKey, modo) {
                         borderColor: '#2979FF',
                         backgroundColor: 'transparent',
                         borderWidth: 2.5,
-                        pointBackgroundColor: '#2979FF',
-                        pointBorderColor: '#FFFFFF',
-                        pointBorderWidth: 1.5,
-                        pointRadius: totalPontos > 20 ? 1 : 3,
-                        pointHoverRadius: 7,
+                        pointStyle: 'circle',
+                        pointBackgroundColor: '#0F1117',
+                        pointBorderColor: '#2979FF',
+                        pointBorderWidth: 2,
+                        pointRadius: totalPontos > 20 ? 2.5 : 4,
+                        pointHoverRadius: 7.5,
                         borderDash: [5, 5],
                         tension: 0.1
                     },
@@ -1159,11 +1209,12 @@ function renderizarModalCanal(canalKey, modo) {
                         borderColor: '#FF5252',
                         backgroundColor: 'rgba(255, 82, 82, 0.12)',
                         borderWidth: 3,
-                        pointBackgroundColor: '#FF5252',
-                        pointBorderColor: '#FFFFFF',
-                        pointBorderWidth: 2,
-                        pointRadius: totalPontos > 20 ? 2 : 4,
-                        pointHoverRadius: 8,
+                        pointStyle: 'circle',
+                        pointBackgroundColor: '#FFFFFF',
+                        pointBorderColor: '#FF5252',
+                        pointBorderWidth: 2.5,
+                        pointRadius: totalPontos > 20 ? 3.5 : 5,
+                        pointHoverRadius: 8.5,
                         fill: true,
                         tension: 0.1
                     }
@@ -1222,10 +1273,12 @@ function renderizarModalCanal(canalKey, modo) {
                             drawTicks: false
                         },
                         ticks: {
-                            autoSkip: false,
+                            autoSkip: true,
+                            maxTicksLimit: 16,
                             maxRotation: 0,
                             minRotation: 0,
-                            color: '#A0A0B0',
+                            color: '#94A3B8',
+                            padding: 8,
                             font: { family: 'Montserrat', size: 10, weight: '600' },
                             callback: function(val, index) {
                                 const lbl = this.getLabelForValue(val);
@@ -1234,11 +1287,14 @@ function renderizarModalCanal(canalKey, modo) {
                         }
                     },
                     y: {
-                        grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                        beginAtZero: true,
+                        grid: { color: 'rgba(255, 255, 255, 0.05)', drawTicks: false },
                         ticks: {
-                            color: '#888894',
-                            font: { family: 'Montserrat', size: 10 },
-                            callback: (v) => 'R$ ' + (v >= 1000 ? (v / 1000).toLocaleString('pt-BR') + 'k' : v)
+                            maxTicksLimit: 6,
+                            color: '#94A3B8',
+                            font: { family: 'Montserrat', size: 10, weight: '600' },
+                            padding: 10,
+                            callback: (v) => fmtEixoMoeda(v)
                         }
                     }
                 }
@@ -1324,11 +1380,14 @@ function renderizarModalCanal(canalKey, modo) {
                         }
                     },
                     y: {
-                        grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                        beginAtZero: true,
+                        grid: { color: 'rgba(255, 255, 255, 0.05)', drawTicks: false },
                         ticks: {
-                            color: '#888894',
-                            font: { family: 'Montserrat', size: 10 },
-                            callback: (v) => 'R$ ' + (v >= 1000 ? (v / 1000).toLocaleString('pt-BR') + 'k' : v)
+                            maxTicksLimit: 6,
+                            color: '#94A3B8',
+                            font: { family: 'Montserrat', size: 10, weight: '600' },
+                            padding: 10,
+                            callback: (v) => fmtEixoMoeda(v)
                         }
                     }
                 }
@@ -1470,62 +1529,174 @@ function renderizarHistoricoMensal(hist) {
     const labels = hist.map(h => h.mes_abrev);
     const last = hist[hist.length - 1]; // Mês corrente selecionado
 
-    // 1. Quantidade de Itens Vendidos
-    const itensDados = hist.map(h => h.itens);
-    const totalItens = itensDados.reduce((a, b) => a + (Number(b) || 0), 0);
+    // 1. Quantidade de Itens Vendidos (Linha 1, Coluna 1)
+    const itensDados26 = hist.map(h => h.itens);
+    const itensDados25 = hist.map(h => h.itens_2025 !== undefined ? h.itens_2025 : null);
+    const totalItens26 = itensDados26.reduce((a, b) => a + (Number(b) || 0), 0);
+    const totalItens25 = itensDados25.reduce((a, b) => a + (Number(b) || 0), 0);
+    const varItensYoY = totalItens25 > 0 ? ((totalItens26 - totalItens25) / totalItens25 * 100).toFixed(1) : '0.0';
+
     criarGraficoLinhaArea(
-        'chart-hist-itens', labels, itensDados,
-        '#00E676', 'rgba(0, 230, 118, 0.15)', false, 'Itens Vendidos'
+        'chart-hist-itens', labels, itensDados26, itensDados25,
+        '#00E676', 'rgba(0, 230, 118, 0.12)', false, 'Itens Vendidos', 'itens', hist
     );
     const footItensTotal = document.getElementById('foot-hist-itens-total');
     const footItensAtual = document.getElementById('foot-hist-itens-atual');
-    if (footItensTotal) footItensTotal.textContent = `Acumulado: ${fmtInt(totalItens)}`;
-    if (footItensAtual) footItensAtual.textContent = `Mês Atual: ${fmtInt(last.itens)}`;
+    if (footItensTotal) footItensTotal.innerHTML = `Acum. 26: <strong>${fmtInt(totalItens26)}</strong> <span style="color:#94A3B8;font-weight:500;">(25: ${fmtInt(totalItens25)} | ${varItensYoY >= 0 ? '+' : ''}${varItensYoY}%)</span>`;
+    if (footItensAtual) footItensAtual.innerHTML = `Mês Atual: <strong>${fmtInt(last.itens)}</strong> <span style="color:${(last.itens_diff_2025_pct || 0) >= 0 ? '#00E676' : '#FF5252'};font-weight:600;">(YoY ${(last.itens_diff_2025_pct || 0) >= 0 ? '+' : ''}${(last.itens_diff_2025_pct || 0).toFixed(1)}%)</span>`;
 
-    // 2. Faturamento Líquido (R$)
-    const fatDados = hist.map(h => h.faturamento);
-    const totalFat = fatDados.reduce((a, b) => a + (Number(b) || 0), 0);
+    // 2. Faturamento Líquido (R$) (Linha 1, Coluna 2)
+    const fatDados26 = hist.map(h => h.faturamento);
+    const fatDados25 = hist.map(h => h.faturamento_2025 !== undefined ? h.faturamento_2025 : null);
+    const totalFat26 = fatDados26.reduce((a, b) => a + (Number(b) || 0), 0);
+    const totalFat25 = fatDados25.reduce((a, b) => a + (Number(b) || 0), 0);
+    const varFatYoY = totalFat25 > 0 ? ((totalFat26 - totalFat25) / totalFat25 * 100).toFixed(1) : '0.0';
+
     criarGraficoLinhaArea(
-        'chart-hist-fat', labels, fatDados,
-        '#CB9727', 'rgba(203, 151, 39, 0.15)', true, 'Faturamento'
+        'chart-hist-fat', labels, fatDados26, fatDados25,
+        '#CB9727', 'rgba(203, 151, 39, 0.12)', true, 'Faturamento', 'fat', hist
     );
     const footFatTotal = document.getElementById('foot-hist-fat-total');
     const footFatAtual = document.getElementById('foot-hist-fat-atual');
-    if (footFatTotal) footFatTotal.textContent = `Acumulado: R$ ${fmtMoedaZero(totalFat)}`;
-    if (footFatAtual) footFatAtual.textContent = `Mês Atual: R$ ${fmtMoedaZero(last.faturamento)}`;
+    if (footFatTotal) footFatTotal.innerHTML = `Acum. 26: <strong>R$ ${fmtMoedaZero(totalFat26)}</strong> <span style="color:#94A3B8;font-weight:500;">(25: R$ ${fmtMoedaZero(totalFat25)} | ${varFatYoY >= 0 ? '+' : ''}${varFatYoY}%)</span>`;
+    if (footFatAtual) footFatAtual.innerHTML = `Mês Atual: <strong>R$ ${fmtMoedaZero(last.faturamento)}</strong> <span style="color:${(last.faturamento_diff_2025_pct || 0) >= 0 ? '#00E676' : '#FF5252'};font-weight:600;">(YoY ${(last.faturamento_diff_2025_pct || 0) >= 0 ? '+' : ''}${(last.faturamento_diff_2025_pct || 0).toFixed(1)}%)</span>`;
 
-    // 3. Ticket Médio Líquido (R$)
-    const ticketDados = hist.map(h => h.ticket_medio);
-    const mediaTicket = totalItens > 0 ? (totalFat / totalItens) : 0;
+    // 3. Ticket Médio Líquido (R$) (Linha 2, Coluna 1)
+    const ticketDados26 = hist.map(h => h.ticket_medio);
+    const ticketDados25 = hist.map(h => h.ticket_medio_2025 !== undefined ? h.ticket_medio_2025 : null);
+    const mediaTicket26 = totalItens26 > 0 ? (totalFat26 / totalItens26) : 0;
+    const mediaTicket25 = totalItens25 > 0 ? (totalFat25 / totalItens25) : 0;
+    const varTicketYoY = mediaTicket25 > 0 ? ((mediaTicket26 - mediaTicket25) / mediaTicket25 * 100).toFixed(1) : '0.0';
+
     criarGraficoLinhaArea(
-        'chart-hist-ticket', labels, ticketDados,
-        '#64B5F6', 'rgba(100, 181, 246, 0.15)', true, 'Ticket Médio'
+        'chart-hist-ticket', labels, ticketDados26, ticketDados25,
+        '#64B5F6', 'rgba(100, 181, 246, 0.12)', true, 'Ticket Médio', 'ticket', hist
     );
     const footTicketTotal = document.getElementById('foot-hist-ticket-total');
     const footTicketAtual = document.getElementById('foot-hist-ticket-atual');
-    if (footTicketTotal) footTicketTotal.textContent = `Médio Geral: R$ ${fmtMoeda(mediaTicket)}`;
-    if (footTicketAtual) footTicketAtual.textContent = `Mês Atual: R$ ${fmtMoeda(last.ticket_medio)}`;
+    if (footTicketTotal) footTicketTotal.innerHTML = `Médio 26: <strong>R$ ${fmtMoeda(mediaTicket26)}</strong> <span style="color:#94A3B8;font-weight:500;">(25: R$ ${fmtMoeda(mediaTicket25)} | ${varTicketYoY >= 0 ? '+' : ''}${varTicketYoY}%)</span>`;
+    if (footTicketAtual) footTicketAtual.innerHTML = `Mês Atual: <strong>R$ ${fmtMoeda(last.ticket_medio)}</strong> <span style="color:${(last.ticket_medio_diff_2025_pct || 0) >= 0 ? '#00E676' : '#FF5252'};font-weight:600;">(YoY ${(last.ticket_medio_diff_2025_pct || 0) >= 0 ? '+' : ''}${(last.ticket_medio_diff_2025_pct || 0).toFixed(1)}%)</span>`;
 
-    // 4. Devoluções Mensais (R$)
-    const devDados = hist.map(h => h.devolucoes);
-    const totalDev = devDados.reduce((a, b) => a + (Number(b) || 0), 0);
+    // 4. Devoluções Mensais (R$) (Linha 2, Coluna 2)
+    const devDados26 = hist.map(h => h.devolucoes);
+    const devDados25 = hist.map(h => h.devolucoes_2025 !== undefined ? h.devolucoes_2025 : null);
+    const totalDev26 = devDados26.reduce((a, b) => a + (Number(b) || 0), 0);
+    const totalDev25 = devDados25.reduce((a, b) => a + (Number(b) || 0), 0);
+    const varDevYoY = totalDev25 > 0 ? ((totalDev26 - totalDev25) / totalDev25 * 100).toFixed(1) : '0.0';
+
     criarGraficoLinhaArea(
-        'chart-hist-dev', labels, devDados,
-        '#FF5252', 'rgba(255, 82, 82, 0.15)', true, 'Devoluções'
+        'chart-hist-dev', labels, devDados26, devDados25,
+        '#FF5252', 'rgba(255, 82, 82, 0.12)', true, 'Devoluções', 'dev', hist
     );
     const footDevTotal = document.getElementById('foot-hist-dev-total');
     const footDevAtual = document.getElementById('foot-hist-dev-atual');
-    if (footDevTotal) footDevTotal.textContent = `Acumulado: R$ ${fmtMoedaZero(totalDev)}`;
-    if (footDevAtual) footDevAtual.textContent = `Mês Atual: R$ ${fmtMoedaZero(last.devolucoes)}`;
+    if (footDevTotal) footDevTotal.innerHTML = `Acum. 26: <strong>R$ ${fmtMoedaZero(totalDev26)}</strong> <span style="color:#94A3B8;font-weight:500;">(25: R$ ${fmtMoedaZero(totalDev25)} | ${varDevYoY >= 0 ? '+' : ''}${varDevYoY}%)</span>`;
+    if (footDevAtual) footDevAtual.innerHTML = `Mês Atual: <strong>R$ ${fmtMoedaZero(last.devolucoes)}</strong> <span style="color:${(last.devolucoes_diff_2025_pct || 0) <= 0 ? '#00E676' : '#FF5252'};font-weight:600;">(YoY ${(last.devolucoes_diff_2025_pct || 0) >= 0 ? '+' : ''}${(last.devolucoes_diff_2025_pct || 0).toFixed(1)}%)</span>`;
 }
 
-function criarGraficoLinhaArea(canvasId, labels, dataVals, color, bgColor, isMoeda, metricName) {
+function criarGraficoLinhaArea(canvasId, labels, dataVals2026, dataVals2025, color, bgColor, isMoeda, metricName, metricType, rawHist) {
     const canvas = document.getElementById(canvasId);
     if (!canvas) return;
 
     if (chartInstances[canvasId]) {
         chartInstances[canvasId].destroy();
     }
+
+    // Configuração de escala específica por métrica
+    let yScaleConfig = {
+        grid: { color: 'rgba(255, 255, 255, 0.04)', drawTicks: false },
+        ticks: {
+            maxTicksLimit: 5,
+            color: '#94A3B8',
+            font: { family: 'Montserrat', size: 9.5, weight: '600' },
+            padding: 8,
+            callback: (v) => isMoeda ? fmtEixoMoeda(v) : (v >= 1000 ? (v / 1000).toFixed(0) + 'k' : v)
+        }
+    };
+
+    if (metricType === 'ticket') {
+        // Escala dinâmica para Ticket Médio considerando ambos os anos 2026 e 2025
+        const allVals = [...(dataVals2026 || []), ...(dataVals2025 || [])].filter(v => v !== null && v !== undefined && !isNaN(v) && v > 0);
+        const minVal = allVals.length ? Math.min(...allVals) : 300;
+        const maxVal = allVals.length ? Math.max(...allVals) : 400;
+        
+        yScaleConfig.beginAtZero = false;
+        yScaleConfig.min = Math.max(0, Math.floor((minVal - 18) / 10) * 10);
+        yScaleConfig.max = Math.ceil((maxVal + 22) / 10) * 10;
+        yScaleConfig.ticks.stepSize = 15;
+        yScaleConfig.ticks.callback = (v) => 'R$ ' + Math.round(v);
+    } else {
+        yScaleConfig.beginAtZero = true;
+        yScaleConfig.grace = '22%';
+    }
+
+    // Plugin inline para desenhar valores numéricos sobre cada ponto do dataset 2026 (Ano Atual)
+    // Mantém o design limpo e sem sobreposição de badges
+    const pointLabelsPlugin = {
+        id: 'pointLabels_' + canvasId,
+        afterDatasetsDraw(chart) {
+            const ctx = chart.ctx;
+            const chartArea = chart.chartArea;
+            if (!chartArea) return;
+
+            // Renderiza apenas para o dataset 0 (2026)
+            const dataset = chart.data.datasets[0];
+            const meta = chart.getDatasetMeta(0);
+            if (!meta || meta.hidden) return;
+
+            meta.data.forEach((element, idx) => {
+                const val = dataset.data[idx];
+                if (val === null || val === undefined || isNaN(val)) return;
+
+                let txt = (metricType === 'ticket' || canvasId === 'chart-hist-ticket') ? fmtMoeda(Number(val)) : fmtInt(Math.round(val));
+
+                ctx.save();
+                ctx.font = '700 9.5px Montserrat, sans-serif';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+
+                const textMetrics = ctx.measureText(txt);
+                const textWidth = textMetrics.width;
+                const pillPadX = 5;
+                const pillWidth = textWidth + (pillPadX * 2);
+                const pillHeight = 17;
+
+                // Posiciona o pill acima do ponto com respiro elegante
+                let pillY = element.y - 19 - (pillHeight / 2);
+                let textY = element.y - 19;
+                if (element.y < 38) {
+                    pillY = element.y + 19 - (pillHeight / 2);
+                    textY = element.y + 19;
+                }
+
+                // Clamping horizontal estrito
+                const minX = chartArea.left + 2;
+                const maxX = chartArea.right - pillWidth - 2;
+                let pillX = element.x - (pillWidth / 2);
+                if (pillX < minX) pillX = minX;
+                if (pillX > maxX) pillX = maxX;
+                const centerX = pillX + (pillWidth / 2);
+
+                // Badge de fundo dark com contorno fino na cor da linha 2026
+                ctx.fillStyle = 'rgba(15, 17, 23, 0.92)';
+                ctx.strokeStyle = color;
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                if (ctx.roundRect) {
+                    ctx.roundRect(pillX, pillY, pillWidth, pillHeight, 4);
+                } else {
+                    ctx.rect(pillX, pillY, pillWidth, pillHeight);
+                }
+                ctx.fill();
+                ctx.stroke();
+
+                // Texto em branco puro com nitidez máxima
+                ctx.fillStyle = '#FFFFFF';
+                ctx.fillText(txt, centerX, textY);
+                ctx.restore();
+            });
+        }
+    };
 
     const ctx = canvas.getContext('2d');
     chartInstances[canvasId] = new Chart(ctx, {
@@ -1534,19 +1705,47 @@ function criarGraficoLinhaArea(canvasId, labels, dataVals, color, bgColor, isMoe
             labels: labels,
             datasets: [
                 {
-                    label: metricName,
-                    data: dataVals,
+                    label: '2026 (Atual)',
+                    data: dataVals2026,
                     borderColor: color,
                     backgroundColor: bgColor,
-                    borderWidth: 2.2,
-                    pointBackgroundColor: color,
-                    pointRadius: 3.5,
-                    pointHoverRadius: 6,
+                    borderWidth: 2.8,
+                    pointStyle: 'circle',
+                    pointBackgroundColor: '#FFFFFF',
+                    pointBorderColor: color,
+                    pointBorderWidth: 2.5,
+                    pointRadius: 5.5,
+                    pointHoverRadius: 8.5,
+                    pointHoverBackgroundColor: color,
+                    pointHoverBorderColor: '#FFFFFF',
+                    pointHoverBorderWidth: 2.5,
                     fill: true,
-                    tension: 0.25
+                    tension: 0.25,
+                    order: 1
+                },
+                {
+                    label: '2025 (Anterior)',
+                    data: dataVals2025,
+                    borderColor: '#94A3B8',
+                    backgroundColor: 'transparent',
+                    borderWidth: 2.0,
+                    borderDash: [5, 4],
+                    pointStyle: 'circle',
+                    pointBackgroundColor: '#0F1117',
+                    pointBorderColor: '#94A3B8',
+                    pointBorderWidth: 2.0,
+                    pointRadius: 4.5,
+                    pointHoverRadius: 7.5,
+                    pointHoverBackgroundColor: '#94A3B8',
+                    pointHoverBorderColor: '#FFFFFF',
+                    pointHoverBorderWidth: 2.0,
+                    fill: false,
+                    tension: 0.25,
+                    order: 2
                 }
             ]
         },
+        plugins: [pointLabelsPlugin],
         options: {
             responsive: true,
             maintainAspectRatio: false,
@@ -1562,34 +1761,58 @@ function criarGraficoLinhaArea(canvasId, labels, dataVals, color, bgColor, isMoe
                     bodyColor: '#FFFFFF',
                     borderColor: 'rgba(255, 255, 255, 0.1)',
                     borderWidth: 1,
-                    padding: 9,
+                    padding: 10,
+                    boxPadding: 4,
+                    usePointStyle: true,
                     callbacks: {
+                        title: (items) => {
+                            const idx = items[0].dataIndex;
+                            const mesNome = rawHist && rawHist[idx] ? rawHist[idx].mes_nome : labels[idx].toUpperCase();
+                            return `${mesNome} — Comparativo Anual`;
+                        },
                         label: (ctx) => {
                             const val = ctx.raw || 0;
-                            return isMoeda ? ` ${metricName}: R$ ${fmtMoeda(val)}` : ` ${metricName}: ${fmtInt(val)} itens`;
+                            const is2026 = ctx.datasetIndex === 0;
+                            const anoLbl = is2026 ? '2026' : '2025';
+                            const formatted = isMoeda ? `R$ ${fmtMoeda(val)}` : `${fmtInt(val)} itens`;
+                            return ` ${anoLbl}: ${formatted}`;
+                        },
+                        afterBody: (items) => {
+                            const idx = items[0].dataIndex;
+                            const v26 = dataVals2026[idx] || 0;
+                            const v25 = (dataVals2025 && dataVals2025[idx]) || 0;
+                            if (v25 > 0) {
+                                const diff = ((v26 - v25) / v25 * 100).toFixed(1);
+                                const sign = diff >= 0 ? '+' : '';
+                                const icon = diff >= 0 ? '▲' : '▼';
+                                const indicator = metricType === 'dev'
+                                    ? (diff <= 0 ? ' (Melhoria)' : ' (Atenção)')
+                                    : (diff >= 0 ? ' (Crescimento)' : ' (Queda)');
+                                return [`───────────────────────────`, `${icon} Variação YoY: ${sign}${diff}%${indicator}`];
+                            }
+                            return [];
                         }
                     }
                 }
             },
+            layout: {
+                padding: { left: 16, right: 28, top: 28, bottom: 8 }
+            },
             scales: {
                 x: {
                     grid: { display: false },
-                    ticks: { color: '#888894', font: { family: 'Montserrat', size: 9 } }
-                },
-                y: {
-                    grid: { color: 'rgba(255, 255, 255, 0.04)' },
                     ticks: {
-                        color: '#666672',
-                        font: { family: 'Montserrat', size: 8 },
-                        callback: (v) => isMoeda ? (v >= 1000 ? (v / 1000).toFixed(0) + 'k' : v) : v
+                        color: '#94A3B8',
+                        font: { family: 'Montserrat', size: 10, weight: '700' },
+                        padding: 6
                     }
-                }
+                },
+                y: yScaleConfig
             }
         }
     });
 }
 
-// Helper para badge de ranking e evolução de posições vs mês anterior (▲ subiu / ▼ caiu / = igual / NOVO)
 function getRankBadge(rank, diff) {
     if (rank === null || rank === undefined) return '<span class="text-muted" style="font-size: 10px;">-</span>';
     
@@ -1987,6 +2210,14 @@ function filtrarPagamentos(termo) {
 function renderizarPagamentosPorCanal(data) {
     if (data) {
         currentPagamentosCanalData = [...data];
+        // Preset inicial: expande apenas VTEX e mantém todos os outros canais recolhidos por padrão
+        collapsedPaymentNodes.clear();
+        currentPagamentosCanalData.forEach(c => {
+            const isVtex = (c.id === 'pay_canal_vtex') || (c.canal && c.canal.toUpperCase().includes('VTEX'));
+            if (!isVtex) {
+                collapsedPaymentNodes.add(c.id);
+            }
+        });
     }
     if (!currentPagamentosCanalData) return;
 
@@ -2935,11 +3166,13 @@ function renderizarGraficoConversao() {
                 ySessoes: {
                     type: 'linear',
                     position: 'left',
-                    grid: { color: 'rgba(255, 255, 255, 0.03)' },
+                    grid: { color: 'rgba(255, 255, 255, 0.03)', drawTicks: false },
                     ticks: {
+                        maxTicksLimit: 5,
+                        padding: 8,
                         color: '#38BDF8',
                         font: { family: 'Montserrat', size: 9.5, weight: '600' },
-                        callback: (v) => (v >= 1000 ? (v / 1000).toFixed(0) + 'k' : v)
+                        callback: (v) => (v >= 1000000 ? (v / 1000000).toFixed(1).replace('.', ',') + 'M' : (v >= 1000 ? (v / 1000).toFixed(0) + 'k' : v))
                     },
                     title: {
                         display: false
@@ -2950,6 +3183,8 @@ function renderizarGraficoConversao() {
                     position: 'right',
                     grid: { drawOnChartArea: false },
                     ticks: {
+                        maxTicksLimit: 5,
+                        padding: 8,
                         color: '#00E676',
                         font: { family: 'Montserrat', size: 9.5, weight: '700' },
                         callback: (v) => v.toFixed(1) + '%'
@@ -2983,10 +3218,18 @@ function initSyncButton() {
         btnSync.classList.add('is-syncing');
         if (textSync) textSync.textContent = 'Sincronizando...';
 
-        showToast('Sincronização com Oracle Sankhya iniciada em segundo plano...', 'info');
+        showToast('Consultando Sankhya e atualizando dados...', 'info');
+
+        // Recarrega imediatamente os dados do dashboard (force refresh)
+        carregarDados(true);
 
         try {
-            const resp = await fetch('/api/sincronizar', { method: 'POST' });
+            const anos = getAnosSelecionados();
+            const meses = getMesesSelecionados();
+            const anoParam = anos.length > 0 ? anos[0] : new Date().getFullYear();
+            const mesParam = meses.length > 0 ? meses[meses.length - 1] : (new Date().getMonth() + 1);
+
+            const resp = await fetch(`/api/sincronizar?ano=${anoParam}&mes=${mesParam}`, { method: 'POST' });
             const data = await resp.json();
 
             // Inicia polling de status
@@ -3002,11 +3245,11 @@ function initSyncButton() {
                         if (textSync) textSync.textContent = 'Sincronizar';
 
                         if (stData.sync_state.last_result === 'sucesso') {
-                            showToast('Dados sincronizados com sucesso no MariaDB!', 'success');
+                            showToast('Dados sincronizados com sucesso!', 'success');
                             if (stData.ultima_atualizacao) {
                                 registrarUltimaAtualizacao(stData.ultima_atualizacao);
                             }
-                            // Recarrega o dashboard com dados novos
+                            // Recarrega o dashboard com os dados frescos do Sankhya
                             carregarDados(true);
                         } else {
                             showToast('Aviso: Falha na sincronização. Verifique os logs.', 'error');
@@ -3015,15 +3258,15 @@ function initSyncButton() {
                 } catch (pollErr) {
                     console.error('Erro ao verificar status do sync:', pollErr);
                 }
-            }, 3000);
+            }, 2000);
 
-            // Timeout de segurança para reabilitar botão após 2.5 min
+            // Timeout de segurança para reabilitar botão após 60s
             setTimeout(() => {
                 clearInterval(pollInterval);
                 btnSync.disabled = false;
                 btnSync.classList.remove('is-syncing');
                 if (textSync) textSync.textContent = 'Sincronizar';
-            }, 150000);
+            }, 60000);
 
         } catch (e) {
             console.error('Erro ao solicitar sincronização:', e);
