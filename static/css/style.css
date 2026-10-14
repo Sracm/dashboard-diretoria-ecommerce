@@ -4668,3 +4668,92 @@ span[id^="kpi-meta-"],
 .daily-item strong[style*="#00E676"] {
     color: #00E676 !important;
 }
+
+
+/* === REDISTRIBUIÇÃO DE MÉTRICAS EM 3 COLUNAS E REDUÇÃO DO TAMANHO DOS CARDS === */
+.canal-chart-card {
+    padding: 10px 14px 10px 14px !important;
+}
+
+.canal-perf-strip {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr 1fr !important;
+    gap: 12px !important;
+    background: rgba(255, 255, 255, 0.02) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    border-radius: var(--radius-sm) !important;
+    padding: 10px 14px !important;
+    margin-bottom: 8px !important;
+}
+
+.canal-perf-col {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 5px !important;
+}
+
+.canal-perf-col:nth-child(1),
+.canal-perf-col:nth-child(2) {
+    border-right: 1px solid rgba(255, 255, 255, 0.06) !important;
+    padding-right: 10px !important;
+}
+
+.perf-fat-main {
+    font-size: 1.20rem !important;
+    font-weight: 900 !important;
+    color: #FF5252 !important;
+    letter-spacing: -0.4px !important;
+    font-family: var(--font-number) !important;
+    white-space: nowrap !important;
+}
+
+.perf-ant-main {
+    font-size: 1.20rem !important;
+    font-weight: 800 !important;
+    color: #64B5F6 !important;
+    letter-spacing: -0.4px !important;
+    font-family: var(--font-number) !important;
+    white-space: nowrap !important;
+}
+
+.perf-proj-main {
+    font-size: 1.20rem !important;
+    font-weight: 900 !important;
+    letter-spacing: -0.4px !important;
+    font-family: var(--font-number) !important;
+    color: #FFB300 !important;
+    white-space: nowrap !important;
+}
+
+.perf-tag {
+    font-size: 0.65rem !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.6px !important;
+    text-transform: uppercase !important;
+    color: #8E8E93 !important;
+}
+
+.perf-daily-metrics {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 2px !important;
+    font-size: 0.70rem !important;
+    text-align: right !important;
+}
+
+.canal-chart-container {
+    height: 175px !important;
+    width: 100% !important;
+}
+
+.channels-charts-grid.grid-2col .canal-chart-container {
+    height: 175px !important;
+}
+
+.channels-charts-grid.grid-1col .canal-chart-container {
+    height: 175px !important;
+}
+
+.channels-charts-grid.grid-3col .canal-chart-container {
+    height: 175px !important;
+}

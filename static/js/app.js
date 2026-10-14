@@ -841,6 +841,28 @@ function renderizarSeisGraficos(graficos) {
             perfBadge.className = `perf-status-pill ${dentro ? 'dentro' : 'fora'}`;
         }
         
+        // 1.5. Atualizar Comparativo com Mês Anterior no topo do Card
+        const fatAtual = Number(info.total_fat_periodo) || 0;
+        const fatAnt = Number(info.total_fat_ant_periodo) || 0;
+        const diffVal = fatAtual - fatAnt;
+        const diffPct = fatAnt > 0 ? (diffVal / fatAnt * 100) : 0;
+        const isPos = diffVal >= 0;
+        const sign = isPos ? '+' : '';
+        
+        const perfAntVal = document.getElementById(`perf-ant-val-${s}`);
+        const perfAntDiffVal = document.getElementById(`perf-ant-diff-val-${s}`);
+        const perfAntDiffPct = document.getElementById(`perf-ant-diff-pct-${s}`);
+        
+        if (perfAntVal) perfAntVal.textContent = `R$ ${fmtMoedaZero(fatAnt)}`;
+        if (perfAntDiffVal) {
+            perfAntDiffVal.textContent = `${sign}R$ ${fmtMoedaZero(diffVal)}`;
+            perfAntDiffVal.style.color = isPos ? '#00E676' : '#FF5252';
+        }
+        if (perfAntDiffPct) {
+            perfAntDiffPct.textContent = `${sign}${diffPct.toFixed(1)}%`;
+            perfAntDiffPct.style.color = isPos ? '#00E676' : '#FF5252';
+        }
+
         // 2. Atualizar Projeção de Fechamento do Mês (Ritmo Atual de Vendas)
         const perfProjBadge = document.getElementById(`perf-proj-badge-${s}`);
         const perfProjVal = document.getElementById(`perf-proj-val-${s}`);
