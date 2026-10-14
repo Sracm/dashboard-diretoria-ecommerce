@@ -836,10 +836,8 @@ function renderizarSeisGraficos(graficos) {
         if (perfMetaDia) perfMetaDia.innerHTML = `Meta/dia: <strong>R$ ${fmtMoedaZero(info.meta_dia)}</strong>`;
         
         if (perfBadge) {
-            const dentro = info.atingimento_pct >= 100;
-            const diffPct = (info.atingimento_pct - 100).toFixed(1);
-            const diffSign = diffPct > 0 ? '+' : '';
-            perfBadge.textContent = dentro ? `Dentro da Meta (${diffSign}${diffPct}%)` : `Fora da Meta (${diffPct}%)`;
+            const dentro = (info.atingimento_pct || 0) >= 100;
+            perfBadge.textContent = dentro ? 'DENTRO DA META' : 'FORA DA META';
             perfBadge.className = `perf-status-pill ${dentro ? 'dentro' : 'fora'}`;
         }
         

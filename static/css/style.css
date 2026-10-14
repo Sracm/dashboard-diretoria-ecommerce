@@ -4546,3 +4546,125 @@ span[id^="kpi-meta-"],
     gap: 8px;
     flex-wrap: wrap;
 }
+
+
+/* === AJUSTE DE DESTAQUE: STATUS DA META E REDISTRIBUIÇÃO DE MÉTRICAS (2026-10-14) === */
+.canal-card-header {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    margin-bottom: 12px !important;
+}
+
+.canal-title-group {
+    display: flex !important;
+    align-items: center !important;
+    gap: 12px !important;
+    flex-wrap: wrap !important;
+}
+
+.canal-title {
+    font-size: 14px !important;
+    font-weight: 800 !important;
+    letter-spacing: 0.5px !important;
+    color: var(--text-light) !important;
+}
+
+.perf-status-pill {
+    font-size: 0.74rem !important;
+    font-weight: 800 !important;
+    letter-spacing: 0.6px !important;
+    padding: 5px 14px !important;
+    border-radius: 20px !important;
+    text-transform: uppercase !important;
+    white-space: nowrap !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    line-height: 1 !important;
+}
+
+.perf-status-pill.dentro {
+    background: rgba(0, 230, 118, 0.16) !important;
+    border: 1px solid rgba(0, 230, 118, 0.5) !important;
+    color: #00E676 !important;
+    box-shadow: 0 0 12px rgba(0, 230, 118, 0.22) !important;
+}
+
+.perf-status-pill.fora {
+    background: rgba(255, 82, 82, 0.16) !important;
+    border: 1px solid rgba(255, 82, 82, 0.5) !important;
+    color: #FF5252 !important;
+    box-shadow: 0 0 12px rgba(255, 82, 82, 0.22) !important;
+}
+
+.perf-fat-main {
+    font-size: 1.30rem !important;
+    font-weight: 900 !important;
+    color: #FF5252 !important;
+    letter-spacing: -0.5px !important;
+    font-family: var(--font-number) !important;
+    text-shadow: 0 0 10px rgba(255, 82, 82, 0.25) !important;
+    white-space: nowrap !important;
+}
+
+.perf-proj-main {
+    font-size: 1.30rem !important;
+    font-weight: 900 !important;
+    letter-spacing: -0.5px !important;
+    font-family: var(--font-number) !important;
+    color: #FFB300 !important;
+    white-space: nowrap !important;
+}
+
+.canal-perf-strip {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 16px !important;
+    background: rgba(255, 255, 255, 0.02) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    border-radius: var(--radius-sm) !important;
+    padding: 12px 16px !important;
+    margin-bottom: 12px !important;
+}
+
+.canal-perf-col {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 6px !important;
+}
+
+.canal-perf-col:first-child {
+    border-right: 1px solid rgba(255, 255, 255, 0.06) !important;
+    padding-right: 14px !important;
+}
+
+.perf-tag {
+    font-size: 0.70rem !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.6px !important;
+    text-transform: uppercase !important;
+    color: #8E8E93 !important;
+}
+
+.perf-daily-metrics {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 3px !important;
+    font-size: 0.72rem !important;
+    text-align: right !important;
+}
+
+.daily-item {
+    color: #A0A0AA !important;
+    white-space: nowrap !important;
+}
+
+.daily-item strong {
+    font-weight: 700 !important;
+    color: #FFFFFF !important;
+}
+
+.daily-item strong[style*="#00E676"] {
+    color: #00E676 !important;
+}

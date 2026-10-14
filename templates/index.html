@@ -13,7 +13,7 @@
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
     <!-- Estilos -->
-    <link rel="stylesheet" href="/static/css/style.css?v=20261014_fat_compact_v2">
+    <link rel="stylesheet" href="/static/css/style.css?v=20261014_meta_status_v5">
 </head>
 <body>
     <div class="app-layout">
@@ -404,21 +404,20 @@
                         <div class="canal-card-header">
                             <div class="canal-title-group">
                                 <span class="canal-title">TOTAL E-COMMERCE</span>
-                                <button type="button" class="btn-zoom-chart" onclick="abrirModalCanal('GERAL')" title="Ampliar gráfico Total E-commerce">
+                                <span id="perf-badge-geral" class="perf-status-pill dentro">DENTRO DA META</span>
+                            </div>
+                            <button type="button" class="btn-zoom-chart" onclick="abrirModalCanal('GERAL')" title="Ampliar gráfico Total E-commerce">
                                     <i data-lucide="maximize-2"></i>
                                 </button>
-                            </div>
                         </div>
                         <div class="canal-perf-strip">
                             <div class="canal-perf-col">
                                 <div class="perf-row-title">
                                     <span class="perf-tag">FATURAMENTO ATUAL</span>
-                                    <span id="perf-badge-geral" class="perf-status-pill dentro">Dentro (+0%)</span>
                                 </div>
                                 <div class="perf-row-body">
                                     <div class="perf-highlight">
                                         <span class="perf-fat-main" id="perf-fat-val-geral">R$ 0</span>
-                                        <span class="perf-pct-main status-badge" id="perf-ating-geral">0.0%</span>
                                     </div>
                                     <div class="perf-daily-metrics">
                                         <span class="daily-item" style="color: #A0A0AA;">Meta Período: <strong id="perf-meta-periodo-geral" style="color: #00E676;">R$ 0</strong></span>
@@ -434,7 +433,6 @@
                                 <div class="perf-row-body">
                                     <div class="perf-highlight">
                                         <span class="perf-proj-main gold-text" id="perf-proj-val-geral">R$ 0</span>
-                                        <span class="perf-pct-label" id="perf-proj-pct-geral">0.0% da Meta Mês</span>
                                     </div>
                                     <div class="perf-daily-metrics">
                                         <span class="daily-item" id="perf-meta-mes-geral">Meta Mês: <strong>R$ 0</strong></span>
@@ -457,21 +455,20 @@
                         <div class="canal-card-header">
                             <div class="canal-title-group">
                                 <span class="canal-title">MERCADO LIVRE</span>
-                                <button type="button" class="btn-zoom-chart" onclick="abrirModalCanal('MERCADO LIVRE')" title="Ampliar gráfico de Mercado Livre">
+                                <span id="perf-badge-ml" class="perf-status-pill dentro">DENTRO DA META</span>
+                            </div>
+                            <button type="button" class="btn-zoom-chart" onclick="abrirModalCanal('MERCADO LIVRE')" title="Ampliar gráfico de Mercado Livre">
                                     <i data-lucide="maximize-2"></i>
                                 </button>
-                            </div>
                         </div>
                         <div class="canal-perf-strip">
                             <div class="canal-perf-col">
                                 <div class="perf-row-title">
                                     <span class="perf-tag">FATURAMENTO ATUAL</span>
-                                    <span id="perf-badge-ml" class="perf-status-pill fora">Fora (0%)</span>
                                 </div>
                                 <div class="perf-row-body">
                                     <div class="perf-highlight">
                                         <span class="perf-fat-main" id="perf-fat-val-ml">R$ 0</span>
-                                        <span class="perf-pct-main status-badge" id="perf-ating-ml">0.0%</span>
                                     </div>
                                     <div class="perf-daily-metrics">
                                         <span class="daily-item" style="color: #A0A0AA;">Meta Período: <strong id="perf-meta-periodo-ml" style="color: #00E676;">R$ 0</strong></span>
@@ -487,7 +484,6 @@
                                 <div class="perf-row-body">
                                     <div class="perf-highlight">
                                         <span class="perf-proj-main gold-text" id="perf-proj-val-ml">R$ 0</span>
-                                        <span class="perf-pct-label" id="perf-proj-pct-ml">0.0% da Meta Mês</span>
                                     </div>
                                     <div class="perf-daily-metrics">
                                         <span class="daily-item" id="perf-meta-mes-ml">Meta Mês: <strong>R$ 0</strong></span>
@@ -510,21 +506,20 @@
                         <div class="canal-card-header">
                             <div class="canal-title-group">
                                 <span class="canal-title">VTEX (LOJA PRÓPRIA)</span>
-                                <button type="button" class="btn-zoom-chart" onclick="abrirModalCanal('VTEX')" title="Ampliar gráfico de VTEX">
+                                <span id="perf-badge-vtex" class="perf-status-pill dentro">DENTRO DA META</span>
+                            </div>
+                            <button type="button" class="btn-zoom-chart" onclick="abrirModalCanal('VTEX')" title="Ampliar gráfico de VTEX">
                                     <i data-lucide="maximize-2"></i>
                                 </button>
-                            </div>
                         </div>
                         <div class="canal-perf-strip">
                             <div class="canal-perf-col">
                                 <div class="perf-row-title">
                                     <span class="perf-tag">FATURAMENTO ATUAL</span>
-                                    <span id="perf-badge-vtex" class="perf-status-pill fora">Fora (0%)</span>
                                 </div>
                                 <div class="perf-row-body">
                                     <div class="perf-highlight">
                                         <span class="perf-fat-main" id="perf-fat-val-vtex">R$ 0</span>
-                                        <span class="perf-pct-main status-badge" id="perf-ating-vtex">0.0%</span>
                                     </div>
                                     <div class="perf-daily-metrics">
                                         <span class="daily-item" style="color: #A0A0AA;">Meta Período: <strong id="perf-meta-periodo-vtex" style="color: #00E676;">R$ 0</strong></span>
@@ -540,7 +535,6 @@
                                 <div class="perf-row-body">
                                     <div class="perf-highlight">
                                         <span class="perf-proj-main gold-text" id="perf-proj-val-vtex">R$ 0</span>
-                                        <span class="perf-pct-label" id="perf-proj-pct-vtex">0.0% da Meta Mês</span>
                                     </div>
                                     <div class="perf-daily-metrics">
                                         <span class="daily-item" id="perf-meta-mes-vtex">Meta Mês: <strong>R$ 0</strong></span>
@@ -563,21 +557,20 @@
                         <div class="canal-card-header">
                             <div class="canal-title-group">
                                 <span class="canal-title">SHOPEE</span>
-                                <button type="button" class="btn-zoom-chart" onclick="abrirModalCanal('SHOPEE')" title="Ampliar gráfico da Shopee">
+                                <span id="perf-badge-shopee" class="perf-status-pill dentro">DENTRO DA META</span>
+                            </div>
+                            <button type="button" class="btn-zoom-chart" onclick="abrirModalCanal('SHOPEE')" title="Ampliar gráfico da Shopee">
                                     <i data-lucide="maximize-2"></i>
                                 </button>
-                            </div>
                         </div>
                         <div class="canal-perf-strip">
                             <div class="canal-perf-col">
                                 <div class="perf-row-title">
                                     <span class="perf-tag">FATURAMENTO ATUAL</span>
-                                    <span id="perf-badge-shopee" class="perf-status-pill dentro">Dentro (+0%)</span>
                                 </div>
                                 <div class="perf-row-body">
                                     <div class="perf-highlight">
                                         <span class="perf-fat-main" id="perf-fat-val-shopee">R$ 0</span>
-                                        <span class="perf-pct-main status-badge" id="perf-ating-shopee">0.0%</span>
                                     </div>
                                     <div class="perf-daily-metrics">
                                         <span class="daily-item" style="color: #A0A0AA;">Meta Período: <strong id="perf-meta-periodo-shopee" style="color: #00E676;">R$ 0</strong></span>
@@ -593,7 +586,6 @@
                                 <div class="perf-row-body">
                                     <div class="perf-highlight">
                                         <span class="perf-proj-main gold-text" id="perf-proj-val-shopee">R$ 0</span>
-                                        <span class="perf-pct-label" id="perf-proj-pct-shopee">0.0% da Meta Mês</span>
                                     </div>
                                     <div class="perf-daily-metrics">
                                         <span class="daily-item" id="perf-meta-mes-shopee">Meta Mês: <strong>R$ 0</strong></span>
@@ -616,21 +608,20 @@
                         <div class="canal-card-header">
                             <div class="canal-title-group">
                                 <span class="canal-title">MAGALU</span>
-                                <button type="button" class="btn-zoom-chart" onclick="abrirModalCanal('MAGALU')" title="Ampliar gráfico do Magalu">
+                                <span id="perf-badge-magalu" class="perf-status-pill dentro">DENTRO DA META</span>
+                            </div>
+                            <button type="button" class="btn-zoom-chart" onclick="abrirModalCanal('MAGALU')" title="Ampliar gráfico do Magalu">
                                     <i data-lucide="maximize-2"></i>
                                 </button>
-                            </div>
                         </div>
                         <div class="canal-perf-strip">
                             <div class="canal-perf-col">
                                 <div class="perf-row-title">
                                     <span class="perf-tag">FATURAMENTO ATUAL</span>
-                                    <span id="perf-badge-magalu" class="perf-status-pill fora">Fora (0%)</span>
                                 </div>
                                 <div class="perf-row-body">
                                     <div class="perf-highlight">
                                         <span class="perf-fat-main" id="perf-fat-val-magalu">R$ 0</span>
-                                        <span class="perf-pct-main status-badge" id="perf-ating-magalu">0.0%</span>
                                     </div>
                                     <div class="perf-daily-metrics">
                                         <span class="daily-item" style="color: #A0A0AA;">Meta Período: <strong id="perf-meta-periodo-magalu" style="color: #00E676;">R$ 0</strong></span>
@@ -646,7 +637,6 @@
                                 <div class="perf-row-body">
                                     <div class="perf-highlight">
                                         <span class="perf-proj-main gold-text" id="perf-proj-val-magalu">R$ 0</span>
-                                        <span class="perf-pct-label" id="perf-proj-pct-magalu">0.0% da Meta Mês</span>
                                     </div>
                                     <div class="perf-daily-metrics">
                                         <span class="daily-item" id="perf-meta-mes-magalu">Meta Mês: <strong>R$ 0</strong></span>
@@ -669,21 +659,20 @@
                         <div class="canal-card-header">
                             <div class="canal-title-group">
                                 <span class="canal-title">PARLUX</span>
-                                <button type="button" class="btn-zoom-chart" onclick="abrirModalCanal('PARLUX')" title="Ampliar gráfico da Parlux">
+                                <span id="perf-badge-parlux" class="perf-status-pill dentro">DENTRO DA META</span>
+                            </div>
+                            <button type="button" class="btn-zoom-chart" onclick="abrirModalCanal('PARLUX')" title="Ampliar gráfico da Parlux">
                                     <i data-lucide="maximize-2"></i>
                                 </button>
-                            </div>
                         </div>
                         <div class="canal-perf-strip">
                             <div class="canal-perf-col">
                                 <div class="perf-row-title">
                                     <span class="perf-tag">FATURAMENTO ATUAL</span>
-                                    <span id="perf-badge-parlux" class="perf-status-pill fora">Fora (0%)</span>
                                 </div>
                                 <div class="perf-row-body">
                                     <div class="perf-highlight">
                                         <span class="perf-fat-main" id="perf-fat-val-parlux">R$ 0</span>
-                                        <span class="perf-pct-main status-badge" id="perf-ating-parlux">0.0%</span>
                                     </div>
                                     <div class="perf-daily-metrics">
                                         <span class="daily-item" style="color: #A0A0AA;">Meta Período: <strong id="perf-meta-periodo-parlux" style="color: #00E676;">R$ 0</strong></span>
@@ -699,7 +688,6 @@
                                 <div class="perf-row-body">
                                     <div class="perf-highlight">
                                         <span class="perf-proj-main gold-text" id="perf-proj-val-parlux">R$ 0</span>
-                                        <span class="perf-pct-label" id="perf-proj-pct-parlux">0.0% da Meta Mês</span>
                                     </div>
                                     <div class="perf-daily-metrics">
                                         <span class="daily-item" id="perf-meta-mes-parlux">Meta Mês: <strong>R$ 0</strong></span>
@@ -1316,7 +1304,7 @@
     </div>
 
     <!-- Scripts -->
-    <script src="/static/js/app.js?v=20261014_fat_compact_v2"></script>
+    <script src="/static/js/app.js?v=20261014_meta_status_v5"></script>
     <script>
         lucide.createIcons();
     </script>
