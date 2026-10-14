@@ -810,11 +810,22 @@ function renderizarSeisGraficos(graficos) {
 
         const s = c.suffix;
 
-        // 1. Atualizar Performance do Período Trabalhado (Dentro / Fora da Meta com Venda/dia vs Meta/dia)
+        // 1. Atualizar Performance do Período Trabalhado (Faturamento Atual + Meta Período + Venda/dia)
         const perfBadge = document.getElementById(`perf-badge-${s}`);
         const perfAting = document.getElementById(`perf-ating-${s}`);
         const perfVendaDia = document.getElementById(`perf-venda-dia-${s}`);
         const perfMetaDia = document.getElementById(`perf-meta-dia-${s}`);
+        
+        // Faturamento Atual em destaque:
+        const perfFatVal = document.getElementById(`perf-fat-val-${s}`);
+        if (perfFatVal) {
+            perfFatVal.textContent = `R$ ${fmtMoedaZero(info.total_fat_periodo)}`;
+        }
+        // Meta do Período Trabalhado:
+        const perfMetaPeriodo = document.getElementById(`perf-meta-periodo-${s}`);
+        if (perfMetaPeriodo) {
+            perfMetaPeriodo.textContent = `R$ ${fmtMoedaZero(info.total_meta_periodo)}`;
+        }
         
         if (perfAting) {
             perfAting.textContent = `${fmtPct(info.atingimento_pct)}`;
