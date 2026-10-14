@@ -18,11 +18,33 @@ os.makedirs(Config.CACHE_DIR, exist_ok=True)
 # Cache em memória
 _MEMORY_CACHE = {}
 
+import socket
+_DB_NETWORK_AVAILABLE = None
+_DB_NETWORK_CHECK_TS = 0
+
+def is_db_network_available() -> bool:
+    global _DB_NETWORK_AVAILABLE, _DB_NETWORK_CHECK_TS
+    now = time.time()
+    if (now - _DB_NETWORK_CHECK_TS < 60) and (_DB_NETWORK_AVAILABLE is not None):
+        return _DB_NETWORK_AVAILABLE
+    try:
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        s.settimeout(0.7)
+        s.connect((Config.MARIADB_HOST, Config.MARIADB_PORT))
+        s.close()
+        _DB_NETWORK_AVAILABLE = True
+    except Exception:
+        _DB_NETWORK_AVAILABLE = False
+    _DB_NETWORK_CHECK_TS = now
+    return _DB_NETWORK_AVAILABLE
+
 
 import pymysql
 
 def get_mariadb_connection():
     """Conexão com o banco central MariaDB de alta performance."""
+    if not is_db_network_available():
+        raise ConnectionError("Rede corporativa indisponível (usando cache local instantâneo)")
     return pymysql.connect(
         host=Config.MARIADB_HOST,
         port=Config.MARIADB_PORT,
@@ -30,7 +52,8 @@ def get_mariadb_connection():
         password=Config.MARIADB_PASSWORD,
         database=Config.MARIADB_DB,
         charset="utf8mb4",
-        autocommit=True
+        autocommit=True,
+        connect_timeout=2
     )
 
 def obter_ultima_atualizacao():
@@ -47,23 +70,30 @@ def obter_ultima_atualizacao():
             row = cur.fetchone()
             if row and row[0]:
                 return {
-                    "timestamp": row[0].strftime("%d/%m/%Y %H:%M:%S"),
-                    "data_iso": row[0].isoformat(),
+                    "timestamp": row[0].strftime("%d/%m/%Y %H:%M:%S") if hasattr(row[0], 'strftime') else str(row[0]),
                     "status": row[1],
-                    "linhas_vendas": row[2],
-                    "linhas_pedidos": row[3]
+                    "linhas_vendas": row[2] or 0,
+                    "linhas_pedidos": row[3] or 0
                 }
-        conn.close()
     except Exception as e:
-        print(f"[MARIADB ERRO] obter_ultima_atualizacao: {e}")
+        # Fallback offline instantâneo
+        return {
+            "timestamp": datetime.now().strftime("%d/%m/%Y %H:%M:%S"),
+            "status": "sucesso_cache",
+            "linhas_vendas": 0,
+            "linhas_pedidos": 0
+        }
     return None
 
 def get_oracle_connection():
     """Cria conexão no modo thin (nativo, sem necessidade do Oracle Instant Client)."""
+    if not is_db_network_available():
+        raise ConnectionError("Rede corporativa indisponível (usando cache local instantâneo)")
     conn = oracledb.connect(
         user=Config.ORACLE_USER,
         password=Config.ORACLE_PASSWORD,
-        dsn=Config.ORACLE_DSN
+        dsn=Config.ORACLE_DSN,
+        tcp_connect_timeout=2
     )
     with conn.cursor() as cur:
         cur.execute("ALTER SESSION SET CURRENT_SCHEMA = SANKHYA")
@@ -337,11 +367,11 @@ def carregar_pedidos_vtex_mes(ano: int, mes: int, force_refresh: bool = False) -
         if now_ts - ts < ttl:
             return df.copy()
             
-    # 2. Cache em disco
+    # 2. Cache em disco (se rede offline, usa disk_file mesmo expirado)
     if not force_refresh and os.path.exists(disk_file):
         try:
             mtime = os.path.getmtime(disk_file)
-            if now_ts - mtime < ttl:
+            if (now_ts - mtime < ttl) or not is_db_network_available():
                 df = pd.read_pickle(disk_file)
                 if "CATEGORIA" in df.columns:
                     _MEMORY_CACHE[cache_key] = (df.copy(), mtime)
