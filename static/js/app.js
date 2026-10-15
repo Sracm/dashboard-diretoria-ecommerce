@@ -853,14 +853,20 @@ function renderizarSeisGraficos(graficos) {
         const perfAntDiffVal = document.getElementById(`perf-ant-diff-val-${s}`);
         const perfAntDiffPct = document.getElementById(`perf-ant-diff-pct-${s}`);
         
-        if (perfAntVal) perfAntVal.textContent = `R$ ${fmtMoedaZero(fatAnt)}`;
+        const colorAnt = isPos ? '#00E676' : '#FF5252';
+        if (perfAntVal) {
+            perfAntVal.textContent = `R$ ${fmtMoedaZero(fatAnt)}`;
+            perfAntVal.style.setProperty('color', colorAnt, 'important');
+            perfAntVal.classList.remove('val-pos', 'val-neg');
+            perfAntVal.classList.add(isPos ? 'val-pos' : 'val-neg');
+        }
         if (perfAntDiffVal) {
             perfAntDiffVal.textContent = `${sign}R$ ${fmtMoedaZero(diffVal)}`;
-            perfAntDiffVal.style.color = isPos ? '#00E676' : '#FF5252';
+            perfAntDiffVal.style.setProperty('color', colorAnt, 'important');
         }
         if (perfAntDiffPct) {
             perfAntDiffPct.textContent = `${sign}${diffPct.toFixed(1)}%`;
-            perfAntDiffPct.style.color = isPos ? '#00E676' : '#FF5252';
+            perfAntDiffPct.style.setProperty('color', colorAnt, 'important');
         }
 
         // 2. Atualizar Projeção de Fechamento do Mês (Ritmo Atual de Vendas)

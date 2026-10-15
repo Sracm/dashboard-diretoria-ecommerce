@@ -4719,10 +4719,17 @@ span[id^="kpi-meta-"],
 .perf-ant-main {
     font-size: 1.10rem !important;
     font-weight: 800 !important;
-    color: #64B5F6 !important;
     letter-spacing: -0.4px !important;
     font-family: var(--font-number) !important;
     white-space: nowrap !important;
+}
+
+.perf-ant-main.val-pos {
+    color: #00E676 !important;
+}
+
+.perf-ant-main.val-neg {
+    color: #FF5252 !important;
 }
 
 .perf-proj-main {
