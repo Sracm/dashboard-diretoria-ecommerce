@@ -2533,7 +2533,7 @@ function renderizarGraficoPagamentos(data) {
                 ctx.fillText(nomeCurto.toUpperCase(), centerX, centerY - 16);
 
                 // Valor do item selecionado
-                ctx.font = '800 20px Montserrat';
+                ctx.font = '800 24px Montserrat';
                 ctx.fillStyle = '#FFFFFF';
                 ctx.fillText(`R$ ${fmtMoedaZero(item.valor)}`, centerX, centerY + 3);
 
@@ -2548,7 +2548,7 @@ function renderizarGraficoPagamentos(data) {
                 ctx.fillText('TOTAL CONSOLIDADO', centerX, centerY - 16);
 
                 // Valor total faturado em ouro MQ
-                ctx.font = '800 21px Montserrat';
+                ctx.font = '800 26px Montserrat';
                 ctx.fillStyle = '#FFD700';
                 const total = currentPagamentosGraficoData ? currentPagamentosGraficoData.total_valor : 0;
                 ctx.fillText(`R$ ${fmtMoedaZero(total)}`, centerX, centerY + 3);
@@ -2584,7 +2584,7 @@ function renderizarGraficoPagamentos(data) {
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            cutout: '70%',
+            cutout: '66%',
             layout: {
                 padding: 10
             },
@@ -3307,3 +3307,17 @@ function showToast(message, type = 'info') {
         setTimeout(() => toast.remove(), 500);
     }, 4500);
 }
+
+// Observer para manter o gráfico de rosca perfeitamente sincronizado com a altura da tabela
+document.addEventListener('DOMContentLoaded', () => {
+    if (window.ResizeObserver) {
+        const donutWrap = document.querySelector('.payment-donut-wrapper') || document.querySelector('.payment-donut-container');
+        if (donutWrap) {
+            new ResizeObserver(() => {
+                if (chartPagamentosPizzaInstance && typeof chartPagamentosPizzaInstance.resize === 'function') {
+                    chartPagamentosPizzaInstance.resize();
+                }
+            }).observe(donutWrap);
+        }
+    }
+});

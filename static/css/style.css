@@ -2149,7 +2149,7 @@ body {
 /* Layout Lado a Lado: Tabela (sem modalidade/gateway) + Gráfico de Participação */
 .payments-dual-layout {
     display: grid;
-    grid-template-columns: minmax(0, 1.58fr) minmax(360px, 1fr);
+    grid-template-columns: minmax(0, 1.45fr) minmax(420px, 1fr);
     gap: 20px;
     align-items: stretch;
 }
@@ -2162,11 +2162,12 @@ body {
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
     display: flex;
     flex-direction: column;
+    height: 100%;
 }
 
 .payment-table-card .payment-table-container {
     flex: 1;
-    max-height: 560px;
+    min-height: 520px;
     overflow-y: auto;
     overflow-x: hidden;
 }
@@ -2212,6 +2213,8 @@ body {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    height: 100%;
+    min-height: 520px;
     gap: 12px;
     box-shadow: 0 14px 34px -10px rgba(0, 0, 0, 0.65), 0 0 20px -6px rgba(203, 151, 39, 0.08);
     transition: var(--transition);
@@ -2308,17 +2311,19 @@ body {
 .payment-donut-container {
     position: relative;
     width: 100%;
-    height: 380px;
+    flex: 1;
+    min-height: 420px;
     display: flex;
     align-items: center;
     justify-content: center;
     padding: 4px 0;
 }
 
-.vtex-pizza-wrapper {
+.payment-donut-wrapper {
     position: relative;
     width: 100%;
-    height: 380px;
+    height: 100%;
+    min-height: 420px;
     display: flex;
     align-items: center;
     justify-content: center;
