@@ -565,59 +565,32 @@ def api_resumo():
             # Pré-agrupamento por mês do ano 2025 (ano anterior)
             mes_agg_map_ant = df_ano_ant_canais.groupby("MES")[["VALORVENDA", "FRETE", "VALORDEVOLUCAO", "QTDVENDIDA"]].sum().to_dict('index') if not df_ano_ant_canais.empty else {}
             
-            for m_num in range(1, 11): # Jan até Outubro
-                # Se for o mês corrente (Outubro), compara até o dia atual selecionado (dia_fim)
-                if m_num == 10:
-                    df_m = df_ano_canais[(df_ano_canais["MES"] == m_num) & (df_ano_canais["DIA"] <= dia_fim)]
-                    df_prev = df_ano_canais[(df_ano_canais["MES"] == 9) & (df_ano_canais["DIA"] <= dia_fim)]
-                    vb_m = float(df_m["VALORVENDA"].sum()) if not df_m.empty else 0.0
-                    fr_m = float(df_m["FRETE"].sum()) if not df_m.empty else 0.0
-                    dv_m = float(df_m["VALORDEVOLUCAO"].sum()) if not df_m.empty else 0.0
-                    it_m = int(df_m["QTDVENDIDA"].sum()) if not df_m.empty else 0
-                    
-                    vb_p = float(df_prev["VALORVENDA"].sum()) if not df_prev.empty else 0.0
-                    fr_p = float(df_prev["FRETE"].sum()) if not df_prev.empty else 0.0
-                    dv_p = float(df_prev["VALORDEVOLUCAO"].sum()) if not df_prev.empty else 0.0
-                    it_p = int(df_prev["QTDVENDIDA"].sum()) if not df_prev.empty else 0
+            max_mes = max(meses) if meses else 10
+            for m_num in range(1, max_mes + 1): # Todos os meses no mesmo período selecionado (dia_ini até dia_fim)
+                # Filtra mês corrente e comparativos exatamente no período selecionado (dia_ini até dia_fim)
+                df_m = df_ano_canais[(df_ano_canais["MES"] == m_num) & (df_ano_canais["DIA"] >= dia_ini) & (df_ano_canais["DIA"] <= dia_fim)]
+                vb_m = float(df_m["VALORVENDA"].sum()) if not df_m.empty else 0.0
+                fr_m = float(df_m["FRETE"].sum()) if not df_m.empty else 0.0
+                dv_m = float(df_m["VALORDEVOLUCAO"].sum()) if not df_m.empty else 0.0
+                it_m = int(df_m["QTDVENDIDA"].sum()) if not df_m.empty else 0
 
-                    if vb_p == 0.0:
-                        df_prev_cheio = df_ano_canais[df_ano_canais["MES"] == 9]
-                        if not df_prev_cheio.empty:
-                            vb_p = float(df_prev_cheio["VALORVENDA"].sum())
-                            fr_p = float(df_prev_cheio["FRETE"].sum())
-                            dv_p = float(df_prev_cheio["VALORDEVOLUCAO"].sum())
-                            it_p = int(df_prev_cheio["QTDVENDIDA"].sum())
-
-                    # 2025 (Outubro até dia_fim para comparação like-for-like perfeita)
-                    df_25 = df_ano_ant_canais[(df_ano_ant_canais["MES"] == m_num) & (df_ano_ant_canais["DIA"] <= dia_fim)] if not df_ano_ant_canais.empty else pd.DataFrame()
-                    vb_25 = float(df_25["VALORVENDA"].sum()) if not df_25.empty else 0.0
-                    fr_25 = float(df_25["FRETE"].sum()) if not df_25.empty else 0.0
-                    dv_25 = float(df_25["VALORDEVOLUCAO"].sum()) if not df_25.empty else 0.0
-                    it_25 = int(df_25["QTDVENDIDA"].sum()) if not df_25.empty else 0
+                # Comparativo com mês anterior (M-1) no mesmo período dia_ini até dia_fim
+                if m_num == 1:
+                    df_prev = df_dez_ant[(df_dez_ant["DIA"] >= dia_ini) & (df_dez_ant["DIA"] <= dia_fim)] if not df_dez_ant.empty else pd.DataFrame()
                 else:
-                    m_data = mes_agg_map.get(m_num, {})
-                    vb_m = float(m_data.get("VALORVENDA", 0.0))
-                    fr_m = float(m_data.get("FRETE", 0.0))
-                    dv_m = float(m_data.get("VALORDEVOLUCAO", 0.0))
-                    it_m = int(m_data.get("QTDVENDIDA", 0))
-                    
-                    if m_num == 1:
-                        vb_p = float(df_dez_ant["VALORVENDA"].sum()) if not df_dez_ant.empty else 0.0
-                        fr_p = float(df_dez_ant["FRETE"].sum()) if not df_dez_ant.empty else 0.0
-                        dv_p = float(df_dez_ant["VALORDEVOLUCAO"].sum()) if not df_dez_ant.empty else 0.0
-                        it_p = int(df_dez_ant["QTDVENDIDA"].sum()) if not df_dez_ant.empty else 0
-                    else:
-                        p_data = mes_agg_map.get(m_num - 1, {})
-                        vb_p = float(p_data.get("VALORVENDA", 0.0))
-                        fr_p = float(p_data.get("FRETE", 0.0))
-                        dv_p = float(p_data.get("VALORDEVOLUCAO", 0.0))
-                        it_p = int(p_data.get("QTDVENDIDA", 0))
+                    df_prev = df_ano_canais[(df_ano_canais["MES"] == m_num - 1) & (df_ano_canais["DIA"] >= dia_ini) & (df_ano_canais["DIA"] <= dia_fim)]
+                
+                vb_p = float(df_prev["VALORVENDA"].sum()) if not df_prev.empty else 0.0
+                fr_p = float(df_prev["FRETE"].sum()) if not df_prev.empty else 0.0
+                dv_p = float(df_prev["VALORDEVOLUCAO"].sum()) if not df_prev.empty else 0.0
+                it_p = int(df_prev["QTDVENDIDA"].sum()) if not df_prev.empty else 0
 
-                    m25_data = mes_agg_map_ant.get(m_num, {})
-                    vb_25 = float(m25_data.get("VALORVENDA", 0.0))
-                    fr_25 = float(m25_data.get("FRETE", 0.0))
-                    dv_25 = float(m25_data.get("VALORDEVOLUCAO", 0.0))
-                    it_25 = int(m25_data.get("QTDVENDIDA", 0))
+                # Comparativo com ano anterior 2025 no mesmo período dia_ini até dia_fim
+                df_25 = df_ano_ant_canais[(df_ano_ant_canais["MES"] == m_num) & (df_ano_ant_canais["DIA"] >= dia_ini) & (df_ano_ant_canais["DIA"] <= dia_fim)] if not df_ano_ant_canais.empty else pd.DataFrame()
+                vb_25 = float(df_25["VALORVENDA"].sum()) if not df_25.empty else 0.0
+                fr_25 = float(df_25["FRETE"].sum()) if not df_25.empty else 0.0
+                dv_25 = float(df_25["VALORDEVOLUCAO"].sum()) if not df_25.empty else 0.0
+                it_25 = int(df_25["QTDVENDIDA"].sum()) if not df_25.empty else 0
 
                 fl_m = vb_m - fr_m - dv_m
                 tm_m = round(fl_m / it_m, 2) if it_m > 0 else 0.0

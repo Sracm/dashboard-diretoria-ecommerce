@@ -142,246 +142,7 @@
                 <p>Consolidando faturamento e metas em tempo real...</p>
             </div>
 
-            <!-- KPIs Executivos Nível Diretoria: Projeções por Canal & Consolidado -->
-            <section class="kpi-grid">
-                <!-- KPI 1: Projeção Total do Mês (Consolidado E-commerce) -->
-                <div class="kpi-card kpi-col-4">
-                    <div class="kpi-header">
-                        <span class="kpi-label">Projeção do Mês (Total)</span>
-                        <div class="kpi-icon-badge blue-bg">
-                            <i data-lucide="trending-up"></i>
-                        </div>
-                    </div>
-                    <div class="kpi-value-row">
-                        <span class="kpi-currency">R$</span>
-                        <span id="kpi-projecao" class="kpi-value">0,00</span>
-                    </div>
-                    <div class="kpi-footer">
-                        <span id="kpi-projecao-pct" class="badge-pill pill-blue">0.0% da Meta Total</span>
-                        <span id="kpi-meta-mes" class="kpi-subtext kpi-meta-green" style="color: #00E676 !important; font-weight: 700 !important;">Meta Mês: R$ 0,00</span>
-                    </div>
-                    <div class="kpi-comparatives">
-                        <div class="comp-row">
-                            <span class="comp-label"><span class="comp-tag">MoM</span> Mês Ant. Fechado:</span>
-                            <div class="comp-data">
-                                <span id="kpi-proj-mom-val" class="comp-val">R$ 0,00</span>
-                                <span id="kpi-proj-mom-badge" class="comp-badge neutral">0,0% vs M-1</span>
-                            </div>
-                        </div>
-                        <div class="comp-row">
-                            <span class="comp-label"><span class="comp-tag">YTD</span> Meta Acumulada:</span>
-                            <div class="comp-data">
-                                <span id="kpi-proj-ytd-val" class="comp-val">R$ 0,00</span>
-                                <span id="kpi-proj-ytd-badge" class="comp-badge neutral">0,0% Meta</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- KPI 2: Projeção Mercado Livre -->
-                <div class="kpi-card kpi-col-4">
-                    <div class="kpi-header">
-                        <span class="kpi-label">Projeção — Mercado Livre</span>
-                        <div class="kpi-icon-badge ml-bg">
-                            <i data-lucide="shopping-bag"></i>
-                        </div>
-                    </div>
-                    <div class="kpi-value-row">
-                        <span class="kpi-currency">R$</span>
-                        <span id="kpi-proj-ml" class="kpi-value">0,00</span>
-                    </div>
-                    <div class="kpi-footer">
-                        <span id="kpi-proj-pct-ml" class="badge-pill pill-blue">0.0% da Meta</span>
-                        <span id="kpi-meta-ml" class="kpi-subtext kpi-meta-green" style="color: #00E676 !important; font-weight: 700 !important;">Meta Mês: R$ 0,00</span>
-                    </div>
-                    <div class="kpi-comparatives">
-                        <div class="comp-row">
-                            <span class="comp-label"><span class="comp-tag">MoM</span> Mês Ant. Fechado:</span>
-                            <div class="comp-data">
-                                <span id="kpi-proj-mom-val-ml" class="comp-val">R$ 0,00</span>
-                                <span id="kpi-proj-mom-badge-ml" class="comp-badge neutral">0,0% vs M-1</span>
-                            </div>
-                        </div>
-                        <div class="comp-row">
-                            <span class="comp-label"><span class="comp-tag">YTD</span> Meta Acumulada:</span>
-                            <div class="comp-data">
-                                <span id="kpi-proj-ytd-val-ml" class="comp-val">R$ 0,00</span>
-                                <span id="kpi-proj-ytd-badge-ml" class="comp-badge neutral">0,0% Meta</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- KPI 3: Projeção Shopee -->
-                <div class="kpi-card kpi-col-4">
-                    <div class="kpi-header">
-                        <span class="kpi-label">Projeção — Shopee</span>
-                        <div class="kpi-icon-badge shopee-bg">
-                            <i data-lucide="shopping-cart"></i>
-                        </div>
-                    </div>
-                    <div class="kpi-value-row">
-                        <span class="kpi-currency">R$</span>
-                        <span id="kpi-proj-shopee" class="kpi-value">0,00</span>
-                    </div>
-                    <div class="kpi-footer">
-                        <span id="kpi-proj-pct-shopee" class="badge-pill pill-blue">0.0% da Meta</span>
-                        <span id="kpi-meta-shopee" class="kpi-subtext kpi-meta-green" style="color: #00E676 !important; font-weight: 700 !important;">Meta Mês: R$ 0,00</span>
-                    </div>
-                    <div class="kpi-comparatives">
-                        <div class="comp-row">
-                            <span class="comp-label"><span class="comp-tag">MoM</span> Mês Ant. Fechado:</span>
-                            <div class="comp-data">
-                                <span id="kpi-proj-mom-val-shopee" class="comp-val">R$ 0,00</span>
-                                <span id="kpi-proj-mom-badge-shopee" class="comp-badge neutral">0,0% vs M-1</span>
-                            </div>
-                        </div>
-                        <div class="comp-row">
-                            <span class="comp-label"><span class="comp-tag">YTD</span> Meta Acumulada:</span>
-                            <div class="comp-data">
-                                <span id="kpi-proj-ytd-val-shopee" class="comp-val">R$ 0,00</span>
-                                <span id="kpi-proj-ytd-badge-shopee" class="comp-badge neutral">0,0% Meta</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- KPI 4: Projeção VTEX (Loja Própria) -->
-                <div class="kpi-card kpi-col-4">
-                    <div class="kpi-header">
-                        <span class="kpi-label">Projeção — VTEX (Loja Própria)</span>
-                        <div class="kpi-icon-badge vtex-bg">
-                            <i data-lucide="globe"></i>
-                        </div>
-                    </div>
-                    <div class="kpi-value-row">
-                        <span class="kpi-currency">R$</span>
-                        <span id="kpi-proj-vtex" class="kpi-value">0,00</span>
-                    </div>
-                    <div class="kpi-footer">
-                        <span id="kpi-proj-pct-vtex" class="badge-pill pill-blue">0.0% da Meta</span>
-                        <span id="kpi-meta-vtex" class="kpi-subtext kpi-meta-green" style="color: #00E676 !important; font-weight: 700 !important;">Meta Mês: R$ 0,00</span>
-                    </div>
-                    <div class="kpi-comparatives">
-                        <div class="comp-row">
-                            <span class="comp-label"><span class="comp-tag">MoM</span> Mês Ant. Fechado:</span>
-                            <div class="comp-data">
-                                <span id="kpi-proj-mom-val-vtex" class="comp-val">R$ 0,00</span>
-                                <span id="kpi-proj-mom-badge-vtex" class="comp-badge neutral">0,0% vs M-1</span>
-                            </div>
-                        </div>
-                        <div class="comp-row">
-                            <span class="comp-label"><span class="comp-tag">YTD</span> Meta Acumulada:</span>
-                            <div class="comp-data">
-                                <span id="kpi-proj-ytd-val-vtex" class="comp-val">R$ 0,00</span>
-                                <span id="kpi-proj-ytd-badge-vtex" class="comp-badge neutral">0,0% Meta</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- KPI 5: Projeção Magalu -->
-                <div class="kpi-card kpi-col-3">
-                    <div class="kpi-header">
-                        <span class="kpi-label">Projeção — Magalu</span>
-                        <div class="kpi-icon-badge magalu-bg">
-                            <i data-lucide="store"></i>
-                        </div>
-                    </div>
-                    <div class="kpi-value-row">
-                        <span class="kpi-currency">R$</span>
-                        <span id="kpi-proj-magalu" class="kpi-value">0,00</span>
-                    </div>
-                    <div class="kpi-footer">
-                        <span id="kpi-proj-pct-magalu" class="badge-pill pill-blue">0.0% da Meta</span>
-                        <span id="kpi-meta-magalu" class="kpi-subtext kpi-meta-green" style="color: #00E676 !important; font-weight: 700 !important;">Meta Mês: R$ 0,00</span>
-                    </div>
-                    <div class="kpi-comparatives">
-                        <div class="comp-row">
-                            <span class="comp-label"><span class="comp-tag">MoM</span> Mês Ant. Fechado:</span>
-                            <div class="comp-data">
-                                <span id="kpi-proj-mom-val-magalu" class="comp-val">R$ 0,00</span>
-                                <span id="kpi-proj-mom-badge-magalu" class="comp-badge neutral">0,0% vs M-1</span>
-                            </div>
-                        </div>
-                        <div class="comp-row">
-                            <span class="comp-label"><span class="comp-tag">YTD</span> Meta Acumulada:</span>
-                            <div class="comp-data">
-                                <span id="kpi-proj-ytd-val-magalu" class="comp-val">R$ 0,00</span>
-                                <span id="kpi-proj-ytd-badge-magalu" class="comp-badge neutral">0,0% Meta</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- KPI 6: Projeção Parlux -->
-                <div class="kpi-card kpi-col-3">
-                    <div class="kpi-header">
-                        <span class="kpi-label">Projeção — Parlux</span>
-                        <div class="kpi-icon-badge parlux-bg">
-                            <i data-lucide="zap"></i>
-                        </div>
-                    </div>
-                    <div class="kpi-value-row">
-                        <span class="kpi-currency">R$</span>
-                        <span id="kpi-proj-parlux" class="kpi-value">0,00</span>
-                    </div>
-                    <div class="kpi-footer">
-                        <span id="kpi-proj-pct-parlux" class="badge-pill pill-blue">0.0% da Meta</span>
-                        <span id="kpi-meta-parlux" class="kpi-subtext kpi-meta-green" style="color: #00E676 !important; font-weight: 700 !important;">Meta Mês: R$ 0,00</span>
-                    </div>
-                    <div class="kpi-comparatives">
-                        <div class="comp-row">
-                            <span class="comp-label"><span class="comp-tag">MoM</span> Mês Ant. Fechado:</span>
-                            <div class="comp-data">
-                                <span id="kpi-proj-mom-val-parlux" class="comp-val">R$ 0,00</span>
-                                <span id="kpi-proj-mom-badge-parlux" class="comp-badge neutral">0,0% vs M-1</span>
-                            </div>
-                        </div>
-                        <div class="comp-row">
-                            <span class="comp-label"><span class="comp-tag">YTD</span> Meta Acumulada:</span>
-                            <div class="comp-data">
-                                <span id="kpi-proj-ytd-val-parlux" class="comp-val">R$ 0,00</span>
-                                <span id="kpi-proj-ytd-badge-parlux" class="comp-badge neutral">0,0% Meta</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- KPI 7: Devoluções -->
-                <div class="kpi-card kpi-col-3">
-                    <div class="kpi-header">
-                        <span class="kpi-label">Devoluções</span>
-                        <div class="kpi-icon-badge purple-bg">
-                            <i data-lucide="rotate-ccw"></i>
-                        </div>
-                    </div>
-                    <div class="kpi-value-row">
-                        <span id="kpi-devolucao-pct" class="kpi-value">0.0%</span>
-                        <span class="kpi-unit">taxa devoluções</span>
-                    </div>
-                    <div class="kpi-footer">
-                        <span class="kpi-subtext">Total Devolvido:</span>
-                        <span id="kpi-devolucao-vlr" class="highlight-text red">R$ 0,00</span>
-                    </div>
-                    <div class="kpi-comparatives">
-                        <div class="comp-row">
-                            <span class="comp-label"><span class="comp-tag">MoM</span> Mês Ant. (<span class="comp-dias">dias 1-6</span>):</span>
-                            <div class="comp-data">
-                                <span id="kpi-dev-mom-val" class="comp-val">0,0%</span>
-                                <span id="kpi-dev-mom-badge" class="comp-badge neutral">0,0 p.p.</span>
-                            </div>
-                        </div>
-                        <div class="comp-row">
-                            <span class="comp-label"><span class="comp-tag">YTD</span> Acumulado <span class="comp-ano">2026</span>:</span>
-                            <div class="comp-data">
-                                <span id="kpi-dev-ytd-val" class="comp-val">0,0%</span>
-                                <span id="kpi-dev-ytd-badge" class="comp-badge neutral">0,0 p.p.</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
+            
 
             <!-- SEÇÃO DESTAQUE: OS 6 GRÁFICOS DIÁRIOS ACUMULADOS (MERCADO LIVRE, VTEX, SHOPEE, MAGALU, PARLUX, GERAL) -->
             <section class="section-card">
@@ -786,21 +547,7 @@
                                 <th class="sortable text-right" data-col="devolucao" title="Clique para ordenar por Devoluções">
                                     <span class="th-content">Devoluções <i class="sort-icon"></i></span>
                                 </th>
-                                <th class="sortable text-right" data-col="faturamento_liquido" title="Clique para ordenar por Faturamento">
-                                    <span class="th-content">Faturamento <i class="sort-icon"></i></span>
-                                </th>
-                                <th class="sortable text-right" data-col="meta_periodo" title="Clique para ordenar por Meta Período">
-                                    <span class="th-content">Meta Período <i class="sort-icon"></i></span>
-                                </th>
-                                <th class="sortable" data-col="atingimento_periodo_pct" title="Clique para ordenar por % Ating. Período">
-                                    <span class="th-content">% Ating. Período <i class="sort-icon"></i></span>
-                                </th>
-                                <th class="sortable text-right" data-col="meta_mes" title="Clique para ordenar por Meta Mês Total">
-                                    <span class="th-content">Meta Mês Total <i class="sort-icon"></i></span>
-                                </th>
-                                <th class="sortable text-right" data-col="projecao_mes" title="Clique para ordenar por Projeção Mês">
-                                    <span class="th-content">Projeção Mês <i class="sort-icon"></i></span>
-                                </th>
+                                
                                 <th class="sortable text-right" data-col="itens" title="Clique para ordenar por Quantidade de Itens">
                                     <span class="th-content">Itens <i class="sort-icon"></i></span>
                                 </th>
@@ -1154,36 +901,7 @@
                         </div>
 
                         <!-- Tabela de Conversão Mês a Mês -->
-                        <div class="table-responsive conversao-table-container">
-                            <table class="matrix-table conversao-table" id="table-conversao">
-                                <thead>
-                                    <tr class="thead-group-row">
-                                        <th colspan="2" class="th-group-left">GOOGLE ANALYTICS 4</th>
-                                        <th colspan="2" class="th-group-right">TAXA CONVERSÃO</th>
-                                    </tr>
-                                    <tr class="thead-cols-row">
-                                        <th class="sortable" data-col="mes_abrev" title="Ordenar por Mês">
-                                            <span class="th-content">MÊS <i class="sort-icon"></i></span>
-                                        </th>
-                                        <th class="sortable text-right" data-col="sessoes" title="Ordenar por Sessões">
-                                            <span class="th-content">SESSÕES <i class="sort-icon"></i></span>
-                                        </th>
-                                        <th class="sortable text-right" data-col="pedidos" title="Ordenar por Pedidos">
-                                            <span class="th-content">PEDIDOS <i class="sort-icon"></i></span>
-                                        </th>
-                                        <th class="sortable text-right" data-col="taxa_conversao" title="Ordenar por Taxa">
-                                            <span class="th-content">TAXA CONV. <i class="sort-icon"></i></span>
-                                        </th>
-                                    </tr>
-                                </thead>
-                                <tbody id="conversao-table-body">
-                                    <!-- Preenchido via JS -->
-                                </tbody>
-                                <tfoot id="conversao-table-foot">
-                                    <!-- Linha de Total Geral preenchida via JS -->
-                                </tfoot>
-                            </table>
-                        </div>
+                        
                     </div>
                 </div>
             </section>
@@ -1364,7 +1082,7 @@
     </div>
 
     <!-- Scripts -->
-    <script src="/static/js/app.js?v=20261015_color_ant_v1"></script>
+    <script src="/static/js/app.js?v=20261015_NO_CARDS_20261015_color_ant_v1"></script>
     <script>
         lucide.createIcons();
     </script>

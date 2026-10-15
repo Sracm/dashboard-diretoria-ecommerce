@@ -1500,20 +1500,6 @@ function renderizarTabelaCanais() {
         tr.innerHTML = `
             <td class="channel-name">${c.canal}</td>
             <td class="text-right" style="color: #EF5350;">R$ ${fmtMoeda(c.devolucao)} (${fmtPct(c.pct_devolucao)})</td>
-            <td class="text-right" style="font-weight: 700; color: #FFF;">R$ ${fmtMoeda(c.faturamento_liquido)}</td>
-            <td class="text-right" style="color: #00E676; font-weight: 600;">R$ ${fmtMoeda(c.meta_periodo)}</td>
-            <td>
-                <div class="progress-cell-box">
-                    <div class="progress-header">
-                        <span>${fmtPct(c.atingimento_periodo_pct)}</span>
-                    </div>
-                    <div class="progress-bar-bg">
-                        <div class="progress-bar-fill ${barClass}" style="width: ${barWidth}%"></div>
-                    </div>
-                </div>
-            </td>
-            <td class="text-right">R$ ${fmtMoeda(c.meta_mes)}</td>
-            <td class="text-right" style="color: #CB9727; font-weight: 600;">R$ ${fmtMoeda(c.projecao_mes)}</td>
             <td class="text-right">${fmtInt(c.itens)}</td>
             <td class="text-right">R$ ${fmtMoeda(c.ticket_medio)}</td>
             <td class="text-right" style="font-weight: 700;">${fmtPct(c.share_pct)}</td>
@@ -1536,20 +1522,6 @@ function renderizarTabelaCanais() {
             <tr class="tfoot-total-row">
                 <td class="total-title">TOTAL</td>
                 <td class="text-right" style="color: #EF5350;">R$ ${fmtMoeda(totDevolucao)} (${fmtPct(totPctDevolucao)})</td>
-                <td class="text-right" style="font-weight: 800; color: #FFF;">R$ ${fmtMoeda(totFatLiquido)}</td>
-                <td class="text-right" style="color: #00E676; font-weight: 700;">R$ ${fmtMoeda(totMetaPeriodo)}</td>
-                <td>
-                    <div class="progress-cell-box">
-                        <div class="progress-header">
-                            <span style="font-weight: 800;">${fmtPct(totAtingPeriodoPct)}</span>
-                        </div>
-                        <div class="progress-bar-bg">
-                            <div class="progress-bar-fill ${barClassTot}" style="width: ${barWidthTot}%"></div>
-                        </div>
-                    </div>
-                </td>
-                <td class="text-right" style="font-weight: 700;">R$ ${fmtMoeda(totMetaMes)}</td>
-                <td class="text-right" style="color: #CB9727; font-weight: 700;">R$ ${fmtMoeda(totProjecao)}</td>
                 <td class="text-right" style="font-weight: 700;">${fmtInt(totItens)}</td>
                 <td class="text-right" style="font-weight: 700;">R$ ${fmtMoeda(totTicketMedio)}</td>
                 <td class="text-right" style="font-weight: 800; color: #CB9727;">100,0%</td>
