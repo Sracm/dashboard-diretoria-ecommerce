@@ -4750,18 +4750,18 @@ span[id^="kpi-meta-"],
 }
 
 .canal-chart-container {
-    height: 200px !important;
+    height: 240px !important;
     width: 100% !important;
 }
 
 .channels-charts-grid.grid-2col .canal-chart-container {
-    height: 200px !important;
+    height: 240px !important;
 }
 
 .channels-charts-grid.grid-1col .canal-chart-container {
-    height: 200px !important;
+    height: 240px !important;
 }
 
 .channels-charts-grid.grid-3col .canal-chart-container {
-    height: 200px !important;
+    height: 240px !important;
 }
