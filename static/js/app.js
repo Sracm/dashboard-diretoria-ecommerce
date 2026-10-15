@@ -1509,8 +1509,8 @@ function renderizarTabelaCanais() {
             <td class="text-right">R$ ${fmtMoeda(c.ticket_medio)}</td>
             <td class="text-right" style="font-weight: 700; color: var(--mq-gold, #FFD700);">${fmtPct(c.share_pct)}</td>
             <td class="text-right" style="font-weight: 600; color: #94A3B8;">${fmtPct(c.share_ant_pct)}</td>
-            <td class="text-right" style="font-weight: 600; color: #CBD5E1;">${fmtPct(c.share_ano_ant_pct)}</td>
             <td class="text-right" style="font-weight: 700; color: ${diffColor};">${diffText}</td>
+            <td class="text-right" style="font-weight: 600; color: #CBD5E1;">${fmtPct(c.share_ano_ant_pct)}</td>
         `;
         tbody.appendChild(tr);
     });
@@ -1533,8 +1533,8 @@ function renderizarTabelaCanais() {
                 <td class="text-right" style="font-weight: 700;">R$ ${fmtMoeda(totTicketMedio)}</td>
                 <td class="text-right" style="font-weight: 800; color: var(--mq-gold, #CB9727);">100,00%</td>
                 <td class="text-right" style="font-weight: 800; color: #94A3B8;">100,00%</td>
-                <td class="text-right" style="font-weight: 800; color: #CBD5E1;">100,00%</td>
                 <td class="text-right" style="font-weight: 800; color: #94A3B8;">0,00 p.p.</td>
+                <td class="text-right" style="font-weight: 800; color: #CBD5E1;">100,00%</td>
             </tr>
         `;
     }
