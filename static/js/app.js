@@ -67,7 +67,7 @@ const fmtMoedaZero = (val) => {
 };
 
 const fmtPct = (val) => {
-    return (val || 0).toLocaleString('pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 2 }) + '%';
+    return (val || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + '%';
 };
 
 const fmtInt = (val) => {
@@ -1496,14 +1496,21 @@ function renderizarTabelaCanais() {
         const barWidth = Math.min(100, Math.max(0, c.atingimento_periodo_pct));
         const barClass = c.status === 'superou' ? 'fill-superou' : (c.status === 'atencao' ? 'fill-atencao' : 'fill-critico');
 
+        const diffPP = Number(c.diff_share_ano_ant) || 0;
+        const diffColor = diffPP > 0 ? '#00E676' : (diffPP < 0 ? '#EF5350' : '#94A3B8');
+        const diffIcon = diffPP > 0 ? '▲ +' : (diffPP < 0 ? '▼ ' : '');
+        const diffText = diffPP === 0 ? '0,00 p.p.' : `${diffIcon}${diffPP.toFixed(2).replace('.', ',')} p.p.`;
+
         const tr = document.createElement('tr');
         tr.innerHTML = `
             <td class="channel-name">${c.canal}</td>
             <td class="text-right" style="color: #EF5350;">R$ ${fmtMoeda(c.devolucao)} (${fmtPct(c.pct_devolucao)})</td>
             <td class="text-right">${fmtInt(c.itens)}</td>
             <td class="text-right">R$ ${fmtMoeda(c.ticket_medio)}</td>
-            <td class="text-right" style="font-weight: 700;">${fmtPct(c.share_pct)}</td>
+            <td class="text-right" style="font-weight: 700; color: var(--mq-gold, #FFD700);">${fmtPct(c.share_pct)}</td>
             <td class="text-right" style="font-weight: 600; color: #94A3B8;">${fmtPct(c.share_ant_pct)}</td>
+            <td class="text-right" style="font-weight: 600; color: #CBD5E1;">${fmtPct(c.share_ano_ant_pct)}</td>
+            <td class="text-right" style="font-weight: 700; color: ${diffColor};">${diffText}</td>
         `;
         tbody.appendChild(tr);
     });
@@ -1524,8 +1531,10 @@ function renderizarTabelaCanais() {
                 <td class="text-right" style="color: #EF5350;">R$ ${fmtMoeda(totDevolucao)} (${fmtPct(totPctDevolucao)})</td>
                 <td class="text-right" style="font-weight: 700;">${fmtInt(totItens)}</td>
                 <td class="text-right" style="font-weight: 700;">R$ ${fmtMoeda(totTicketMedio)}</td>
-                <td class="text-right" style="font-weight: 800; color: #CB9727;">100,0%</td>
-                <td class="text-right" style="font-weight: 800; color: #94A3B8;">100,0%</td>
+                <td class="text-right" style="font-weight: 800; color: var(--mq-gold, #CB9727);">100,00%</td>
+                <td class="text-right" style="font-weight: 800; color: #94A3B8;">100,00%</td>
+                <td class="text-right" style="font-weight: 800; color: #CBD5E1;">100,00%</td>
+                <td class="text-right" style="font-weight: 800; color: #94A3B8;">0,00 p.p.</td>
             </tr>
         `;
     }

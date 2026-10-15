@@ -434,6 +434,27 @@ def api_resumo():
         canais_para_tabela = [c for c in CANAIS_OFICIAIS if c != "PARLUX"] if canal_filtro != "PARLUX" else ["PARLUX"]
         fat_liquido_total_tabela = sum(graficos_canais[c]["total_fat_periodo"] for c in canais_para_tabela)
         fat_ant_total_tabela = sum(graficos_canais[c]["total_fat_ant_periodo"] for c in canais_para_tabela)
+
+        # Mesmo período no ano anterior (2025): mesmos meses e mesmo intervalo de dias
+        df_periodo_ano_ant = df_ano_ant_filt[
+            (df_ano_ant_filt["MES"].isin(meses)) &
+            (df_ano_ant_filt["DIA"] >= dia_ini) &
+            (df_ano_ant_filt["DIA"] <= dia_fim)
+        ] if not df_ano_ant_filt.empty else pd.DataFrame()
+
+        fat_ano_ant_canais = {}
+        for canal in canais_para_tabela:
+            df_c_ano_ant = df_periodo_ano_ant[df_periodo_ano_ant["CANAL"] == canal] if not df_periodo_ano_ant.empty else pd.DataFrame()
+            if not df_c_ano_ant.empty:
+                vb_aa = float(df_c_ano_ant["VALORVENDA"].sum())
+                fr_aa = float(df_c_ano_ant["FRETE"].sum())
+                dev_aa = float(df_c_ano_ant["VALORDEVOLUCAO"].sum())
+                fat_ano_ant_canais[canal] = vb_aa - fr_aa - dev_aa
+            else:
+                fat_ano_ant_canais[canal] = 0.0
+
+        fat_ano_ant_total_tabela = sum(fat_ano_ant_canais.values())
+
         for canal in canais_para_tabela:
             info = graficos_canais[canal]
             real_c = info["total_fat_periodo"]
@@ -457,6 +478,10 @@ def api_resumo():
             cresc_mom = round((real_c - fat_ant_c) / fat_ant_c * 100, 1) if fat_ant_c > 0 else 0.0
             share_ant_c = round((fat_ant_c / fat_ant_total_tabela * 100), 2) if fat_ant_total_tabela > 0 else 0.0
             
+            fat_ano_ant_c = fat_ano_ant_canais.get(canal, 0.0)
+            share_ano_ant_c = round((fat_ano_ant_c / fat_ano_ant_total_tabela * 100), 2) if fat_ano_ant_total_tabela > 0 else 0.0
+            diff_share_ano_ant_c = round(share_c - share_ano_ant_c, 2)
+            
             canais_tabela.append({
                 "canal": canal,
                 "venda_bruta": round(vb_c, 2),
@@ -465,6 +490,7 @@ def api_resumo():
                 "pct_devolucao": dev_pct_c,
                 "faturamento_liquido": round(real_c, 2),
                 "faturamento_ant": round(fat_ant_c, 2),
+                "faturamento_ano_ant": round(fat_ano_ant_c, 2),
                 "crescimento_mom": cresc_mom,
                 "meta_periodo": round(meta_per_c, 2),
                 "meta_mes": round(meta_mes_c, 2),
@@ -476,6 +502,8 @@ def api_resumo():
                 "ticket_medio": tm_c,
                 "share_pct": share_c,
                 "share_ant_pct": share_ant_c,
+                "share_ano_ant_pct": share_ano_ant_c,
+                "diff_share_ano_ant": diff_share_ano_ant_c,
                 "status": "superou" if info["atingimento_pct"] >= 100 else ("atencao" if info["atingimento_pct"] >= 75 else "critico")
             })
 
