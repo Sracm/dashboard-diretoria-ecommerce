@@ -482,46 +482,123 @@ function setupEventListeners() {
         });
     });
 
-    // Controle de Modo TV / Tela Cheia Adaptativo
-    const btnTv = document.getElementById('btn-toggle-tv');
-    const btnTvText = document.getElementById('btn-tv-text');
-    if (btnTv) {
-        btnTv.addEventListener('click', () => {
-            const isTv = document.body.classList.toggle('tv-mode');
-            btnTv.classList.toggle('active', isTv);
-            if (btnTvText) btnTvText.textContent = isTv ? 'Sair TV' : 'Modo TV';
+    // ============================================================
+    // GERENCIADOR AVANÇADO DE MODO TELA CHEIA & ADAPTABILIDADE
+    // ============================================================
+    initFullscreenMode();
+}
 
-            // Tentar Fullscreen nativo
-            if (isTv) {
-                if (document.documentElement.requestFullscreen) {
-                    document.documentElement.requestFullscreen().catch(() => {});
-                }
-            } else {
-                if (document.fullscreenElement && document.exitFullscreen) {
-                    document.exitFullscreen().catch(() => {});
-                }
+function redimensionarTodosGraficos() {
+    // 1. Gráficos de Linha dos Canais e Histórico Mensal
+    if (chartInstances && typeof chartInstances === 'object') {
+        Object.values(chartInstances).forEach(inst => {
+            if (inst && typeof inst.resize === 'function') {
+                try { inst.resize(); } catch(e) {}
             }
-
-            // Forçar redimensionamento dos gráficos para o novo tamanho
-            setTimeout(() => {
-                window.dispatchEvent(new Event('resize'));
-            }, 150);
         });
     }
+    // 2. Gráfico Donut de Pagamentos
+    if (chartPagamentosPizzaInstance && typeof chartPagamentosPizzaInstance.resize === 'function') {
+        try { chartPagamentosPizzaInstance.resize(); } catch(e) {}
+    }
+    // 3. Gráfico de Conversão / Funil VTEX
+    if (chartConversaoInstance && typeof chartConversaoInstance.resize === 'function') {
+        try { chartConversaoInstance.resize(); } catch(e) {}
+    }
+    // 4. Gráfico do Modal Zoom se ativo
+    if (chartModalInstance && typeof chartModalInstance.resize === 'function') {
+        try { chartModalInstance.resize(); } catch(e) {}
+    }
+}
 
-    // Listener global para redimensionamento suave e instantâneo (Qualquer Tela / TV / Notebook)
-    let resizeTimer = null;
-    window.addEventListener('resize', () => {
-        clearTimeout(resizeTimer);
-        resizeTimer = setTimeout(() => {
-            Object.values(chartInstances).forEach(inst => {
-                if (inst && typeof inst.resize === 'function') inst.resize();
-            });
-            if (chartPagamentosPizzaInstance && typeof chartPagamentosPizzaInstance.resize === 'function') {
-                chartPagamentosPizzaInstance.resize();
+let resizeDebounceTimer = null;
+function redimensionarTodosGraficosDebounced(delay = 80) {
+    clearTimeout(resizeDebounceTimer);
+    resizeDebounceTimer = setTimeout(redimensionarTodosGraficos, delay);
+}
+
+function initFullscreenMode() {
+    const btnFullscreen = document.getElementById('btn-toggle-fullscreen') || document.getElementById('btn-toggle-tv');
+    const iconFullscreen = document.getElementById('icon-fullscreen');
+    const textFullscreen = document.getElementById('text-fullscreen') || document.getElementById('btn-tv-text');
+
+    function isFullscreenActive() {
+        return !!(document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement);
+    }
+
+    function toggleFullscreen() {
+        if (!isFullscreenActive()) {
+            const elem = document.documentElement;
+            if (elem.requestFullscreen) {
+                elem.requestFullscreen().catch(() => {});
+            } else if (elem.webkitRequestFullscreen) {
+                elem.webkitRequestFullscreen();
+            } else if (elem.msRequestFullscreen) {
+                elem.msRequestFullscreen();
             }
-        }, 100);
+        } else {
+            if (document.exitFullscreen) {
+                document.exitFullscreen().catch(() => {});
+            } else if (document.webkitExitFullscreen) {
+                document.webkitExitFullscreen();
+            } else if (document.msExitFullscreen) {
+                document.msExitFullscreen();
+            }
+        }
+    }
+
+    function updateFullscreenUI() {
+        const isFs = isFullscreenActive();
+        document.body.classList.toggle('fullscreen-active', isFs);
+        if (btnFullscreen) {
+            btnFullscreen.classList.toggle('active', isFs);
+            btnFullscreen.title = isFs ? 'Sair do Modo Tela Cheia [Esc ou F11]' : 'Ativar Modo Tela Cheia [F11 ou tecla F]';
+        }
+        if (textFullscreen) {
+            textFullscreen.textContent = isFs ? 'Sair Tela Cheia' : 'Modo Tela Cheia';
+        }
+        if (iconFullscreen) {
+            iconFullscreen.setAttribute('data-lucide', isFs ? 'minimize-2' : 'maximize-2');
+            if (window.lucide) lucide.createIcons();
+        }
+
+        // Força readaptação de todos os gráficos
+        redimensionarTodosGraficosDebounced(50);
+        setTimeout(redimensionarTodosGraficos, 200);
+        setTimeout(redimensionarTodosGraficos, 450);
+    }
+
+    if (btnFullscreen) {
+        btnFullscreen.addEventListener('click', toggleFullscreen);
+    }
+
+    // Ouvintes de eventos nativos para sincronizar com F11, Esc e atalhos do SO
+    ['fullscreenchange', 'webkitfullscreenchange', 'mozfullscreenchange', 'MSFullscreenChange'].forEach(evt => {
+        document.addEventListener(evt, updateFullscreenUI);
     });
+
+    // Tecla de atalho: 'f' ou 'F' ativa/desativa modo tela cheia (quando fora de inputs)
+    document.addEventListener('keydown', (e) => {
+        const tag = (document.activeElement?.tagName || '').toLowerCase();
+        if (tag === 'input' || tag === 'textarea' || tag === 'select') return;
+        if (e.key === 'f' || e.key === 'F') {
+            e.preventDefault();
+            toggleFullscreen();
+        }
+    });
+
+    // Listener global de resize da janela com debouncing
+    window.addEventListener('resize', () => {
+        redimensionarTodosGraficosDebounced(80);
+    });
+
+    // ResizeObserver universal na página para capturar qualquer mudança de tela/monitor
+    if (window.ResizeObserver) {
+        const ro = new ResizeObserver(() => {
+            redimensionarTodosGraficosDebounced(80);
+        });
+        ro.observe(document.body);
+    }
 }
 
 // Controle de concorrência e cache ultra-rápido no navegador
