@@ -5005,51 +5005,41 @@ span[id^="kpi-meta-"],
 }
 
 /* ==========================================================================
-   Legenda Inferior dos Gráficos de Canais (Posicionada Embaixo dos Dias)
+   Legenda Executiva no Cabeçalho da Seção de Curvas Diárias
+   (Substitui as antigas bolinhas e remove legendas dos cards individuais)
    ========================================================================== */
-.canal-chart-bottom-legend {
-    display: flex !important;
+.executive-header-legend {
+    display: inline-flex !important;
     align-items: center !important;
-    justify-content: center !important;
-    gap: 16px !important;
-    padding: 7px 10px 3px 10px !important;
-    margin-top: 3px !important;
-    border-top: 1px solid rgba(255, 255, 255, 0.07) !important;
-    background: rgba(0, 0, 0, 0.22) !important;
-    border-radius: 0 0 var(--radius-sm) var(--radius-sm) !important;
+    gap: 22px !important;
+    background: transparent !important;
+    border: none !important;
+    padding: 2px 0 !important;
     user-select: none !important;
     flex-wrap: wrap !important;
 }
 
-.bottom-legend-item {
+.executive-header-legend .header-legend-item {
     display: inline-flex !important;
     align-items: center !important;
-    gap: 7px !important;
-    font-size: 0.70rem !important;
+    gap: 8px !important;
+    font-size: 0.78rem !important;
     font-weight: 700 !important;
     font-family: 'Montserrat', sans-serif !important;
-    color: #CBD5E1 !important;
-    letter-spacing: 0.3px !important;
-    cursor: pointer !important;
-    transition: all 0.2s ease !important;
-    padding: 2px 6px !important;
-    border-radius: 4px !important;
-}
-
-.bottom-legend-item:hover {
     color: #FFFFFF !important;
-    background: rgba(255, 255, 255, 0.06) !important;
+    letter-spacing: 0.2px !important;
 }
 
-.bottom-legend-item.legend-dimmed {
-    opacity: 0.35 !important;
-    text-decoration: line-through !important;
+.executive-header-legend .legend-text {
+    color: #FFFFFF !important;
+    font-weight: 700 !important;
+    white-space: nowrap !important;
 }
 
-/* Amostras das Linhas dos Gráficos */
+/* Amostras das Linhas com Nós Centrais (--o--) */
 .legend-line-sample {
     position: relative !important;
-    width: 20px !important;
+    width: 22px !important;
     height: 3px !important;
     border-radius: 2px !important;
     display: inline-block !important;
@@ -5062,12 +5052,12 @@ span[id^="kpi-meta-"],
     top: 50% !important;
     left: 50% !important;
     transform: translate(-50%, -50%) !important;
-    width: 7px !important;
-    height: 7px !important;
+    width: 8px !important;
+    height: 8px !important;
     border-radius: 50% !important;
 }
 
-/* 1. Meta Acumulada: Linha Verde com Ponto Branco/Verde */
+/* 1. Meta Acumulada: Linha Verde com Ponto Central Branco e Borda Verde */
 .legend-line-sample.meta-sample {
     background-color: #00E676 !important;
     box-shadow: 0 0 6px rgba(0, 230, 118, 0.45) !important;
@@ -5078,7 +5068,7 @@ span[id^="kpi-meta-"],
     border: 2px solid #00E676 !important;
 }
 
-/* 2. Faturamento Atual: Linha Vermelha com Ponto Branco/Vermelho */
+/* 2. Faturamento Atual: Linha Vermelha com Ponto Central Branco e Borda Vermelha */
 .legend-line-sample.fat-sample {
     background-color: #FF5252 !important;
     box-shadow: 0 0 6px rgba(255, 82, 82, 0.45) !important;
@@ -5089,19 +5079,15 @@ span[id^="kpi-meta-"],
     border: 2px solid #FF5252 !important;
 }
 
-/* 3. Fat. Mês Anterior: Linha Azul Tracejada com Ponto */
+/* 3. Fat. Mês Anterior: Linha Azul com Ponto Anelar Escuro e Borda Azul */
 .legend-line-sample.ant-sample {
-    background: repeating-linear-gradient(90deg, #2979FF, #2979FF 4px, transparent 4px, transparent 7px) !important;
-    box-shadow: 0 0 6px rgba(41, 121, 255, 0.35) !important;
+    background-color: #2979FF !important;
+    box-shadow: 0 0 6px rgba(41, 121, 255, 0.45) !important;
 }
 
 .legend-line-sample.ant-sample::after {
-    background-color: #0F1117 !important;
+    background-color: #0D1117 !important;
     border: 2px solid #2979FF !important;
-}
-
-.legend-text {
-    white-space: nowrap !important;
 }
 
 /* ==========================================================================

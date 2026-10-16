@@ -112,10 +112,6 @@
                     <div class="next-update" id="next-update">Próxima atualização em: 30:00</div>
                 </div>
 
-                <div class="server-badge" id="btn-manual-sync" title="Clique para sincronizar com o Sankhya agora" style="cursor: pointer;">
-                    <span class="badge-dot"></span>
-                    <span>Sankhya Direto</span>
-                </div>
 
                 <button type="button" id="btn-toggle-fullscreen" class="btn-fullscreen-mode" title="Ativar Modo Tela Cheia [F11 ou tecla F]">
                     <i data-lucide="maximize-2" id="icon-fullscreen"></i>
@@ -141,10 +137,19 @@
                         <h2 class="section-title">Evolução Diária Acumulada: Meta vs Realizado</h2>
                         <span class="section-subtitle" style="color: #FFFFFF !important; font-weight: 500;">Curvas acumuladas dia a dia comparando o ritmo planejado contra o faturamento líquido faturado</span>
                     </div>
-                    <div class="meta-legend">
-                        <span class="legend-item"><span class="dot green"></span> Meta Acumulada</span>
-                        <span class="legend-item"><span class="dot red"></span> Fat. Acumulado Atual</span>
-                        <span class="legend-item"><span class="dot blue"></span> Fat. Acum Mês ant.</span>
+                    <div class="meta-legend executive-header-legend">
+                        <div class="header-legend-item legend-meta" title="Meta planejada acumulada para os dias decorridos">
+                            <span class="legend-line-sample meta-sample"></span>
+                            <span class="legend-text">Meta Acumulada</span>
+                        </div>
+                        <div class="header-legend-item legend-fat" title="Faturamento realizado acumulado até a data atual">
+                            <span class="legend-line-sample fat-sample"></span>
+                            <span class="legend-text">Faturamento Atual</span>
+                        </div>
+                        <div class="header-legend-item legend-ant" title="Faturamento acumulado no mesmo período do mês anterior">
+                            <span class="legend-line-sample ant-sample"></span>
+                            <span class="legend-text">Fat. Mês Anterior</span>
+                        </div>
                     </div>
                 </div>
 
@@ -226,20 +231,6 @@
                         <div class="canal-chart-container">
                             <canvas id="chart-geral"></canvas>
                         </div>
-                        <div class="canal-chart-bottom-legend">
-                            <div class="bottom-legend-item legend-meta" onclick="toggleCanalDataset('chart-geral', 0)" title="Meta Acumulada (Clique para ocultar/exibir)">
-                                <span class="legend-line-sample meta-sample"></span>
-                                <span class="legend-text">Meta Acumulada</span>
-                            </div>
-                            <div class="bottom-legend-item legend-fat" onclick="toggleCanalDataset('chart-geral', 2)" title="Faturamento Atual (Clique para ocultar/exibir)">
-                                <span class="legend-line-sample fat-sample"></span>
-                                <span class="legend-text">Faturamento Atual</span>
-                            </div>
-                            <div class="bottom-legend-item legend-ant" onclick="toggleCanalDataset('chart-geral', 1)" title="Fat. Mês Anterior (Clique para ocultar/exibir)">
-                                <span class="legend-line-sample ant-sample"></span>
-                                <span class="legend-text">Fat. Mês Anterior</span>
-                            </div>
-                        </div>
                     </div>
 
                     <!-- 2. MERCADO LIVRE -->
@@ -317,20 +308,6 @@
                         </div>
                         <div class="canal-chart-container">
                             <canvas id="chart-ml"></canvas>
-                        </div>
-                        <div class="canal-chart-bottom-legend">
-                            <div class="bottom-legend-item legend-meta" onclick="toggleCanalDataset('chart-ml', 0)" title="Meta Acumulada (Clique para ocultar/exibir)">
-                                <span class="legend-line-sample meta-sample"></span>
-                                <span class="legend-text">Meta Acumulada</span>
-                            </div>
-                            <div class="bottom-legend-item legend-fat" onclick="toggleCanalDataset('chart-ml', 2)" title="Faturamento Atual (Clique para ocultar/exibir)">
-                                <span class="legend-line-sample fat-sample"></span>
-                                <span class="legend-text">Faturamento Atual</span>
-                            </div>
-                            <div class="bottom-legend-item legend-ant" onclick="toggleCanalDataset('chart-ml', 1)" title="Fat. Mês Anterior (Clique para ocultar/exibir)">
-                                <span class="legend-line-sample ant-sample"></span>
-                                <span class="legend-text">Fat. Mês Anterior</span>
-                            </div>
                         </div>
                     </div>
 
@@ -410,20 +387,6 @@
                         <div class="canal-chart-container">
                             <canvas id="chart-vtex"></canvas>
                         </div>
-                        <div class="canal-chart-bottom-legend">
-                            <div class="bottom-legend-item legend-meta" onclick="toggleCanalDataset('chart-vtex', 0)" title="Meta Acumulada (Clique para ocultar/exibir)">
-                                <span class="legend-line-sample meta-sample"></span>
-                                <span class="legend-text">Meta Acumulada</span>
-                            </div>
-                            <div class="bottom-legend-item legend-fat" onclick="toggleCanalDataset('chart-vtex', 2)" title="Faturamento Atual (Clique para ocultar/exibir)">
-                                <span class="legend-line-sample fat-sample"></span>
-                                <span class="legend-text">Faturamento Atual</span>
-                            </div>
-                            <div class="bottom-legend-item legend-ant" onclick="toggleCanalDataset('chart-vtex', 1)" title="Fat. Mês Anterior (Clique para ocultar/exibir)">
-                                <span class="legend-line-sample ant-sample"></span>
-                                <span class="legend-text">Fat. Mês Anterior</span>
-                            </div>
-                        </div>
                     </div>
 
                     <!-- 4. SHOPEE -->
@@ -501,20 +464,6 @@
                         </div>
                         <div class="canal-chart-container">
                             <canvas id="chart-shopee"></canvas>
-                        </div>
-                        <div class="canal-chart-bottom-legend">
-                            <div class="bottom-legend-item legend-meta" onclick="toggleCanalDataset('chart-shopee', 0)" title="Meta Acumulada (Clique para ocultar/exibir)">
-                                <span class="legend-line-sample meta-sample"></span>
-                                <span class="legend-text">Meta Acumulada</span>
-                            </div>
-                            <div class="bottom-legend-item legend-fat" onclick="toggleCanalDataset('chart-shopee', 2)" title="Faturamento Atual (Clique para ocultar/exibir)">
-                                <span class="legend-line-sample fat-sample"></span>
-                                <span class="legend-text">Faturamento Atual</span>
-                            </div>
-                            <div class="bottom-legend-item legend-ant" onclick="toggleCanalDataset('chart-shopee', 1)" title="Fat. Mês Anterior (Clique para ocultar/exibir)">
-                                <span class="legend-line-sample ant-sample"></span>
-                                <span class="legend-text">Fat. Mês Anterior</span>
-                            </div>
                         </div>
                     </div>
 
@@ -594,20 +543,6 @@
                         <div class="canal-chart-container">
                             <canvas id="chart-magalu"></canvas>
                         </div>
-                        <div class="canal-chart-bottom-legend">
-                            <div class="bottom-legend-item legend-meta" onclick="toggleCanalDataset('chart-magalu', 0)" title="Meta Acumulada (Clique para ocultar/exibir)">
-                                <span class="legend-line-sample meta-sample"></span>
-                                <span class="legend-text">Meta Acumulada</span>
-                            </div>
-                            <div class="bottom-legend-item legend-fat" onclick="toggleCanalDataset('chart-magalu', 2)" title="Faturamento Atual (Clique para ocultar/exibir)">
-                                <span class="legend-line-sample fat-sample"></span>
-                                <span class="legend-text">Faturamento Atual</span>
-                            </div>
-                            <div class="bottom-legend-item legend-ant" onclick="toggleCanalDataset('chart-magalu', 1)" title="Fat. Mês Anterior (Clique para ocultar/exibir)">
-                                <span class="legend-line-sample ant-sample"></span>
-                                <span class="legend-text">Fat. Mês Anterior</span>
-                            </div>
-                        </div>
                     </div>
 
                     <!-- 6. PARLUX -->
@@ -685,20 +620,6 @@
                         </div>
                         <div class="canal-chart-container">
                             <canvas id="chart-parlux"></canvas>
-                        </div>
-                        <div class="canal-chart-bottom-legend">
-                            <div class="bottom-legend-item legend-meta" onclick="toggleCanalDataset('chart-parlux', 0)" title="Meta Acumulada (Clique para ocultar/exibir)">
-                                <span class="legend-line-sample meta-sample"></span>
-                                <span class="legend-text">Meta Acumulada</span>
-                            </div>
-                            <div class="bottom-legend-item legend-fat" onclick="toggleCanalDataset('chart-parlux', 2)" title="Faturamento Atual (Clique para ocultar/exibir)">
-                                <span class="legend-line-sample fat-sample"></span>
-                                <span class="legend-text">Faturamento Atual</span>
-                            </div>
-                            <div class="bottom-legend-item legend-ant" onclick="toggleCanalDataset('chart-parlux', 1)" title="Fat. Mês Anterior (Clique para ocultar/exibir)">
-                                <span class="legend-line-sample ant-sample"></span>
-                                <span class="legend-text">Fat. Mês Anterior</span>
-                            </div>
                         </div>
                     </div>
                 </div>
