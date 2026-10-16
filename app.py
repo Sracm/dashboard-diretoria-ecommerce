@@ -32,6 +32,35 @@ NOMES_MESES = [
 ]
 
 
+def simplificar_nome_produto(nome):
+    if not nome or pd.isna(nome):
+        return "—"
+    n = str(nome).strip()
+    u = n.upper()
+    if "PRO 480" in u or "PRO480" in u:
+        if "VELOX" in u:
+            return "PRO 480 VELOX"
+        elif "TURBO" in u:
+            return "PRO 480 TURBO"
+        elif "SLIM" in u:
+            return "PRO 480 SLIM"
+        else:
+            return "PRO 480"
+    if "MAX480" in u or "MAX 480" in u:
+        return "MAX 480"
+    res = n
+    for prefix in [
+        "PRANCHA MQ ", "SECADOR MQ ", "MAQUINA MQ ", "ESCOVA MQ ",
+        "MODELADOR MQ ", "PRANCHA ", "SECADOR ", "MAQUINA "
+    ]:
+        if res.upper().startswith(prefix):
+            res = res[len(prefix):]
+            break
+    if len(res) > 28:
+        res = res[:25] + "..."
+    return res
+
+
 @app.route("/")
 def index():
     now = datetime.now()
@@ -357,6 +386,44 @@ def api_resumo():
             proj_pct_c = round((proj_c / meta_mes_c * 100), 1) if meta_mes_c > 0 else 0.0
             gap_proj_c = round(proj_c - meta_mes_c, 2)
 
+            # Cálculo de Maior Dia de Venda e Top Produto
+            df_c_periodo = df_c[(df_c["DIA"] >= dia_ini) & (df_c["DIA"] <= dia_fim)] if df_c is not None and not df_c.empty else pd.DataFrame()
+            rec_dia = 0
+            rec_data_str = "—"
+            rec_fat = 0.0
+            rec_prod_dia = "—"
+            rec_prod_dia_full = "—"
+            rec_prod_dia_fat = 0.0
+            rec_prod_dia_qtd = 0
+            rec_prod_per = "—"
+            rec_prod_per_full = "—"
+            rec_prod_per_fat = 0.0
+            rec_prod_per_qtd = 0
+
+            if not df_c_periodo.empty:
+                vendas_dias_validos = {d: fat_dia_map.get(d, 0.0) for d in range(dia_ini, dia_fim + 1)}
+                if vendas_dias_validos and max(vendas_dias_validos.values()) > 0:
+                    rec_dia = int(max(vendas_dias_validos, key=vendas_dias_validos.get))
+                    rec_fat = float(vendas_dias_validos[rec_dia])
+                    df_rec_dia = df_c_periodo[df_c_periodo["DIA"] == rec_dia]
+                    mes_rec = int(df_rec_dia["MES"].iloc[0]) if "MES" in df_rec_dia.columns else mes
+                    rec_data_str = f"{rec_dia:02d}/{mes_rec:02d}"
+                    
+                    if not df_rec_dia.empty and "PRODUTO" in df_rec_dia.columns:
+                        grp_dia_p = df_rec_dia.groupby("PRODUTO")["FAT_LIQUIDO"].sum()
+                        if not grp_dia_p.empty and grp_dia_p.max() > 0:
+                            rec_prod_dia_full = str(grp_dia_p.idxmax())
+                            rec_prod_dia = simplificar_nome_produto(rec_prod_dia_full)
+                            rec_prod_dia_fat = float(grp_dia_p.max())
+                            rec_prod_dia_qtd = int(df_rec_dia[df_rec_dia["PRODUTO"] == rec_prod_dia_full]["QTDVENDIDA"].sum())
+
+                    grp_per_p = df_c_periodo.groupby("PRODUTO")["FAT_LIQUIDO"].sum()
+                    if not grp_per_p.empty and grp_per_p.max() > 0:
+                        rec_prod_per_full = str(grp_per_p.idxmax())
+                        rec_prod_per = simplificar_nome_produto(rec_prod_per_full)
+                        rec_prod_per_fat = float(grp_per_p.max())
+                        rec_prod_per_qtd = int(df_c_periodo[df_c_periodo["PRODUTO"] == rec_prod_per_full]["QTDVENDIDA"].sum())
+
             graficos_canais[canal] = {
                 "canal": canal,
                 "labels": labels,
@@ -374,7 +441,20 @@ def api_resumo():
                 "diff_pct_periodo": diff_pct_c_periodo,
                 "projecao_mes": proj_c,
                 "projecao_pct": proj_pct_c,
-                "gap_projecao": gap_proj_c
+                "gap_projecao": gap_proj_c,
+                "recorde_dia": {
+                    "dia": rec_dia,
+                    "data_formatada": rec_data_str,
+                    "faturamento": round(rec_fat, 2),
+                    "top_produto": rec_prod_dia,
+                    "top_produto_full": rec_prod_dia_full,
+                    "top_produto_fat": round(rec_prod_dia_fat, 2),
+                    "top_produto_qtd": rec_prod_dia_qtd,
+                    "top_produto_periodo": rec_prod_per,
+                    "top_produto_periodo_full": rec_prod_per_full,
+                    "top_produto_periodo_fat": round(rec_prod_per_fat, 2),
+                    "top_produto_periodo_qtd": rec_prod_per_qtd
+                }
             }
 
         # Gráfico 6: GERAL (Consolidado)
@@ -409,6 +489,43 @@ def api_resumo():
         proj_pct_g = round((proj_g / meta_mes_geral * 100), 1) if meta_mes_geral > 0 else 0.0
         gap_proj_g = round(proj_g - meta_mes_geral, 2)
 
+        df_g_periodo = df_kpis[(df_kpis["DIA"] >= dia_ini) & (df_kpis["DIA"] <= dia_fim)] if not df_kpis.empty else pd.DataFrame()
+        rec_dia_g = 0
+        rec_data_str_g = "—"
+        rec_fat_g = 0.0
+        rec_prod_dia_g = "—"
+        rec_prod_dia_full_g = "—"
+        rec_prod_dia_fat_g = 0.0
+        rec_prod_dia_qtd_g = 0
+        rec_prod_per_g = "—"
+        rec_prod_per_full_g = "—"
+        rec_prod_per_fat_g = 0.0
+        rec_prod_per_qtd_g = 0
+
+        if not df_g_periodo.empty:
+            fat_dias_g = df_g_periodo.groupby("DIA")["FAT_LIQUIDO"].sum().to_dict()
+            if fat_dias_g and max(fat_dias_g.values()) > 0:
+                rec_dia_g = int(max(fat_dias_g, key=fat_dias_g.get))
+                rec_fat_g = float(fat_dias_g[rec_dia_g])
+                df_rec_dia_g = df_g_periodo[df_g_periodo["DIA"] == rec_dia_g]
+                mes_rec_g = int(df_rec_dia_g["MES"].iloc[0]) if "MES" in df_rec_dia_g.columns else mes
+                rec_data_str_g = f"{rec_dia_g:02d}/{mes_rec_g:02d}"
+
+                if not df_rec_dia_g.empty and "PRODUTO" in df_rec_dia_g.columns:
+                    grp_dia_pg = df_rec_dia_g.groupby("PRODUTO")["FAT_LIQUIDO"].sum()
+                    if not grp_dia_pg.empty and grp_dia_pg.max() > 0:
+                        rec_prod_dia_full_g = str(grp_dia_pg.idxmax())
+                        rec_prod_dia_g = simplificar_nome_produto(rec_prod_dia_full_g)
+                        rec_prod_dia_fat_g = float(grp_dia_pg.max())
+                        rec_prod_dia_qtd_g = int(df_rec_dia_g[df_rec_dia_g["PRODUTO"] == rec_prod_dia_full_g]["QTDVENDIDA"].sum())
+
+                grp_per_pg = df_g_periodo.groupby("PRODUTO")["FAT_LIQUIDO"].sum()
+                if not grp_per_pg.empty and grp_per_pg.max() > 0:
+                    rec_prod_per_full_g = str(grp_per_pg.idxmax())
+                    rec_prod_per_g = simplificar_nome_produto(rec_prod_per_full_g)
+                    rec_prod_per_fat_g = float(grp_per_pg.max())
+                    rec_prod_per_qtd_g = int(df_g_periodo[df_g_periodo["PRODUTO"] == rec_prod_per_full_g]["QTDVENDIDA"].sum())
+
         graficos_canais["GERAL"] = {
             "canal": "GERAL",
             "labels": labels_geral,
@@ -426,7 +543,20 @@ def api_resumo():
             "diff_pct_periodo": diff_pct_g_periodo,
             "projecao_mes": proj_g,
             "projecao_pct": proj_pct_g,
-            "gap_projecao": gap_proj_g
+            "gap_projecao": gap_proj_g,
+            "recorde_dia": {
+                "dia": rec_dia_g,
+                "data_formatada": rec_data_str_g,
+                "faturamento": round(rec_fat_g, 2),
+                "top_produto": rec_prod_dia_g,
+                "top_produto_full": rec_prod_dia_full_g,
+                "top_produto_fat": round(rec_prod_dia_fat_g, 2),
+                "top_produto_qtd": rec_prod_dia_qtd_g,
+                "top_produto_periodo": rec_prod_per_g,
+                "top_produto_periodo_full": rec_prod_per_full_g,
+                "top_produto_periodo_fat": round(rec_prod_per_fat_g, 2),
+                "top_produto_periodo_qtd": rec_prod_per_qtd_g
+            }
         }
 
         # 4. Tabela Detalhada por Canal no Período (sem Parlux conforme solicitação da Diretoria)

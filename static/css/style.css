@@ -4885,3 +4885,106 @@ span[id^="kpi-meta-"],
     font-size: 8px !important;
     padding: 1px 4px !important;
 }
+
+/* ==========================================================================
+   BARRA EXECUTIVA: MAIOR DIA DE VENDA E TOP PRODUTO POR CANAL
+   ========================================================================== */
+.canal-record-strip {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 8px !important;
+    background: linear-gradient(90deg, rgba(255, 179, 0, 0.08) 0%, rgba(255, 255, 255, 0.025) 50%, rgba(255, 179, 0, 0.05) 100%) !important;
+    border: 1px solid rgba(255, 179, 0, 0.25) !important;
+    border-radius: var(--radius-sm, 8px) !important;
+    padding: 6px 10px !important;
+    margin-bottom: 8px !important;
+    min-height: 32px !important;
+}
+
+.canal-record-col {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    overflow: hidden !important;
+    white-space: nowrap !important;
+    flex: 1 !important;
+}
+
+.canal-record-col:last-child {
+    justify-content: flex-end !important;
+}
+
+.canal-record-strip .record-tag {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 4px !important;
+    font-size: 0.67rem !important;
+    font-weight: 800 !important;
+    letter-spacing: 0.4px !important;
+    text-transform: uppercase !important;
+    color: #FFB300 !important;
+}
+
+.canal-record-strip .record-tag svg,
+.canal-record-strip .record-tag i {
+    width: 12px !important;
+    height: 12px !important;
+    color: #FFB300 !important;
+    stroke-width: 2.5 !important;
+}
+
+.canal-record-strip .record-info {
+    display: inline-flex !important;
+    align-items: baseline !important;
+    gap: 5px !important;
+    overflow: hidden !important;
+}
+
+.record-date-badge {
+    font-size: 0.82rem !important;
+    font-weight: 800 !important;
+    color: #FFFFFF !important;
+    background: rgba(255, 179, 0, 0.22) !important;
+    border: 1px solid rgba(255, 179, 0, 0.45) !important;
+    padding: 1px 5px !important;
+    border-radius: 4px !important;
+    font-family: var(--font-number, monospace) !important;
+    letter-spacing: 0.3px !important;
+}
+
+.record-fat-badge {
+    font-size: 0.74rem !important;
+    font-weight: 700 !important;
+    color: #00E676 !important;
+}
+
+.canal-record-sep {
+    width: 1px !important;
+    height: 18px !important;
+    background: rgba(255, 255, 255, 0.12) !important;
+    flex-shrink: 0 !important;
+}
+
+.record-prod-name {
+    font-size: 0.80rem !important;
+    font-weight: 800 !important;
+    color: #FFD54F !important;
+    max-width: 200px !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+}
+
+.record-prod-qtd {
+    font-size: 0.70rem !important;
+    font-weight: 600 !important;
+    color: #A0A0AA !important;
+    white-space: nowrap !important;
+}
+
+.modal-record-box {
+    border: 1px solid rgba(255, 179, 0, 0.35) !important;
+    background: rgba(255, 179, 0, 0.08) !important;
+}
+

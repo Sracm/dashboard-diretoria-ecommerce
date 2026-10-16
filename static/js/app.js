@@ -890,7 +890,22 @@ function renderizarSeisGraficos(graficos) {
             perfProjBadge.className = `perf-status-pill ${atingProj ? 'dentro' : 'fora'}`;
         }
 
+        // 2.5. Atualizar Maior Dia de Venda e Top Produto
+        const rec = info.recorde_dia || {};
+        const recDiaEl = document.getElementById(`perf-record-dia-${s}`);
+        const recFatEl = document.getElementById(`perf-record-fat-${s}`);
+        const recProdEl = document.getElementById(`perf-record-prod-${s}`);
+        const recQtdEl = document.getElementById(`perf-record-qtd-${s}`);
 
+        if (recDiaEl) recDiaEl.textContent = rec.data_formatada || '—';
+        if (recFatEl) recFatEl.textContent = rec.faturamento > 0 ? `(R$ ${fmtMoedaZero(rec.faturamento)})` : '';
+        if (recProdEl) {
+            recProdEl.textContent = rec.top_produto || '—';
+            recProdEl.title = `${rec.top_produto_full || rec.top_produto || ''} · R$ ${fmtMoedaZero(rec.top_produto_fat || 0)}`;
+        }
+        if (recQtdEl) {
+            recQtdEl.textContent = rec.top_produto_qtd > 0 ? `(${rec.top_produto_qtd} un)` : '';
+        }
 
         // Atualizar Valores do Rodapé do Card:
         const footAnt = document.getElementById(c.footAnt);
@@ -910,10 +925,31 @@ function renderizarSeisGraficos(graficos) {
             chartInstances[c.canvasId].destroy();
         }
 
-                const totalPontos = info.labels ? info.labels.length : 0;
+        const totalPontos = info.labels ? info.labels.length : 0;
         // Marcadores executivos refinados (estilo anel com núcleo de alto contraste e borda na cor da métrica)
         const pRadius = totalPontos > 25 ? 2.5 : 3.5;
         const pRadiusFat = totalPontos > 25 ? 3 : 4.5;
+
+        // Destaque do Maior Dia de Venda no Gráfico
+        const diaRecIdx = (rec && rec.dia > 0) ? (rec.dia - 1) : -1;
+        const fatPointRadii = [];
+        const fatPointBg = [];
+        const fatPointBorder = [];
+        const fatPointBorderW = [];
+
+        for (let idxPt = 0; idxPt < totalPontos; idxPt++) {
+            if (idxPt === diaRecIdx && rec.faturamento > 0) {
+                fatPointRadii.push(pRadiusFat + 3.5);
+                fatPointBg.push('#FFB300');
+                fatPointBorder.push('#FFFFFF');
+                fatPointBorderW.push(2.5);
+            } else {
+                fatPointRadii.push(pRadiusFat);
+                fatPointBg.push('#FFFFFF');
+                fatPointBorder.push('#FF5252');
+                fatPointBorderW.push(2.2);
+            }
+        }
 
         const ctx = canvas.getContext('2d');
         chartInstances[c.canvasId] = new Chart(ctx, {
@@ -963,14 +999,14 @@ function renderizarSeisGraficos(graficos) {
                         backgroundColor: 'rgba(255, 82, 82, 0.08)',
                         borderWidth: 2.5,
                         pointStyle: 'circle',
-                        pointBackgroundColor: '#FFFFFF',
-                        pointBorderColor: '#FF5252',
-                        pointBorderWidth: 2.2,
-                        pointRadius: pRadiusFat,
-                        pointHoverRadius: 8,
-                        pointHoverBackgroundColor: '#FF5252',
+                        pointBackgroundColor: fatPointBg,
+                        pointBorderColor: fatPointBorder,
+                        pointBorderWidth: fatPointBorderW,
+                        pointRadius: fatPointRadii,
+                        pointHoverRadius: 9,
+                        pointHoverBackgroundColor: '#FFB300',
                         pointHoverBorderColor: '#FFFFFF',
-                        pointHoverBorderWidth: 2.2,
+                        pointHoverBorderWidth: 2.5,
                         fill: true,
                         tension: 0.1
                     }
@@ -1000,19 +1036,25 @@ function renderizarSeisGraficos(graficos) {
                             title: (items) => {
                                 if (!items.length) return '';
                                 const dLabel = String(items[0].label).replace(/^D/i, '');
-                                return `📅 Dia ${dLabel}`;
+                                const isRec = (items[0].dataIndex === diaRecIdx && rec.faturamento > 0);
+                                return isRec ? `🏆 Dia ${dLabel} (MAIOR VENDA DO CANAL)` : `📅 Dia ${dLabel}`;
                             },
                             label: (ctx) => ` ${ctx.dataset.label}: R$ ${fmtMoeda(ctx.raw)}`,
                             afterBody: (items) => {
+                                const lines = [];
                                 const fatItem = items.find(i => i.dataset.label === 'Fat. Acumulado');
                                 const metaItem = items.find(i => i.dataset.label === 'Meta Acumulada');
                                 if (fatItem && metaItem && metaItem.raw > 0) {
                                     const ating = ((fatItem.raw / metaItem.raw) * 100).toFixed(1);
                                     const diff = fatItem.raw - metaItem.raw;
                                     const sinal = diff >= 0 ? '+' : '';
-                                    return `\n🎯 Ating. até o dia: ${ating}%\n⚖️ Saldo vs Meta: ${sinal}R$ ${fmtMoeda(diff)}`;
+                                    lines.push(`\n🎯 Ating. até o dia: ${ating}%\n⚖️ Saldo vs Meta: ${sinal}R$ ${fmtMoeda(diff)}`);
                                 }
-                                return '';
+                                if (items[0].dataIndex === diaRecIdx && rec.faturamento > 0) {
+                                    lines.push(`\n⭐ Pico de Faturamento: R$ ${fmtMoedaZero(rec.faturamento)}`);
+                                    lines.push(`🔥 Top Produto no Dia: ${rec.top_produto} (${rec.top_produto_qtd} un)`);
+                                }
+                                return lines.join('');
                             }
                         }
                     }
@@ -1191,6 +1233,16 @@ function renderizarModalCanal(canalKey, modo) {
             <div class="modal-kpi-item">
                 <span class="modal-kpi-lbl">Fat. Mês Anterior</span>
                 <span class="modal-kpi-val blue-text">R$ ${fmtMoeda(info.total_fat_ant_periodo)}</span>
+            </div>
+            <div class="modal-kpi-item modal-record-box">
+                <span class="modal-kpi-lbl">🏆 Recorde Diário</span>
+                <span class="modal-kpi-val gold-text">Dia ${info.recorde_dia ? info.recorde_dia.data_formatada : '—'} (R$ ${fmtMoedaZero(info.recorde_dia ? info.recorde_dia.faturamento : 0)})</span>
+            </div>
+            <div class="modal-kpi-item modal-record-box">
+                <span class="modal-kpi-lbl">🔥 Top Produto</span>
+                <span class="modal-kpi-val" style="color: #FFD54F;" title="${info.recorde_dia ? (info.recorde_dia.top_produto_full || '') : ''}">
+                    ${info.recorde_dia ? info.recorde_dia.top_produto : '—'} <span style="font-size:0.75rem; color:#A0A0AA;">(${info.recorde_dia ? info.recorde_dia.top_produto_qtd : 0} un)</span>
+                </span>
             </div>
         `;
     }
