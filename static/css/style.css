@@ -407,53 +407,56 @@ body {
     100% { transform: rotate(360deg); }
 }
 
-/* Informações de Ciclo de Atualização Automática (30 min) */
+/* Informações de Ciclo de Atualização Automática (30 min) no Topo Direito */
 .header-meta-info {
     display: flex;
     flex-direction: column;
     align-items: flex-end;
     justify-content: center;
-    gap: 2px;
+    gap: 3px;
     font-family: 'Montserrat', sans-serif;
-    line-height: 1.25;
-    padding: 0 4px;
+    line-height: 1.2;
+    padding: 2px 6px;
+    user-select: none;
 }
 
 .last-update {
     font-size: 11px;
-    font-weight: 500;
-    color: var(--text-secondary);
-    letter-spacing: 0.2px;
+    font-weight: 600;
+    color: #CBD5E1;
+    letter-spacing: 0.3px;
     white-space: nowrap;
 }
 
 .next-update {
     font-size: 11px;
-    font-weight: 700;
-    color: var(--mq-gold);
-    letter-spacing: 0.3px;
+    font-weight: 800;
+    color: #FFB300;
+    letter-spacing: 0.4px;
     white-space: nowrap;
 }
 
 .server-badge {
-    display: flex;
+    display: inline-flex;
     align-items: center;
     gap: 8px;
     font-size: 11px;
-    font-weight: 600;
-    color: var(--text-secondary);
-    background-color: rgba(255, 255, 255, 0.03);
-    padding: 6px 12px;
+    font-weight: 700;
+    font-family: 'Montserrat', sans-serif;
+    color: #E2E8F0;
+    background-color: rgba(255, 255, 255, 0.04);
+    padding: 6px 14px;
     border-radius: 20px;
-    border: 1px solid var(--mq-card-border);
+    border: 1px solid rgba(255, 255, 255, 0.12);
     transition: var(--transition);
     user-select: none;
+    white-space: nowrap;
 }
 
 .server-badge:hover {
-    background-color: rgba(255, 255, 255, 0.08);
-    border-color: rgba(255, 255, 255, 0.25);
-    color: var(--text-primary);
+    background-color: rgba(255, 255, 255, 0.09);
+    border-color: rgba(255, 255, 255, 0.3);
+    color: #FFFFFF;
 }
 
 .badge-dot {
