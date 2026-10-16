@@ -2149,8 +2149,8 @@ body {
 /* Layout Lado a Lado: Tabela (sem modalidade/gateway) + Gráfico de Participação */
 .payments-dual-layout {
     display: grid;
-    grid-template-columns: minmax(0, 1.45fr) minmax(420px, 1fr);
-    gap: 20px;
+    grid-template-columns: minmax(0, 1.7fr) minmax(320px, 380px);
+    gap: 16px;
     align-items: stretch;
 }
 
@@ -2167,7 +2167,8 @@ body {
 
 .payment-table-card .payment-table-container {
     flex: 1;
-    min-height: 520px;
+    min-height: 400px;
+    max-height: 480px;
     overflow-y: auto;
     overflow-x: hidden;
 }
@@ -2209,13 +2210,14 @@ body {
     border: 1px solid rgba(255, 255, 255, 0.08);
     border-top: 3px solid var(--mq-gold, #CB9727);
     border-radius: var(--radius-md);
-    padding: 18px 20px;
+    padding: 14px 16px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     height: 100%;
-    min-height: 520px;
-    gap: 12px;
+    min-height: 400px;
+    max-height: 480px;
+    gap: 10px;
     box-shadow: 0 14px 34px -10px rgba(0, 0, 0, 0.65), 0 0 20px -6px rgba(203, 151, 39, 0.08);
     transition: var(--transition);
     position: relative;
@@ -2232,32 +2234,32 @@ body {
     align-items: center;
     justify-content: space-between;
     border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-    padding-bottom: 12px;
-    gap: 10px;
+    padding-bottom: 10px;
+    gap: 8px;
     flex-wrap: wrap;
 }
 
 .vtex-chart-title-tag {
     display: flex;
     align-items: center;
-    gap: 8px;
-    font-size: 11.5px;
+    gap: 7px;
+    font-size: 11px;
     font-weight: 800;
     color: #FFFFFF;
     text-transform: uppercase;
-    letter-spacing: 0.6px;
+    letter-spacing: 0.5px;
 }
 
 .chart-tag-icon {
-    width: 17px;
-    height: 17px;
+    width: 16px;
+    height: 16px;
     color: var(--mq-gold, #CB9727);
 }
 
 .vtex-chart-header-actions {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
     flex-wrap: wrap;
 }
 
@@ -2265,7 +2267,7 @@ body {
     display: inline-flex;
     background: rgba(255, 255, 255, 0.05);
     border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 8px;
+    border-radius: 7px;
     padding: 2px;
     gap: 2px;
 }
@@ -2275,14 +2277,14 @@ body {
     border: none;
     color: #94A3B8;
     font-family: 'Montserrat', sans-serif;
-    font-size: 10px;
+    font-size: 9.5px;
     font-weight: 700;
-    padding: 4px 10px;
-    border-radius: 6px;
+    padding: 3px 8px;
+    border-radius: 5px;
     cursor: pointer;
     transition: all 0.2s ease;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.4px;
 }
 
 .btn-donut-mode:hover {
@@ -2297,58 +2299,62 @@ body {
 }
 
 .vtex-modalidades-count {
-    font-size: 11px;
+    font-size: 10px;
     font-weight: 800;
     color: var(--mq-gold);
     background: rgba(203, 151, 39, 0.12);
-    padding: 3px 10px;
-    border-radius: 14px;
+    padding: 2px 8px;
+    border-radius: 12px;
     border: 1px solid rgba(203, 151, 39, 0.25);
     white-space: nowrap;
 }
 
-/* Redimensionamento Generoso do Gráfico de Rosca */
+/* Redimensionamento Harmonioso do Gráfico de Rosca */
 .payment-donut-container {
     position: relative;
     width: 100%;
     flex: 1;
-    min-height: 420px;
+    height: 220px;
+    min-height: 200px;
+    max-height: 235px;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 4px 0;
+    padding: 2px 0;
 }
 
 .payment-donut-wrapper {
     position: relative;
-    width: 100%;
-    height: 100%;
-    min-height: 420px;
+    width: 210px;
+    height: 210px;
+    max-width: 220px;
+    max-height: 220px;
     display: flex;
     align-items: center;
     justify-content: center;
+    margin: 0 auto;
 }
 
-/* Legenda Executiva em Pills Horizontais */
+/* Legenda Executiva em Pills Horizontais Harmoniosas */
 .payment-pills-legend {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     justify-content: center;
-    gap: 8px;
-    padding: 12px 6px 4px 6px;
+    gap: 6px;
+    padding: 8px 4px 2px 4px;
     border-top: 1px solid rgba(255, 255, 255, 0.07);
-    min-height: 44px;
+    min-height: auto;
 }
 
 .donut-pill-item {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
-    padding: 4px 11px;
+    gap: 5px;
+    padding: 3px 8px;
     background: rgba(255, 255, 255, 0.035);
     border: 1px solid rgba(255, 255, 255, 0.07);
-    border-radius: 20px;
+    border-radius: 16px;
     cursor: pointer;
     transition: all 0.2s ease;
     user-select: none;
@@ -2362,21 +2368,21 @@ body {
 }
 
 .donut-pill-dot {
-    width: 8px;
-    height: 8px;
+    width: 7px;
+    height: 7px;
     border-radius: 50%;
     flex-shrink: 0;
 }
 
 .donut-pill-label {
-    font-size: 11px;
+    font-size: 10px;
     font-weight: 700;
     color: #E2E8F0;
     white-space: nowrap;
 }
 
 .donut-pill-pct {
-    font-size: 11px;
+    font-size: 10px;
     font-weight: 800;
     white-space: nowrap;
 }
@@ -4763,20 +4769,20 @@ span[id^="kpi-meta-"],
 }
 
 .canal-chart-container {
-    height: 240px !important;
+    height: 220px !important;
     width: 100% !important;
 }
 
 .channels-charts-grid.grid-2col .canal-chart-container {
-    height: 240px !important;
+    height: 220px !important;
 }
 
 .channels-charts-grid.grid-1col .canal-chart-container {
-    height: 240px !important;
+    height: 220px !important;
 }
 
 .channels-charts-grid.grid-3col .canal-chart-container {
-    height: 240px !important;
+    height: 220px !important;
 }
 
 /* ===== ULTRA-COMPACT KPI CARDS ===== */
@@ -4987,4 +4993,105 @@ span[id^="kpi-meta-"],
     border: 1px solid rgba(255, 179, 0, 0.35) !important;
     background: rgba(255, 179, 0, 0.08) !important;
 }
+
+/* ==========================================================================
+   Legenda Inferior dos Gráficos de Canais (Posicionada Embaixo dos Dias)
+   ========================================================================== */
+.canal-chart-bottom-legend {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 16px !important;
+    padding: 7px 10px 3px 10px !important;
+    margin-top: 3px !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.07) !important;
+    background: rgba(0, 0, 0, 0.22) !important;
+    border-radius: 0 0 var(--radius-sm) var(--radius-sm) !important;
+    user-select: none !important;
+    flex-wrap: wrap !important;
+}
+
+.bottom-legend-item {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 7px !important;
+    font-size: 0.70rem !important;
+    font-weight: 700 !important;
+    font-family: 'Montserrat', sans-serif !important;
+    color: #CBD5E1 !important;
+    letter-spacing: 0.3px !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+    padding: 2px 6px !important;
+    border-radius: 4px !important;
+}
+
+.bottom-legend-item:hover {
+    color: #FFFFFF !important;
+    background: rgba(255, 255, 255, 0.06) !important;
+}
+
+.bottom-legend-item.legend-dimmed {
+    opacity: 0.35 !important;
+    text-decoration: line-through !important;
+}
+
+/* Amostras das Linhas dos Gráficos */
+.legend-line-sample {
+    position: relative !important;
+    width: 20px !important;
+    height: 3px !important;
+    border-radius: 2px !important;
+    display: inline-block !important;
+    flex-shrink: 0 !important;
+}
+
+.legend-line-sample::after {
+    content: '' !important;
+    position: absolute !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    width: 7px !important;
+    height: 7px !important;
+    border-radius: 50% !important;
+}
+
+/* 1. Meta Acumulada: Linha Verde com Ponto Branco/Verde */
+.legend-line-sample.meta-sample {
+    background-color: #00E676 !important;
+    box-shadow: 0 0 6px rgba(0, 230, 118, 0.45) !important;
+}
+
+.legend-line-sample.meta-sample::after {
+    background-color: #FFFFFF !important;
+    border: 2px solid #00E676 !important;
+}
+
+/* 2. Faturamento Atual: Linha Vermelha com Ponto Branco/Vermelho */
+.legend-line-sample.fat-sample {
+    background-color: #FF5252 !important;
+    box-shadow: 0 0 6px rgba(255, 82, 82, 0.45) !important;
+}
+
+.legend-line-sample.fat-sample::after {
+    background-color: #FFFFFF !important;
+    border: 2px solid #FF5252 !important;
+}
+
+/* 3. Fat. Mês Anterior: Linha Azul Tracejada com Ponto */
+.legend-line-sample.ant-sample {
+    background: repeating-linear-gradient(90deg, #2979FF, #2979FF 4px, transparent 4px, transparent 7px) !important;
+    box-shadow: 0 0 6px rgba(41, 121, 255, 0.35) !important;
+}
+
+.legend-line-sample.ant-sample::after {
+    background-color: #0F1117 !important;
+    border: 2px solid #2979FF !important;
+}
+
+.legend-text {
+    white-space: nowrap !important;
+}
+
 

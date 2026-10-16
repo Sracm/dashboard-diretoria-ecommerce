@@ -1151,6 +1151,30 @@ function setupGridToggle() {
     });
 }
 
+// Alterna visibilidade da linha selecionada na legenda inferior do canal
+function toggleCanalDataset(canvasId, datasetIdx) {
+    const chart = chartInstances[canvasId];
+    if (!chart) return;
+    const isVisible = chart.isDatasetVisible(datasetIdx);
+    chart.setDatasetVisibility(datasetIdx, !isVisible);
+    chart.update();
+
+    const canvas = document.getElementById(canvasId);
+    if (!canvas) return;
+    const card = canvas.closest('.canal-chart-card');
+    if (card) {
+        const targetClass = datasetIdx === 0 ? 'legend-meta' : (datasetIdx === 2 ? 'legend-fat' : 'legend-ant');
+        const item = card.querySelector(`.${targetClass}`);
+        if (item) {
+            if (isVisible) {
+                item.classList.add('legend-dimmed');
+            } else {
+                item.classList.remove('legend-dimmed');
+            }
+        }
+    }
+}
+
 // Funções do Modal de Zoom / Detalhe do Canal
 function abrirModalCanal(canalKey) {
     if (!currentGraficosData || !currentGraficosData[canalKey]) return;
@@ -2588,37 +2612,37 @@ function renderizarGraficoPagamentos(data) {
                 const pct = total > 0 ? (item.valor / total * 100) : 0;
 
                 // Título do item selecionado
-                ctx.font = '800 10.5px Montserrat';
+                ctx.font = '800 8.5px Montserrat';
                 ctx.fillStyle = item.cor || '#38BDF8';
-                const nomeCurto = item.nome.length > 20 ? item.nome.substring(0, 18) + '...' : item.nome;
-                ctx.fillText(nomeCurto.toUpperCase(), centerX, centerY - 16);
+                const nomeCurto = item.nome.length > 18 ? item.nome.substring(0, 16) + '...' : item.nome;
+                ctx.fillText(nomeCurto.toUpperCase(), centerX, centerY - 15);
 
                 // Valor do item selecionado
-                ctx.font = '800 24px Montserrat';
+                ctx.font = '800 16px Montserrat';
                 ctx.fillStyle = '#FFFFFF';
-                ctx.fillText(`R$ ${fmtMoedaZero(item.valor)}`, centerX, centerY + 3);
+                ctx.fillText(`R$ ${fmtMoedaZero(item.valor)}`, centerX, centerY + 1);
 
                 // Percentual e pedidos
-                ctx.font = '700 11px Montserrat';
+                ctx.font = '700 8.5px Montserrat';
                 ctx.fillStyle = item.cor || '#38BDF8';
-                ctx.fillText(`${pct.toFixed(1).replace('.', ',')}% • ${fmtInt(item.pedidos)} PED`, centerX, centerY + 21);
+                ctx.fillText(`${pct.toFixed(1).replace('.', ',')}% • ${fmtInt(item.pedidos)} PED`, centerX, centerY + 16);
             } else {
                 // Estado Padrão: Total Consolidado
-                ctx.font = '800 10.5px Montserrat';
+                ctx.font = '800 8.5px Montserrat';
                 ctx.fillStyle = '#94A3B8';
-                ctx.fillText('TOTAL CONSOLIDADO', centerX, centerY - 16);
+                ctx.fillText('TOTAL CONSOLIDADO', centerX, centerY - 15);
 
                 // Valor total faturado em ouro MQ
-                ctx.font = '800 26px Montserrat';
+                ctx.font = '800 17px Montserrat';
                 ctx.fillStyle = '#FFD700';
                 const total = currentPagamentosGraficoData ? currentPagamentosGraficoData.total_valor : 0;
-                ctx.fillText(`R$ ${fmtMoedaZero(total)}`, centerX, centerY + 3);
+                ctx.fillText(`R$ ${fmtMoedaZero(total)}`, centerX, centerY + 1);
 
                 // Quantidade total de transações
-                ctx.font = '700 11px Montserrat';
+                ctx.font = '700 8.5px Montserrat';
                 ctx.fillStyle = '#CBD5E1';
                 const pedidos = currentPagamentosGraficoData ? currentPagamentosGraficoData.total_pedidos : 0;
-                ctx.fillText(`${fmtInt(pedidos)} PEDIDOS • 100%`, centerX, centerY + 21);
+                ctx.fillText(`${fmtInt(pedidos)} PEDIDOS • 100%`, centerX, centerY + 16);
             }
 
             ctx.restore();
@@ -2634,20 +2658,20 @@ function renderizarGraficoPagamentos(data) {
                 data: dataVals,
                 backgroundColor: bgColors,
                 borderColor: '#111116',
-                borderWidth: 3,
+                borderWidth: 2,
                 hoverBorderColor: '#FFFFFF',
-                hoverBorderWidth: 2.5,
-                hoverOffset: 12,
-                borderRadius: 6,
-                spacing: 2
+                hoverBorderWidth: 2,
+                hoverOffset: 6,
+                borderRadius: 4,
+                spacing: 1.5
             }]
         },
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            cutout: '66%',
+            cutout: '70%',
             layout: {
-                padding: 10
+                padding: 4
             },
             onHover: (event, elements) => {
                 if (elements && elements.length > 0) {
