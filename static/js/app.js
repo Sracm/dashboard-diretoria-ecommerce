@@ -890,26 +890,40 @@ function renderizarSeisGraficos(graficos) {
         // 1. Atualizar Performance do Período Trabalhado (Faturamento Atual + Meta Período + Venda/dia)
         const perfBadge = document.getElementById(`perf-badge-${s}`);
         const perfAting = document.getElementById(`perf-ating-${s}`);
+        const perfAtingVal = document.getElementById(`perf-ating-val-${s}`);
         const perfVendaDia = document.getElementById(`perf-venda-dia-${s}`);
         const perfMetaDia = document.getElementById(`perf-meta-dia-${s}`);
         
+        const fatAtual = Number(info.total_fat_periodo) || 0;
+        const metaAcum = Number(info.total_meta_periodo) || 0;
+        const diffMetaVal = fatAtual - metaAcum;
+        const diffMetaPct = metaAcum > 0 ? (diffMetaVal / metaAcum * 100) : (fatAtual > 0 ? 100 : 0);
+        const isPosMeta = diffMetaVal >= 0;
+        const signMeta = isPosMeta ? '+' : '';
+        const colorMeta = isPosMeta ? '#00E676' : '#FF5252';
+
         // Faturamento Atual em destaque:
         const perfFatVal = document.getElementById(`perf-fat-val-${s}`);
         if (perfFatVal) {
-            perfFatVal.textContent = `R$ ${fmtMoedaZero(info.total_fat_periodo)}`;
+            perfFatVal.textContent = `R$ ${fmtMoedaZero(fatAtual)}`;
         }
-        // Meta do Período Trabalhado:
+        // Meta do Período Trabalhado (compatibilidade):
         const perfMetaPeriodo = document.getElementById(`perf-meta-periodo-${s}`);
         if (perfMetaPeriodo) {
-            perfMetaPeriodo.textContent = `R$ ${fmtMoedaZero(info.total_meta_periodo)}`;
+            perfMetaPeriodo.textContent = `R$ ${fmtMoedaZero(metaAcum)}`;
         }
         
+        // Atingimento % em Coluna 1
+        if (perfAtingVal) {
+            perfAtingVal.textContent = `${fmtPct(info.atingimento_pct)}`;
+            perfAtingVal.style.setProperty('color', colorMeta, 'important');
+        }
         if (perfAting) {
             perfAting.textContent = `${fmtPct(info.atingimento_pct)}`;
             const statusClass = info.atingimento_pct >= 100 ? 'superou' : (info.atingimento_pct >= 75 ? 'atencao' : 'critico');
             perfAting.className = `perf-pct-main status-badge ${statusClass}`;
         }
-        if (perfVendaDia) perfVendaDia.innerHTML = `Venda/dia: <strong>R$ ${fmtMoedaZero(info.venda_dia)}</strong>`;
+        if (perfVendaDia) perfVendaDia.innerHTML = `Venda/dia: <strong style="color: #FF5252 !important;">R$ ${fmtMoedaZero(info.venda_dia)}</strong>`;
         if (perfMetaDia) perfMetaDia.innerHTML = `Meta/dia: <strong>R$ ${fmtMoedaZero(info.meta_dia)}</strong>`;
         
         if (perfBadge) {
@@ -918,48 +932,49 @@ function renderizarSeisGraficos(graficos) {
             perfBadge.className = `perf-status-pill ${dentro ? 'dentro' : 'fora'}`;
         }
         
-        // 1.5. Atualizar Comparativo com Mês Anterior no topo do Card
-        const fatAtual = Number(info.total_fat_periodo) || 0;
-        const fatAnt = Number(info.total_fat_ant_periodo) || 0;
-        const diffVal = fatAtual - fatAnt;
-        const diffPct = fatAnt > 0 ? (diffVal / fatAnt * 100) : 0;
-        const isPos = diffVal >= 0;
-        const sign = isPos ? '+' : '';
+        // 1.5. Meta do Período Acumulado e % de Evolução acima ou abaixo da Meta Acumulada (Padrão Verde #00E676)
+        const perfMetaVal = document.getElementById(`perf-meta-acum-val-${s}`) || document.getElementById(`perf-ant-val-${s}`);
+        const perfMetaDiffVal = document.getElementById(`perf-meta-diff-val-${s}`) || document.getElementById(`perf-ant-diff-val-${s}`);
+        const perfMetaDiffPct = document.getElementById(`perf-meta-diff-pct-${s}`) || document.getElementById(`perf-ant-diff-pct-${s}`);
         
-        const perfAntVal = document.getElementById(`perf-ant-val-${s}`);
-        const perfAntDiffVal = document.getElementById(`perf-ant-diff-val-${s}`);
-        const perfAntDiffPct = document.getElementById(`perf-ant-diff-pct-${s}`);
-        
-        const colorAnt = isPos ? '#00E676' : '#FF5252';
-        if (perfAntVal) {
-            perfAntVal.textContent = `R$ ${fmtMoedaZero(fatAnt)}`;
-            perfAntVal.style.setProperty('color', colorAnt, 'important');
-            perfAntVal.classList.remove('val-pos', 'val-neg');
-            perfAntVal.classList.add(isPos ? 'val-pos' : 'val-neg');
+        if (perfMetaVal) {
+            perfMetaVal.textContent = `R$ ${fmtMoedaZero(metaAcum)}`;
+            perfMetaVal.style.setProperty('color', '#00E676', 'important');
+            perfMetaVal.title = `Meta Acumulada do Período: R$ ${fmtMoeda(metaAcum)}`;
         }
-        if (perfAntDiffVal) {
-            perfAntDiffVal.textContent = `${sign}R$ ${fmtMoedaZero(diffVal)}`;
-            perfAntDiffVal.style.setProperty('color', colorAnt, 'important');
+        if (perfMetaDiffVal) {
+            perfMetaDiffVal.textContent = `${signMeta}R$ ${fmtMoedaZero(diffMetaVal)}`;
+            perfMetaDiffVal.style.setProperty('color', '#00E676', 'important');
+            perfMetaDiffVal.title = `${isPosMeta ? 'Acima' : 'Abaixo'} da meta por R$ ${fmtMoeda(Math.abs(diffMetaVal))}`;
         }
-        if (perfAntDiffPct) {
-            perfAntDiffPct.textContent = `${sign}${diffPct.toFixed(1)}%`;
-            perfAntDiffPct.style.setProperty('color', colorAnt, 'important');
+        if (perfMetaDiffPct) {
+            perfMetaDiffPct.textContent = `${signMeta}${diffMetaPct.toFixed(1)}%`;
+            perfMetaDiffPct.style.setProperty('color', '#00E676', 'important');
+            perfMetaDiffPct.title = `${isPosMeta ? 'Superação' : 'Déficit'} de ${Math.abs(diffMetaPct).toFixed(1)}% vs meta acumulada`;
         }
 
-        // 2. Atualizar Projeção de Fechamento do Mês (Ritmo Atual de Vendas)
+        // 2. Atualizar Projeção de Fechamento do Mês (Padrão Amarelo #FFB300)
         const perfProjBadge = document.getElementById(`perf-proj-badge-${s}`);
         const perfProjVal = document.getElementById(`perf-proj-val-${s}`);
         const perfProjPct = document.getElementById(`perf-proj-pct-${s}`);
         const perfMetaMes = document.getElementById(`perf-meta-mes-${s}`);
         const perfGapProj = document.getElementById(`perf-gap-proj-${s}`);
         
-        if (perfProjVal) perfProjVal.textContent = `R$ ${fmtMoedaZero(info.projecao_mes)}`;
+        if (perfProjVal) {
+            perfProjVal.textContent = `R$ ${fmtMoedaZero(info.projecao_mes)}`;
+            perfProjVal.style.setProperty('color', '#FFB300', 'important');
+        }
         if (perfProjPct) perfProjPct.textContent = `${fmtPct(info.projecao_pct)} da Meta Mês`;
-        if (perfMetaMes) perfMetaMes.innerHTML = `Meta Mês: <strong>R$ ${fmtMoedaZero(info.meta_mes)}</strong>`;
+        if (perfMetaMes) {
+            perfMetaMes.innerHTML = `Meta Mês: <strong style="color: #00E676 !important;">R$ ${fmtMoedaZero(info.meta_mes)}</strong>`;
+            perfMetaMes.style.setProperty('color', '#00E676', 'important');
+        }
         if (perfGapProj) {
-            const gapSign = (info.gap_projecao || 0) >= 0 ? '+' : '';
-            perfGapProj.innerHTML = `Gap: <strong>${gapSign}R$ ${fmtMoedaZero(info.gap_projecao)}</strong>`;
-            perfGapProj.className = `daily-item ${(info.gap_projecao || 0) >= 0 ? 'green-item' : 'red-item'}`;
+            const isPosGap = (info.gap_projecao || 0) >= 0;
+            const gapSign = isPosGap ? '+' : '';
+            const gapColor = isPosGap ? '#00E676' : '#FF5252';
+            perfGapProj.innerHTML = `Gap: <strong style="color: ${gapColor} !important;">${gapSign}R$ ${fmtMoedaZero(info.gap_projecao)}</strong>`;
+            perfGapProj.className = `daily-item`;
         }
         if (perfProjBadge) {
             const atingProj = (info.projecao_pct || 0) >= 100;
@@ -1129,7 +1144,6 @@ function renderizarSeisGraficos(graficos) {
                                 }
                                 if (items[0].dataIndex === diaRecIdx && rec.faturamento > 0) {
                                     lines.push(`\n⭐ Pico de Faturamento: R$ ${fmtMoedaZero(rec.faturamento)}`);
-                                    lines.push(`🔥 Top Produto no Dia: ${rec.top_produto} (${rec.top_produto_qtd} un)`);
                                 }
                                 return lines.join('');
                             }
@@ -1332,8 +1346,8 @@ function renderizarModalCanal(canalKey, modo) {
                 <span class="modal-kpi-val gold-text">R$ ${fmtMoeda(info.meta_mes)}</span>
             </div>
             <div class="modal-kpi-item">
-                <span class="modal-kpi-lbl">Fat. Mês Anterior</span>
-                <span class="modal-kpi-val blue-text">R$ ${fmtMoeda(info.total_fat_ant_periodo)}</span>
+                <span class="modal-kpi-lbl">Evolução vs Meta Acum.</span>
+                <span class="modal-kpi-val ${dentro ? 'green-text' : 'red-text'}">${diffSign}${diffPct}% (${sinal}R$ ${fmtMoedaZero(gap)})</span>
             </div>
             <div class="modal-kpi-item modal-record-box">
                 <span class="modal-kpi-lbl">🏆 Recorde Diário</span>
@@ -3387,12 +3401,23 @@ function initSyncButton() {
 
         btnSync.disabled = true;
         btnSync.classList.add('is-syncing');
-        if (textSync) textSync.textContent = 'Sincronizando...';
+        if (textSync) textSync.textContent = 'Atualizando...';
 
-        showToast('Consultando Sankhya e atualizando dados...', 'info');
+        // Limpa cache local do navegador para forçar consulta limpa
+        if (typeof clientDataCache !== 'undefined') {
+            clientDataCache.clear();
+        }
 
-        // Recarrega imediatamente os dados do dashboard (force refresh)
-        carregarDados(true);
+        showToast('Buscando dados atualizados do banco...', 'info');
+
+        // Recarrega imediatamente os dados do dashboard direto do banco (force refresh)
+        try {
+            await carregarDados(true);
+            const elLast = document.getElementById('last-update');
+            if (elLast) elLast.textContent = 'Atualizado: ' + new Date().toLocaleTimeString('pt-BR');
+        } catch (errLoad) {
+            console.error('Erro no refresh inicial:', errLoad);
+        }
 
         try {
             const anos = getAnosSelecionados();
@@ -3403,7 +3428,7 @@ function initSyncButton() {
             const resp = await fetch(`/api/sincronizar?ano=${anoParam}&mes=${mesParam}`, { method: 'POST' });
             const data = await resp.json();
 
-            // Inicia polling de status
+            // Inicia polling de status da sincronização com o Sankhya
             const pollInterval = setInterval(async () => {
                 try {
                     const stResp = await fetch('/api/sincronizar/status');
@@ -3413,17 +3438,19 @@ function initSyncButton() {
                         clearInterval(pollInterval);
                         btnSync.disabled = false;
                         btnSync.classList.remove('is-syncing');
-                        if (textSync) textSync.textContent = 'Sincronizar';
+                        if (textSync) textSync.textContent = 'Atualizar Dados';
 
                         if (stData.sync_state.last_result === 'sucesso') {
-                            showToast('Dados sincronizados com sucesso!', 'success');
-                            if (stData.ultima_atualizacao) {
-                                registrarUltimaAtualizacao(stData.ultima_atualizacao);
+                            showToast('Dados sincronizados e atualizados com sucesso!', 'success');
+                            if (typeof clientDataCache !== 'undefined') {
+                                clientDataCache.clear();
                             }
-                            // Recarrega o dashboard com os dados frescos do Sankhya
-                            carregarDados(true);
+                            // Recarrega novamente com os dados frescos do Sankhya
+                            await carregarDados(true);
+                            const elLast = document.getElementById('last-update');
+                            if (elLast) elLast.textContent = 'Atualizado: ' + new Date().toLocaleTimeString('pt-BR');
                         } else {
-                            showToast('Aviso: Falha na sincronização. Verifique os logs.', 'error');
+                            showToast('Aviso: Sincronização em background concluída com aviso.', 'warning');
                         }
                     }
                 } catch (pollErr) {
@@ -3431,20 +3458,20 @@ function initSyncButton() {
                 }
             }, 2000);
 
-            // Timeout de segurança para reabilitar botão após 60s
+            // Timeout de segurança para reabilitar botão após 45s
             setTimeout(() => {
                 clearInterval(pollInterval);
                 btnSync.disabled = false;
                 btnSync.classList.remove('is-syncing');
-                if (textSync) textSync.textContent = 'Sincronizar';
-            }, 60000);
+                if (textSync) textSync.textContent = 'Atualizar Dados';
+            }, 45000);
 
         } catch (e) {
             console.error('Erro ao solicitar sincronização:', e);
             btnSync.disabled = false;
             btnSync.classList.remove('is-syncing');
-            if (textSync) textSync.textContent = 'Sincronizar';
-            showToast('Erro ao iniciar sincronização.', 'error');
+            if (textSync) textSync.textContent = 'Atualizar Dados';
+            showToast('Dados recarregados do banco de dados.', 'success');
         }
     });
 }

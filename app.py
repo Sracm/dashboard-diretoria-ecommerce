@@ -270,7 +270,7 @@ def api_resumo():
         diff_proj_mom_pct = round((projecao_mes - fat_ant_mes_cheio) / fat_ant_mes_cheio * 100, 1) if fat_ant_mes_cheio > 0 else 0.0
 
         # Cálculos de Comparativos YTD (Acumulado do Ano até o dia atual selecionado)
-        df_ano_total = carregar_vendas_ecommerce(ano=ano, mes=None, force_refresh=False)
+        df_ano_total = carregar_vendas_ecommerce(ano=ano, mes=None, force_refresh=force)
         df_ano_ant_total = carregar_vendas_ecommerce(ano=ano - 1, mes=None, force_refresh=False)
 
         df_ano_filt = df_ano_total[df_ano_total["CANAL"].isin(CANAIS_OFICIAIS)].copy() if not df_ano_total.empty else pd.DataFrame()

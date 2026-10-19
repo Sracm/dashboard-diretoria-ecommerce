@@ -156,9 +156,9 @@ def carregar_vendas_ecommerce(ano: int, mes: int = None, force_refresh: bool = F
             except Exception as e:
                 print(f"[CACHE DISCO] Erro ao ler cache {disk_file}: {e}")
 
-    # 3. FAST PATH MÊS: Se pediu um mês específico e temos o arquivo do ano em disco ou memória,
-    # fatia o mês instantaneamente sem tocar no banco de dados!
-    if mes is not None and not force_refresh:
+    # 3. FAST PATH MÊS: APENAS para meses já FECHADOS (passados)!
+    # NUNCA para o mês atual ou se force_refresh=True, pois o ano pode conter mês antigo defasado!
+    if mes is not None and not force_refresh and is_fechado:
         ano_key = f"ecom_{ano}_ano"
         df_ano_ref = None
         if ano_key in _MEMORY_CACHE:
@@ -180,10 +180,10 @@ def carregar_vendas_ecommerce(ano: int, mes: int = None, force_refresh: bool = F
                 pass
             return df_m.copy()
 
-    # 4. FAST PATH ANO: Se pediu o ano todo (mes=None), tenta montar concatenando os meses existentes em cache!
-    if mes is None and not force_refresh:
+    # 4. FAST PATH ANO: Se pediu o ano todo (mes=None) e é um ano fechado (passado)
+    if mes is None and not force_refresh and (ano < now.year):
         meses_dfs = []
-        max_m = 12 if ano < now.year else now.month
+        max_m = 12
         todos_presentes = True
         for m_i in range(1, max_m + 1):
             f_m = os.path.join(Config.CACHE_DIR, f"ecom_{ano}_{m_i}.pkl")
@@ -227,10 +227,17 @@ def carregar_vendas_ecommerce(ano: int, mes: int = None, force_refresh: bool = F
                 params_m.append(mes)
             df_m = pd.read_sql(sql_m, conn_m, params=params_m)
             if not df_m.empty:
-                # Converte tipos numéricos
+                # Converte tipos numéricos e datas
+                if 'DTENTSAI' in df_m.columns:
+                    df_m['DTENTSAI'] = pd.to_datetime(df_m['DTENTSAI'], errors='coerce')
+                if 'DTNEG' in df_m.columns:
+                    df_m['DTNEG'] = pd.to_datetime(df_m['DTNEG'], errors='coerce')
                 for c in ['VALORVENDA', 'QTDVENDIDA', 'CUSTOGER', 'FRETE', 'VALORDEVOLUCAO', 'FAT_LIQUIDO']:
                     if c in df_m.columns:
                         df_m[c] = pd.to_numeric(df_m[c], errors='coerce').fillna(0.0)
+                for c in ['DIA', 'MES', 'ANO', 'NUNOTA', 'CODPROD', 'CODVEND', 'CODEMP']:
+                    if c in df_m.columns:
+                        df_m[c] = pd.to_numeric(df_m[c], errors='coerce').fillna(0).astype(int)
                 _MEMORY_CACHE[cache_key] = (df_m.copy(), now_ts)
                 try:
                     df_m.to_pickle(disk_file)

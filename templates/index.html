@@ -13,7 +13,178 @@
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
     <!-- Estilos -->
-    <link rel="stylesheet" href="/static/css/style.css?v=20261015_kpi_ultracompact">
+    <link rel="stylesheet" href="/static/css/style.css?v=20261019_col_exact_v11">
+    <style>
+        /* === PADRONIZAÇÃO EXATA DOS CARDS DE CANAIS (CONFORME LAYOUT TOTAL E-COMMERCE) === */
+        .canal-chart-card {
+            padding: 10px 14px 10px 14px !important;
+            scroll-margin-top: 80px;
+        }
+        .canal-card-header {
+            margin-bottom: 6px !important;
+        }
+        .canal-perf-strip {
+            display: grid !important;
+            grid-template-columns: 1fr 1fr 1fr !important;
+            gap: 10px !important;
+            background: rgba(255, 255, 255, 0.02) !important;
+            border: 1px solid rgba(255, 255, 255, 0.08) !important;
+            border-radius: var(--radius-sm, 6px) !important;
+            padding: 8px 12px !important;
+            margin-bottom: 8px !important;
+        }
+        .canal-perf-col {
+            display: flex !important;
+            flex-direction: column !important;
+            justify-content: flex-start !important;
+            gap: 3px !important;
+            min-width: 0 !important;
+        }
+        .canal-perf-col:nth-child(1),
+        .canal-perf-col:nth-child(2) {
+            border-right: 1px solid rgba(255, 255, 255, 0.08) !important;
+            padding-right: 10px !important;
+        }
+        .canal-perf-col .perf-row-title {
+            width: 100% !important;
+            margin-bottom: 2px !important;
+        }
+        .canal-perf-col .perf-tag {
+            font-size: 0.68rem !important;
+            font-weight: 700 !important;
+            letter-spacing: 0.5px !important;
+            text-transform: uppercase !important;
+            color: #8E8E93 !important;
+            display: block !important;
+            white-space: nowrap !important;
+        }
+        .canal-perf-col .perf-row-body {
+            display: flex !important;
+            flex-direction: column !important;
+            width: 100% !important;
+            gap: 3px !important;
+        }
+        .canal-perf-col .perf-highlight {
+            display: block !important;
+            width: 100% !important;
+            line-height: 1.15 !important;
+            margin-bottom: 2px !important;
+        }
+        /* Números Principais */
+        .perf-fat-main {
+            font-size: 1.30rem !important;
+            font-weight: 900 !important;
+            color: #FF5252 !important;
+            letter-spacing: -0.4px !important;
+            font-family: var(--font-number), 'Montserrat', sans-serif !important;
+            white-space: nowrap !important;
+            display: block !important;
+            text-align: left !important;
+        }
+        .perf-ant-main,
+        .perf-meta-acum-main {
+            font-size: 1.30rem !important;
+            font-weight: 900 !important;
+            color: #00E676 !important;
+            letter-spacing: -0.4px !important;
+            font-family: var(--font-number), 'Montserrat', sans-serif !important;
+            white-space: nowrap !important;
+            display: block !important;
+            text-align: left !important;
+        }
+        .perf-proj-main {
+            font-size: 1.30rem !important;
+            font-weight: 900 !important;
+            color: #FFB300 !important;
+            letter-spacing: -0.4px !important;
+            font-family: var(--font-number), 'Montserrat', sans-serif !important;
+            white-space: nowrap !important;
+            display: block !important;
+            text-align: left !important;
+        }
+        /* Coluna 1: FATURAMENTO ATUAL -> Esquerda */
+        .canal-perf-col:nth-child(1) .perf-daily-metrics {
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: flex-start !important;
+            text-align: left !important;
+            gap: 2px !important;
+            width: 100% !important;
+        }
+        .canal-perf-col:nth-child(1) .daily-item {
+            font-size: 0.72rem !important;
+            color: #8E8E93 !important;
+            white-space: nowrap !important;
+            line-height: 1.25 !important;
+            text-align: left !important;
+        }
+        .canal-perf-col:nth-child(1) .daily-item strong,
+        .canal-perf-col:nth-child(1) .daily-item.red-item strong {
+            color: #FF5252 !important;
+            font-weight: 700 !important;
+        }
+        /* Coluna 2: META DO PERÍODO ACUM. -> Direita */
+        .canal-perf-col:nth-child(2) .perf-daily-metrics {
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: flex-end !important;
+            text-align: right !important;
+            gap: 2px !important;
+            width: 100% !important;
+        }
+        .canal-perf-col:nth-child(2) .daily-item {
+            font-size: 0.72rem !important;
+            color: #8E8E93 !important;
+            white-space: nowrap !important;
+            line-height: 1.25 !important;
+            text-align: right !important;
+        }
+        .canal-perf-col:nth-child(2) .daily-item strong,
+        .canal-perf-col:nth-child(2) [id^="perf-meta-diff-val-"],
+        .canal-perf-col:nth-child(2) [id^="perf-meta-diff-pct-"] {
+            color: #00E676 !important;
+            font-weight: 700 !important;
+        }
+        /* Coluna 3: PROJEÇÃO FECHAMENTO -> Direita */
+        .canal-perf-col:nth-child(3) .perf-daily-metrics {
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: flex-end !important;
+            text-align: right !important;
+            gap: 2px !important;
+            width: 100% !important;
+        }
+        .canal-perf-col:nth-child(3) .daily-item {
+            font-size: 0.72rem !important;
+            color: #8E8E93 !important;
+            white-space: nowrap !important;
+            line-height: 1.25 !important;
+            text-align: right !important;
+        }
+        /* Meta Mês totalmente em Verde (#00E676) */
+        .canal-perf-col:nth-child(3) [id^="perf-meta-mes-"],
+        .canal-perf-col:nth-child(3) [id^="perf-meta-mes-"] strong {
+            color: #00E676 !important;
+            font-weight: 700 !important;
+        }
+        /* Gap da Projeção */
+        .canal-perf-col:nth-child(3) [id^="perf-gap-proj-"] strong {
+            font-weight: 700 !important;
+        }
+        /* Faixa de Recorde Diário (apenas Maior Dia) */
+        .canal-record-strip {
+            display: flex !important;
+            align-items: center !important;
+            justify-content: flex-start !important;
+            gap: 10px !important;
+        }
+        .canal-record-col {
+            display: inline-flex !important;
+            align-items: center !important;
+            gap: 6px !important;
+            flex: 0 1 auto !important;
+        }
+    </style>
 </head>
 <body>
     <div class="app-layout">
@@ -112,6 +283,10 @@
                     <div class="next-update" id="next-update">Próxima atualização em: 30:00</div>
                 </div>
 
+                <button type="button" id="btnSyncMariaDB" class="btn-sync-mariadb" title="Buscar dados atualizados no banco de dados (Sankhya ERP & MariaDB)">
+                    <i data-lucide="refresh-cw" id="iconSync"></i>
+                    <span id="textSync">Atualizar Dados</span>
+                </button>
 
                 <button type="button" id="btn-toggle-fullscreen" class="btn-fullscreen-mode" title="Ativar Modo Tela Cheia [F11 ou tecla F]">
                     <i data-lucide="maximize-2" id="icon-fullscreen"></i>
@@ -176,22 +351,21 @@
                                         <span class="perf-fat-main" id="perf-fat-val-geral">R$ 0</span>
                                     </div>
                                     <div class="perf-daily-metrics">
-                                        <span class="daily-item" style="color: #A0A0AA;">Meta Período: <strong id="perf-meta-periodo-geral" style="color: #00E676;">R$ 0</strong></span>
                                         <span class="daily-item red-item" id="perf-venda-dia-geral">Venda/dia: <strong>R$ 0</strong></span>
                                     </div>
                                 </div>
                             </div>
-                                                        <div class="canal-perf-col">
+                            <div class="canal-perf-col">
                                 <div class="perf-row-title">
-                                    <span class="perf-tag">FAT. ACUM. MÊS ANT.</span>
+                                    <span class="perf-tag">META DO PERÍODO ACUM.</span>
                                 </div>
                                 <div class="perf-row-body">
                                     <div class="perf-highlight">
-                                        <span class="perf-ant-main" id="perf-ant-val-geral">R$ 0</span>
+                                        <span class="perf-meta-acum-main val-pos" id="perf-meta-acum-val-geral">R$ 0</span>
                                     </div>
                                     <div class="perf-daily-metrics">
-                                        <span class="daily-item">Diferença: <strong id="perf-ant-diff-val-geral">R$ 0</strong></span>
-                                        <span class="daily-item">Evolução: <strong id="perf-ant-diff-pct-geral">0.0%</strong></span>
+                                        <span class="daily-item">Diferença: <strong id="perf-meta-diff-val-geral">R$ 0</strong></span>
+                                        <span class="daily-item">Evolução: <strong id="perf-meta-diff-pct-geral">0.0%</strong></span>
                                     </div>
                                 </div>
                             </div>
@@ -217,14 +391,6 @@
                                 <div class="record-info">
                                     <span class="record-date-badge" id="perf-record-dia-geral">--/--</span>
                                     <span class="record-fat-badge" id="perf-record-fat-geral">R$ 0</span>
-                                </div>
-                            </div>
-                            <div class="canal-record-sep"></div>
-                            <div class="canal-record-col">
-                                <span class="record-tag"><i data-lucide="flame"></i> TOP PRODUTO:</span>
-                                <div class="record-info">
-                                    <span class="record-prod-name" id="perf-record-prod-geral" title="Produto campeão de vendas">—</span>
-                                    <span class="record-prod-qtd" id="perf-record-qtd-geral">(0 un)</span>
                                 </div>
                             </div>
                         </div>
@@ -254,22 +420,21 @@
                                         <span class="perf-fat-main" id="perf-fat-val-ml">R$ 0</span>
                                     </div>
                                     <div class="perf-daily-metrics">
-                                        <span class="daily-item" style="color: #A0A0AA;">Meta Período: <strong id="perf-meta-periodo-ml" style="color: #00E676;">R$ 0</strong></span>
                                         <span class="daily-item red-item" id="perf-venda-dia-ml">Venda/dia: <strong>R$ 0</strong></span>
                                     </div>
                                 </div>
                             </div>
-                                                        <div class="canal-perf-col">
+                            <div class="canal-perf-col">
                                 <div class="perf-row-title">
-                                    <span class="perf-tag">FAT. ACUM. MÊS ANT.</span>
+                                    <span class="perf-tag">META DO PERÍODO ACUM.</span>
                                 </div>
                                 <div class="perf-row-body">
                                     <div class="perf-highlight">
-                                        <span class="perf-ant-main" id="perf-ant-val-ml">R$ 0</span>
+                                        <span class="perf-meta-acum-main val-pos" id="perf-meta-acum-val-ml">R$ 0</span>
                                     </div>
                                     <div class="perf-daily-metrics">
-                                        <span class="daily-item">Diferença: <strong id="perf-ant-diff-val-ml">R$ 0</strong></span>
-                                        <span class="daily-item">Evolução: <strong id="perf-ant-diff-pct-ml">0.0%</strong></span>
+                                        <span class="daily-item">Diferença: <strong id="perf-meta-diff-val-ml">R$ 0</strong></span>
+                                        <span class="daily-item">Evolução: <strong id="perf-meta-diff-pct-ml">0.0%</strong></span>
                                     </div>
                                 </div>
                             </div>
@@ -295,14 +460,6 @@
                                 <div class="record-info">
                                     <span class="record-date-badge" id="perf-record-dia-ml">--/--</span>
                                     <span class="record-fat-badge" id="perf-record-fat-ml">R$ 0</span>
-                                </div>
-                            </div>
-                            <div class="canal-record-sep"></div>
-                            <div class="canal-record-col">
-                                <span class="record-tag"><i data-lucide="flame"></i> TOP PRODUTO:</span>
-                                <div class="record-info">
-                                    <span class="record-prod-name" id="perf-record-prod-ml" title="Produto campeão de vendas">—</span>
-                                    <span class="record-prod-qtd" id="perf-record-qtd-ml">(0 un)</span>
                                 </div>
                             </div>
                         </div>
@@ -332,22 +489,21 @@
                                         <span class="perf-fat-main" id="perf-fat-val-vtex">R$ 0</span>
                                     </div>
                                     <div class="perf-daily-metrics">
-                                        <span class="daily-item" style="color: #A0A0AA;">Meta Período: <strong id="perf-meta-periodo-vtex" style="color: #00E676;">R$ 0</strong></span>
                                         <span class="daily-item red-item" id="perf-venda-dia-vtex">Venda/dia: <strong>R$ 0</strong></span>
                                     </div>
                                 </div>
                             </div>
-                                                        <div class="canal-perf-col">
+                            <div class="canal-perf-col">
                                 <div class="perf-row-title">
-                                    <span class="perf-tag">FAT. ACUM. MÊS ANT.</span>
+                                    <span class="perf-tag">META DO PERÍODO ACUM.</span>
                                 </div>
                                 <div class="perf-row-body">
                                     <div class="perf-highlight">
-                                        <span class="perf-ant-main" id="perf-ant-val-vtex">R$ 0</span>
+                                        <span class="perf-meta-acum-main val-pos" id="perf-meta-acum-val-vtex">R$ 0</span>
                                     </div>
                                     <div class="perf-daily-metrics">
-                                        <span class="daily-item">Diferença: <strong id="perf-ant-diff-val-vtex">R$ 0</strong></span>
-                                        <span class="daily-item">Evolução: <strong id="perf-ant-diff-pct-vtex">0.0%</strong></span>
+                                        <span class="daily-item">Diferença: <strong id="perf-meta-diff-val-vtex">R$ 0</strong></span>
+                                        <span class="daily-item">Evolução: <strong id="perf-meta-diff-pct-vtex">0.0%</strong></span>
                                     </div>
                                 </div>
                             </div>
@@ -373,14 +529,6 @@
                                 <div class="record-info">
                                     <span class="record-date-badge" id="perf-record-dia-vtex">--/--</span>
                                     <span class="record-fat-badge" id="perf-record-fat-vtex">R$ 0</span>
-                                </div>
-                            </div>
-                            <div class="canal-record-sep"></div>
-                            <div class="canal-record-col">
-                                <span class="record-tag"><i data-lucide="flame"></i> TOP PRODUTO:</span>
-                                <div class="record-info">
-                                    <span class="record-prod-name" id="perf-record-prod-vtex" title="Produto campeão de vendas">—</span>
-                                    <span class="record-prod-qtd" id="perf-record-qtd-vtex">(0 un)</span>
                                 </div>
                             </div>
                         </div>
@@ -410,22 +558,21 @@
                                         <span class="perf-fat-main" id="perf-fat-val-shopee">R$ 0</span>
                                     </div>
                                     <div class="perf-daily-metrics">
-                                        <span class="daily-item" style="color: #A0A0AA;">Meta Período: <strong id="perf-meta-periodo-shopee" style="color: #00E676;">R$ 0</strong></span>
                                         <span class="daily-item red-item" id="perf-venda-dia-shopee">Venda/dia: <strong>R$ 0</strong></span>
                                     </div>
                                 </div>
                             </div>
-                                                        <div class="canal-perf-col">
+                            <div class="canal-perf-col">
                                 <div class="perf-row-title">
-                                    <span class="perf-tag">FAT. ACUM. MÊS ANT.</span>
+                                    <span class="perf-tag">META DO PERÍODO ACUM.</span>
                                 </div>
                                 <div class="perf-row-body">
                                     <div class="perf-highlight">
-                                        <span class="perf-ant-main" id="perf-ant-val-shopee">R$ 0</span>
+                                        <span class="perf-meta-acum-main val-pos" id="perf-meta-acum-val-shopee">R$ 0</span>
                                     </div>
                                     <div class="perf-daily-metrics">
-                                        <span class="daily-item">Diferença: <strong id="perf-ant-diff-val-shopee">R$ 0</strong></span>
-                                        <span class="daily-item">Evolução: <strong id="perf-ant-diff-pct-shopee">0.0%</strong></span>
+                                        <span class="daily-item">Diferença: <strong id="perf-meta-diff-val-shopee">R$ 0</strong></span>
+                                        <span class="daily-item">Evolução: <strong id="perf-meta-diff-pct-shopee">0.0%</strong></span>
                                     </div>
                                 </div>
                             </div>
@@ -451,14 +598,6 @@
                                 <div class="record-info">
                                     <span class="record-date-badge" id="perf-record-dia-shopee">--/--</span>
                                     <span class="record-fat-badge" id="perf-record-fat-shopee">R$ 0</span>
-                                </div>
-                            </div>
-                            <div class="canal-record-sep"></div>
-                            <div class="canal-record-col">
-                                <span class="record-tag"><i data-lucide="flame"></i> TOP PRODUTO:</span>
-                                <div class="record-info">
-                                    <span class="record-prod-name" id="perf-record-prod-shopee" title="Produto campeão de vendas">—</span>
-                                    <span class="record-prod-qtd" id="perf-record-qtd-shopee">(0 un)</span>
                                 </div>
                             </div>
                         </div>
@@ -488,22 +627,21 @@
                                         <span class="perf-fat-main" id="perf-fat-val-magalu">R$ 0</span>
                                     </div>
                                     <div class="perf-daily-metrics">
-                                        <span class="daily-item" style="color: #A0A0AA;">Meta Período: <strong id="perf-meta-periodo-magalu" style="color: #00E676;">R$ 0</strong></span>
                                         <span class="daily-item red-item" id="perf-venda-dia-magalu">Venda/dia: <strong>R$ 0</strong></span>
                                     </div>
                                 </div>
                             </div>
-                                                        <div class="canal-perf-col">
+                            <div class="canal-perf-col">
                                 <div class="perf-row-title">
-                                    <span class="perf-tag">FAT. ACUM. MÊS ANT.</span>
+                                    <span class="perf-tag">META DO PERÍODO ACUM.</span>
                                 </div>
                                 <div class="perf-row-body">
                                     <div class="perf-highlight">
-                                        <span class="perf-ant-main" id="perf-ant-val-magalu">R$ 0</span>
+                                        <span class="perf-meta-acum-main val-pos" id="perf-meta-acum-val-magalu">R$ 0</span>
                                     </div>
                                     <div class="perf-daily-metrics">
-                                        <span class="daily-item">Diferença: <strong id="perf-ant-diff-val-magalu">R$ 0</strong></span>
-                                        <span class="daily-item">Evolução: <strong id="perf-ant-diff-pct-magalu">0.0%</strong></span>
+                                        <span class="daily-item">Diferença: <strong id="perf-meta-diff-val-magalu">R$ 0</strong></span>
+                                        <span class="daily-item">Evolução: <strong id="perf-meta-diff-pct-magalu">0.0%</strong></span>
                                     </div>
                                 </div>
                             </div>
@@ -529,14 +667,6 @@
                                 <div class="record-info">
                                     <span class="record-date-badge" id="perf-record-dia-magalu">--/--</span>
                                     <span class="record-fat-badge" id="perf-record-fat-magalu">R$ 0</span>
-                                </div>
-                            </div>
-                            <div class="canal-record-sep"></div>
-                            <div class="canal-record-col">
-                                <span class="record-tag"><i data-lucide="flame"></i> TOP PRODUTO:</span>
-                                <div class="record-info">
-                                    <span class="record-prod-name" id="perf-record-prod-magalu" title="Produto campeão de vendas">—</span>
-                                    <span class="record-prod-qtd" id="perf-record-qtd-magalu">(0 un)</span>
                                 </div>
                             </div>
                         </div>
@@ -566,22 +696,21 @@
                                         <span class="perf-fat-main" id="perf-fat-val-parlux">R$ 0</span>
                                     </div>
                                     <div class="perf-daily-metrics">
-                                        <span class="daily-item" style="color: #A0A0AA;">Meta Período: <strong id="perf-meta-periodo-parlux" style="color: #00E676;">R$ 0</strong></span>
                                         <span class="daily-item red-item" id="perf-venda-dia-parlux">Venda/dia: <strong>R$ 0</strong></span>
                                     </div>
                                 </div>
                             </div>
-                                                        <div class="canal-perf-col">
+                            <div class="canal-perf-col">
                                 <div class="perf-row-title">
-                                    <span class="perf-tag">FAT. ACUM. MÊS ANT.</span>
+                                    <span class="perf-tag">META DO PERÍODO ACUM.</span>
                                 </div>
                                 <div class="perf-row-body">
                                     <div class="perf-highlight">
-                                        <span class="perf-ant-main" id="perf-ant-val-parlux">R$ 0</span>
+                                        <span class="perf-meta-acum-main val-pos" id="perf-meta-acum-val-parlux">R$ 0</span>
                                     </div>
                                     <div class="perf-daily-metrics">
-                                        <span class="daily-item">Diferença: <strong id="perf-ant-diff-val-parlux">R$ 0</strong></span>
-                                        <span class="daily-item">Evolução: <strong id="perf-ant-diff-pct-parlux">0.0%</strong></span>
+                                        <span class="daily-item">Diferença: <strong id="perf-meta-diff-val-parlux">R$ 0</strong></span>
+                                        <span class="daily-item">Evolução: <strong id="perf-meta-diff-pct-parlux">0.0%</strong></span>
                                     </div>
                                 </div>
                             </div>
@@ -607,14 +736,6 @@
                                 <div class="record-info">
                                     <span class="record-date-badge" id="perf-record-dia-parlux">--/--</span>
                                     <span class="record-fat-badge" id="perf-record-fat-parlux">R$ 0</span>
-                                </div>
-                            </div>
-                            <div class="canal-record-sep"></div>
-                            <div class="canal-record-col">
-                                <span class="record-tag"><i data-lucide="flame"></i> TOP PRODUTO:</span>
-                                <div class="record-info">
-                                    <span class="record-prod-name" id="perf-record-prod-parlux" title="Produto campeão de vendas">—</span>
-                                    <span class="record-prod-qtd" id="perf-record-qtd-parlux">(0 un)</span>
                                 </div>
                             </div>
                         </div>
@@ -1184,8 +1305,7 @@
         </footer>
     </div>
 
-    <!-- Scripts -->
-    <script src="/static/js/app.js?v=20261015_NO_CARDS_20261015_color_ant_v1"></script>
+    <script src="/static/js/app.js?v=20261019_col_colors_v6"></script>
     <script>
         lucide.createIcons();
     </script>
