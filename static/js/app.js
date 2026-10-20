@@ -29,6 +29,7 @@ let currentMatrizData = null;
 let currentParams = null;
 let currentViewMode = 'ranking'; // 'ranking' ou 'categoria'
 let currentRankingSort = { col: 'fat', dir: 'desc' };
+let currentVendSort = { col: 'fat', dir: 'desc' };
 let collapsedNodes = new Set();
 let currentMatrizVendData = null;
 let collapsedVendNodes = new Set();
@@ -421,7 +422,7 @@ function setupEventListeners() {
         });
     }
 
-    // Ordenação interativa da Matriz 1 (Ranking Geral)
+        // Ordenação interativa da Matriz 1 (Categoria & Produto / Ranking Geral)
     document.querySelectorAll('#matrix-sales-table th.sortable').forEach(th => {
         th.addEventListener('click', () => {
             const col = th.getAttribute('data-col');
@@ -430,9 +431,24 @@ function setupEventListeners() {
                 currentRankingSort.dir = currentRankingSort.dir === 'asc' ? 'desc' : 'asc';
             } else {
                 currentRankingSort.col = col;
-                currentRankingSort.dir = col === 'nome' ? 'asc' : 'desc';
+                currentRankingSort.dir = (col === 'nome' || col === 'rank') ? 'asc' : 'desc';
             }
             renderizarMatriz();
+        });
+    });
+
+    // Ordenação interativa da Matriz 2 (Conta / Vendedor & Produto)
+    document.querySelectorAll('#matrix-vend-table th.sortable').forEach(th => {
+        th.addEventListener('click', () => {
+            const col = th.getAttribute('data-col');
+            if (!col) return;
+            if (currentVendSort.col === col) {
+                currentVendSort.dir = currentVendSort.dir === 'asc' ? 'desc' : 'asc';
+            } else {
+                currentVendSort.col = col;
+                currentVendSort.dir = (col === 'nome' || col === 'rank') ? 'asc' : 'desc';
+            }
+            renderizarMatrizVendedores();
         });
     });
 
@@ -898,6 +914,7 @@ function renderizarSeisGraficos(graficos) {
     if (!graficos) return;
     currentGraficosData = graficos;
 
+    document.querySelectorAll('.canal-perf-strip [title], .canal-record-strip [title]').forEach(el => el.removeAttribute('title'));
     const mapaCanais = [
         { key: 'GERAL', canvasId: 'chart-geral', badgeId: 'badge-geral', suffix: 'geral', footFat: 'foot-geral-fat', footMeta: 'foot-geral-meta', footMetaMes: 'foot-geral-metames', footAnt: 'foot-geral-ant' },
         { key: 'MERCADO LIVRE', canvasId: 'chart-ml', badgeId: 'badge-ml', suffix: 'ml', footFat: 'foot-ml-fat', footMeta: 'foot-ml-meta', footMetaMes: 'foot-ml-metames', footAnt: 'foot-ml-ant' },
@@ -970,17 +987,17 @@ function renderizarSeisGraficos(graficos) {
         if (perfMetaVal) {
             perfMetaVal.textContent = `R$ ${fmtMoedaZero(metaAcum)}`;
             perfMetaVal.style.setProperty('color', '#00E676', 'important');
-            perfMetaVal.title = `Meta Acumulada do Período: R$ ${fmtMoeda(metaAcum)}`;
+            // perfMetaVal.title removido
         }
         if (perfMetaDiffVal) {
             perfMetaDiffVal.textContent = `${signMeta}R$ ${fmtMoedaZero(diffMetaVal)}`;
             perfMetaDiffVal.style.setProperty('color', '#00E676', 'important');
-            perfMetaDiffVal.title = `${isPosMeta ? 'Acima' : 'Abaixo'} da meta por R$ ${fmtMoeda(Math.abs(diffMetaVal))}`;
+            // perfMetaDiffVal.title removido
         }
         if (perfMetaDiffPct) {
             perfMetaDiffPct.textContent = `${signMeta}${diffMetaPct.toFixed(1)}%`;
             perfMetaDiffPct.style.setProperty('color', '#00E676', 'important');
-            perfMetaDiffPct.title = `${isPosMeta ? 'Superação' : 'Déficit'} de ${Math.abs(diffMetaPct).toFixed(1)}% vs meta acumulada`;
+            // perfMetaDiffPct.title removido
         }
 
         // 2. Atualizar Projeção de Fechamento do Mês (Padrão Amarelo #FFB300)
@@ -1023,7 +1040,7 @@ function renderizarSeisGraficos(graficos) {
         if (recFatEl) recFatEl.textContent = rec.faturamento > 0 ? `(R$ ${fmtMoedaZero(rec.faturamento)})` : '';
         if (recProdEl) {
             recProdEl.textContent = rec.top_produto || '—';
-            recProdEl.title = `${rec.top_produto_full || rec.top_produto || ''} · R$ ${fmtMoedaZero(rec.top_produto_fat || 0)}`;
+            // recProdEl.title removido
         }
         if (recQtdEl) {
             recQtdEl.textContent = rec.top_produto_qtd > 0 ? `(${rec.top_produto_qtd} un)` : '';
@@ -1385,7 +1402,7 @@ function renderizarModalCanal(canalKey, modo) {
             </div>
             <div class="modal-kpi-item modal-record-box">
                 <span class="modal-kpi-lbl">🔥 Top Produto</span>
-                <span class="modal-kpi-val" style="color: #FFD54F;" title="${info.recorde_dia ? (info.recorde_dia.top_produto_full || '') : ''}">
+                <span class="modal-kpi-val" style="color: #FFD54F;" >
                     ${info.recorde_dia ? info.recorde_dia.top_produto : '—'} <span style="font-size:0.75rem; color:#A0A0AA;">(${info.recorde_dia ? info.recorde_dia.top_produto_qtd : 0} un)</span>
                 </span>
             </div>
@@ -2080,7 +2097,7 @@ function renderizarMatriz() {
     // Atualiza cabeçalhos da tabela com indicador visual de ordenação
     document.querySelectorAll('#matrix-sales-table th.sortable').forEach(th => {
         th.classList.remove('sort-asc', 'sort-desc');
-        if (currentViewMode === 'ranking' && th.getAttribute('data-col') === currentRankingSort.col) {
+        if (th.getAttribute('data-col') === currentRankingSort.col) {
             th.classList.add(currentRankingSort.dir === 'asc' ? 'sort-asc' : 'sort-desc');
         }
     });
@@ -2145,14 +2162,28 @@ function renderizarMatriz() {
 
     } else if (currentViewMode === 'canal') {
         // Modo 'canal' (agrupado por Canal Oficial: MERCADO LIVRE, SHOPEE, VTEX, MAGALU)
-        const canais = currentMatrizData.canais;
-        if (!canais || canais.length === 0) {
+        const canaisRaw = currentMatrizData.canais;
+        if (!canaisRaw || canaisRaw.length === 0) {
             tbody.innerHTML = '<tr><td colspan="7" class="text-center kpi-subtext" style="padding: 24px;">Nenhum canal encontrado</td></tr>';
             if (tfoot) tfoot.innerHTML = '';
             return;
         }
 
+        const { col, dir } = currentRankingSort;
+        const canais = [...canaisRaw].sort((a, b) => {
+            let valA = a[col];
+            let valB = b[col];
+            if (col === 'nome') return dir === 'asc' ? (valA || '').localeCompare(valB || '', 'pt-BR') : -(valA || '').localeCompare(valB || '', 'pt-BR');
+            return dir === 'asc' ? (Number(valA) || 0) - (Number(valB) || 0) : (Number(valB) || 0) - (Number(valA) || 0);
+        });
+
         canais.forEach(cn => {
+            const produtosCn = [...(cn.produtos || [])].sort((a, b) => {
+                let valA = a[col];
+                let valB = b[col];
+                if (col === 'nome') return dir === 'asc' ? (valA || '').localeCompare(valB || '', 'pt-BR') : -(valA || '').localeCompare(valB || '', 'pt-BR');
+                return dir === 'asc' ? (Number(valA) || 0) - (Number(valB) || 0) : (Number(valB) || 0) - (Number(valA) || 0);
+            });
             const isCnCollapsed = collapsedNodes.has(cn.id);
             const iconCn = isCnCollapsed ? '+' : '−';
 
@@ -2180,7 +2211,7 @@ function renderizarMatriz() {
             tbody.appendChild(trCn);
 
             // Linha Nível 2: Produtos do Canal
-            cn.produtos.forEach(p => {
+            produtosCn.forEach(p => {
                 const trP = document.createElement('tr');
                 trP.className = 'matrix-row matrix-row-n2';
                 trP.dataset.parentCat = cn.id;
@@ -2210,14 +2241,28 @@ function renderizarMatriz() {
 
     } else {
         // Modo 'categoria' (agrupado por Categoria: PRANCHA, SECADOR... sem canal)
-        const categorias = currentMatrizData.categorias;
-        if (!categorias || categorias.length === 0) {
+        const categoriasRaw = currentMatrizData.categorias;
+        if (!categoriasRaw || categoriasRaw.length === 0) {
             tbody.innerHTML = '<tr><td colspan="7" class="text-center kpi-subtext" style="padding: 24px;">Nenhuma categoria encontrada para o filtro selecionado</td></tr>';
             if (tfoot) tfoot.innerHTML = '';
             return;
         }
 
+        const { col, dir } = currentRankingSort;
+        const categorias = [...categoriasRaw].sort((a, b) => {
+            let valA = a[col];
+            let valB = b[col];
+            if (col === 'nome') return dir === 'asc' ? (valA || '').localeCompare(valB || '', 'pt-BR') : -(valA || '').localeCompare(valB || '', 'pt-BR');
+            return dir === 'asc' ? (Number(valA) || 0) - (Number(valB) || 0) : (Number(valB) || 0) - (Number(valA) || 0);
+        });
+
         categorias.forEach(cat => {
+            const produtosCat = [...(cat.produtos || [])].sort((a, b) => {
+                let valA = a[col];
+                let valB = b[col];
+                if (col === 'nome') return dir === 'asc' ? (valA || '').localeCompare(valB || '', 'pt-BR') : -(valA || '').localeCompare(valB || '', 'pt-BR');
+                return dir === 'asc' ? (Number(valA) || 0) - (Number(valB) || 0) : (Number(valB) || 0) - (Number(valA) || 0);
+            });
             const isCatCollapsed = collapsedNodes.has(cat.id);
             const iconCat = isCatCollapsed ? '+' : '−';
 
@@ -2245,7 +2290,7 @@ function renderizarMatriz() {
             tbody.appendChild(trCat);
 
             // Linha Nível 2: Produtos da Categoria
-            cat.produtos.forEach(p => {
+            produtosCat.forEach(p => {
                 const trP = document.createElement('tr');
                 trP.className = 'matrix-row matrix-row-n2';
                 trP.dataset.parentCat = cat.id;
@@ -2348,6 +2393,14 @@ function renderizarMatrizVendedores() {
         thMesNome.textContent = `${currentParams.mes_nome.toUpperCase()} (D1 ATÉ D${currentParams.dia_fim})`;
     }
 
+    // 1. Atualiza indicadores visuais de ordenação nos cabeçalhos da Matriz 2
+    document.querySelectorAll('#matrix-vend-table th.sortable').forEach(th => {
+        th.classList.remove('sort-asc', 'sort-desc');
+        if (th.getAttribute('data-col') === currentVendSort.col) {
+            th.classList.add(currentVendSort.dir === 'asc' ? 'sort-asc' : 'sort-desc');
+        }
+    });
+
     const lista = currentMatrizVendData.vendedores;
     tbody.innerHTML = '';
 
@@ -2357,7 +2410,23 @@ function renderizarMatrizVendedores() {
         return;
     }
 
-    lista.forEach(v => {
+    // 2. Ordenação dos Vendedores / Contas
+    const { col, dir } = currentVendSort;
+    const vendedoresOrdenados = [...lista].sort((a, b) => {
+        let valA = a[col];
+        let valB = b[col];
+
+        if (col === 'nome') {
+            const comp = (valA || '').localeCompare(valB || '', 'pt-BR', { sensitivity: 'base' });
+            return dir === 'asc' ? comp : -comp;
+        }
+
+        valA = Number(valA) || 0;
+        valB = Number(valB) || 0;
+        return dir === 'asc' ? valA - valB : valB - valA;
+    });
+
+    vendedoresOrdenados.forEach((v, vIdx) => {
         const isCollapsed = collapsedVendNodes.has(v.id);
         const iconToggle = isCollapsed ? '+' : '−';
 
@@ -2366,15 +2435,19 @@ function renderizarMatrizVendedores() {
         trV.className = 'matrix-row matrix-row-n1';
         trV.dataset.id = v.id;
         trV.dataset.type = 'v1';
+        trV.dataset.search = v.nome.toLowerCase();
+
+        const displayVendRank = (col === 'fat' && dir === 'desc') ? (v.rank || (vIdx + 1)) : (v.rank || (vIdx + 1));
+
         trV.innerHTML = `
             <td class="text-center" style="padding: 4px 2px;">
-                ${getRankBadge(v.rank, v.rank_diff)}
+                ${getRankBadge(displayVendRank, v.rank_diff)}
             </td>
             <td class="cell-tree" style="padding-left: 8px;">
                 <span class="btn-toggle-tree" onclick="toggleVendNode('${v.id}', event)">${iconToggle}</span>
                 <strong style="color: #FFFFFF; font-size: 11px;">${v.nome}</strong>
             </td>
-            <td class="text-right">${v.qtd > 0 ? fmtInt(v.qtd) : ''}</td>
+            <td class="text-right" style="font-weight: 700;">${v.qtd > 0 ? fmtInt(v.qtd) : ''}</td>
             <td class="text-right" style="font-weight: 800; color: var(--mq-gold);">R$ ${fmtMoedaZero(v.fat)}</td>
             <td class="text-right" style="font-weight: 700;" title="Participação da conta no volume total de peças vendidas (% QTD)">${fmtPct(v.pct)}</td>
             <td class="text-right">${v.vlr_medio > 0 ? 'R$ ' + fmtMoeda(v.vlr_medio) : ''}</td>
@@ -2382,8 +2455,23 @@ function renderizarMatrizVendedores() {
         `;
         tbody.appendChild(trV);
 
+        // 3. Ordenação dos Produtos dentro de cada Vendedor / Conta
+        const produtosOrdenados = [...(v.produtos || [])].sort((a, b) => {
+            let valA = a[col];
+            let valB = b[col];
+
+            if (col === 'nome') {
+                const comp = (valA || '').localeCompare(valB || '', 'pt-BR', { sensitivity: 'base' });
+                return dir === 'asc' ? comp : -comp;
+            }
+
+            valA = Number(valA) || 0;
+            valB = Number(valB) || 0;
+            return dir === 'asc' ? valA - valB : valB - valA;
+        });
+
         // Linha Nível 2: Produtos do Vendedor
-        v.produtos.forEach(p => {
+        produtosOrdenados.forEach((p, pIdx) => {
             const trP = document.createElement('tr');
             trP.className = 'matrix-row matrix-row-n2';
             trP.dataset.parentV = v.id;
@@ -2391,9 +2479,11 @@ function renderizarMatrizVendedores() {
             trP.dataset.search = `${v.nome} ${p.nome} ${p.sku}`.toLowerCase();
             if (isCollapsed) trP.style.display = 'none';
 
+            const displayProdRank = (col === 'fat' && dir === 'desc') ? (p.rank || (pIdx + 1)) : (p.rank || (pIdx + 1));
+
             trP.innerHTML = `
                 <td class="text-center" style="padding: 4px 2px;">
-                    ${getRankBadge(p.rank, p.rank_diff)}
+                    ${getRankBadge(displayProdRank, p.rank_diff)}
                 </td>
                 <td class="cell-tree" style="padding-left: 18px;">
                     <span class="tree-leaf-bullet"></span>
@@ -2401,7 +2491,7 @@ function renderizarMatrizVendedores() {
                         <span class="prod-name-title" title="${p.nome}">${p.nome}</span>
                     </div>
                 </td>
-                <td class="text-right">${p.qtd > 0 ? fmtInt(p.qtd) : '-'}</td>
+                <td class="text-right" style="font-weight: 600;">${p.qtd > 0 ? fmtInt(p.qtd) : '-'}</td>
                 <td class="text-right" style="font-weight: 700;">${p.fat > 0 ? 'R$ ' + fmtMoedaZero(p.fat) : '-'}</td>
                 <td class="text-right" style="font-weight: 700; color: var(--mq-gold);" title="Participação em peças na conta comercial (% QTD)">${p.pct > 0 ? fmtPct(p.pct) : '-'}</td>
                 <td class="text-right">${p.vlr_medio > 0 ? 'R$ ' + fmtMoeda(p.vlr_medio) : '-'}</td>

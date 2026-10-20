@@ -13,7 +13,7 @@
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
     <!-- Estilos -->
-    <link rel="stylesheet" href="/static/css/style.css?v=20261020_maior_dia_v1_20261019_col_exact_v12">
+    <link rel="stylesheet" href="/static/css/style.css?v=20261020_sort_notooltip_v4">
     <style>
         /* === PADRONIZAÇÃO EXATA DOS CARDS DE CANAIS (CONFORME LAYOUT TOTAL E-COMMERCE) === */
         .canal-chart-card {
@@ -297,15 +297,15 @@
                         <span class="section-subtitle" style="color: #FFFFFF !important; font-weight: 500;">Curvas acumuladas dia a dia comparando o ritmo planejado</span>
                     </div>
                     <div class="meta-legend executive-header-legend">
-                        <div class="header-legend-item legend-meta" title="Meta planejada acumulada para os dias decorridos">
+                        <div class="header-legend-item legend-meta">
                             <span class="legend-line-sample meta-sample"></span>
                             <span class="legend-text">Meta Acumulada</span>
                         </div>
-                        <div class="header-legend-item legend-fat" title="Faturamento realizado acumulado até a data atual">
+                        <div class="header-legend-item legend-fat">
                             <span class="legend-line-sample fat-sample"></span>
                             <span class="legend-text">Faturamento Atual</span>
                         </div>
-                        <div class="header-legend-item legend-ant" title="Faturamento acumulado no mesmo período do mês anterior">
+                        <div class="header-legend-item legend-ant">
                             <span class="legend-line-sample ant-sample"></span>
                             <span class="legend-text">Fat. Mês Anterior</span>
                         </div>
@@ -1227,16 +1227,30 @@
                         <table class="matrix-table" id="matrix-vend-table">
                             <thead>
                                 <tr class="thead-group-row">
-                                    <th colspan="7" class="th-group-single" id="th-mes-nome-vend">OUTUBRO (D1 ATÉ D6)</th>
+                                    <th colspan="7" class="th-group-single" id="th-mes-nome-vend">OUTUBRO</th>
                                 </tr>
                                 <tr class="thead-cols-row">
-                                    <th class="th-pos text-center" title="Posição no vendedor e evolução vs mês anterior">POS</th>
-                                    <th class="th-tree">CONTA / PRODUTO</th>
-                                    <th class="text-right">QTD</th>
-                                    <th class="text-right">VLR. FAT</th>
-                                    <th class="text-right">%</th>
-                                    <th class="text-right">MÉDIO</th>
-                                    <th class="text-center">EVOL. M-1</th>
+                                    <th class="th-pos text-center sortable" data-col="rank" title="Clique para ordenar por Posição">
+                                        <span class="th-content">POS <i class="sort-icon"></i></span>
+                                    </th>
+                                    <th class="th-tree sortable" data-col="nome" title="Clique para ordenar por Conta / Produto">
+                                        <span class="th-content">CONTA / PRODUTO <i class="sort-icon"></i></span>
+                                    </th>
+                                    <th class="text-right sortable" data-col="qtd" title="Clique para ordenar por Quantidade (Maior/Menor)">
+                                        <span class="th-content">QTD <i class="sort-icon"></i></span>
+                                    </th>
+                                    <th class="text-right sortable" data-col="fat" title="Clique para ordenar por Valor Faturado (Maior/Menor)">
+                                        <span class="th-content">VLR. FAT <i class="sort-icon"></i></span>
+                                    </th>
+                                    <th class="text-right sortable" data-col="pct" title="Clique para ordenar por % de Participação (Maior/Menor)">
+                                        <span class="th-content">% <i class="sort-icon"></i></span>
+                                    </th>
+                                    <th class="text-right sortable" data-col="vlr_medio" title="Clique para ordenar por Preço Médio (Maior/Menor)">
+                                        <span class="th-content">MÉDIO <i class="sort-icon"></i></span>
+                                    </th>
+                                    <th class="text-center sortable" data-col="evolucao_pct" title="Clique para ordenar por Evolução M-1 (Maior/Menor)">
+                                        <span class="th-content">EVOL. M-1 <i class="sort-icon"></i></span>
+                                    </th>
                                 </tr>
                             </thead>
                             <tbody id="matrix-vend-body">
@@ -1296,7 +1310,7 @@
         </footer>
     </div>
 
-    <script src="/static/js/app.js?v=20261020_maior_dia_v1_20261020_qtd_pct_v3"></script>
+    <script src="/static/js/app.js?v=20261020_sort_notooltip_v4"></script>
     <script>
         lucide.createIcons();
     </script>
