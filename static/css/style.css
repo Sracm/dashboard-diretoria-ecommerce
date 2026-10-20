@@ -4808,10 +4808,7 @@ span[id^="kpi-meta-"],
     font-weight: 700 !important;
 }
 
-/* Ocultar a faixa de Recorde Diário para manter layout vertical padronizado */
-.canal-record-strip {
-    display: none !important;
-}
+
 
 .canal-chart-container {
     height: 220px !important;
