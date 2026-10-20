@@ -610,6 +610,7 @@ def api_resumo():
             
             fat_ano_ant_c = fat_ano_ant_canais.get(canal, 0.0)
             share_ano_ant_c = round((fat_ano_ant_c / fat_ano_ant_total_tabela * 100), 2) if fat_ano_ant_total_tabela > 0 else 0.0
+            diff_share_mom_c = round(share_c - share_ant_c, 2)
             diff_share_ano_ant_c = round(share_c - share_ano_ant_c, 2)
             
             canais_tabela.append({
@@ -633,6 +634,7 @@ def api_resumo():
                 "share_pct": share_c,
                 "share_ant_pct": share_ant_c,
                 "share_ano_ant_pct": share_ano_ant_c,
+                "diff_share_mom": diff_share_mom_c,
                 "diff_share_ano_ant": diff_share_ano_ant_c,
                 "status": "superou" if info["atingimento_pct"] >= 100 else ("atencao" if info["atingimento_pct"] >= 75 else "critico")
             })
@@ -820,12 +822,26 @@ def api_resumo():
             "GRUPO_SINTETICO": "first"
         }).sort_values(by="FAT_LIQUIDO", ascending=False)
 
+        # Mapa de quantidade por canal no período atual para cálculo de share QTD por canal
+        qtd_canal_mat_map = df_curr_mat.groupby("CANAL")["QTDVENDIDA"].sum().to_dict() if not df_curr_mat.empty else {}
+
         lista_ranking_produtos = []
         rank_idx = 1
         for prod_val, r in prods_geral_agg.iterrows():
             qtd_p = int(r["QTDVENDIDA"])
             fat_p = float(r["FAT_LIQUIDO"])
-            pct_p = round(float(fat_p / fat_liquido_total * 100), 2) if fat_liquido_total > 0 else 0.0
+
+            # % QTD em relação ao canal correspondente (onde o produto teve maior volume de vendas)
+            g_prod_canais = df_curr_mat[df_curr_mat["PRODUTO"] == prod_val].groupby("CANAL")["QTDVENDIDA"].sum() if not df_curr_mat.empty else pd.Series()
+            if not g_prod_canais.empty and g_prod_canais.max() > 0:
+                top_cn = str(g_prod_canais.idxmax())
+                qtd_top_cn = float(qtd_canal_mat_map.get(top_cn, qtd_itens_total))
+                qtd_p_cn = float(g_prod_canais.max())
+                pct_p = round(float(qtd_p_cn / qtd_top_cn * 100), 2) if qtd_top_cn > 0 else 0.0
+            else:
+                top_cn = "GERAL"
+                pct_p = round(float(qtd_p / qtd_itens_total * 100), 2) if qtd_itens_total > 0 else 0.0
+
             vm_p = round(float(fat_p / qtd_p), 2) if qtd_p > 0 else 0.0
 
             prev_qtd_p = float(prev_prods_qtd_dict.get(prod_val, 0.0))
@@ -845,6 +861,7 @@ def api_resumo():
                 "nome": str(prod_val),
                 "sku": str(r["SKU_MQ"] or ""),
                 "categoria": str(r["GRUPO_SINTETICO"] or "OUTROS"),
+                "canal": top_cn,
                 "qtd": qtd_p,
                 "fat": round(fat_p, 2),
                 "pct": pct_p,
@@ -871,7 +888,7 @@ def api_resumo():
 
             qtd_c = int(g_cat["QTDVENDIDA"].sum())
             fat_c = float(g_cat["FAT_LIQUIDO"].sum())
-            pct_c = round(float(fat_c / fat_liquido_total * 100), 2) if fat_liquido_total > 0 else 0.0
+            pct_c = round(float(qtd_c / qtd_itens_total * 100), 2) if qtd_itens_total > 0 else 0.0
             vm_c = round(float(fat_c / qtd_c), 2) if qtd_c > 0 else 0.0
             prev_qtd_c = float(prev_cats_qtd_dict.get(cat_val, 0.0))
             evol_c = round(float((qtd_c - prev_qtd_c) / prev_qtd_c * 100), 2) if prev_qtd_c > 0 else (100.0 if qtd_c > 0 else 0.0)
@@ -895,7 +912,7 @@ def api_resumo():
             for prod_val, r in prods_cat_agg.iterrows():
                 qtd_cp = int(r["QTDVENDIDA"])
                 fat_cp = float(r["FAT_LIQUIDO"])
-                pct_cp = round(float(fat_cp / fat_liquido_total * 100), 2) if fat_liquido_total > 0 else 0.0
+                pct_cp = round(float(qtd_cp / qtd_c * 100), 2) if qtd_c > 0 else 0.0
                 vm_cp = round(float(fat_cp / qtd_cp), 2) if qtd_cp > 0 else 0.0
                 prev_qtd_cp = float(prev_cat_prod_qtd_dict.get((cat_val, prod_val), 0.0))
                 evol_cp = round(float((qtd_cp - prev_qtd_cp) / prev_qtd_cp * 100), 2) if prev_qtd_cp > 0 else (100.0 if qtd_cp > 0 else 0.0)
@@ -933,11 +950,72 @@ def api_resumo():
             })
             cat_idx += 1
 
+        # 6.3. Agrupamento por Canal de Vendas Oficial
+        lista_canais_prods = []
+        canais_matriz = [c for c in CANAIS_OFICIAIS if c != "PARLUX"]
+        canal_m_idx = 1
+        for c_nome in canais_matriz:
+            g_cn = df_curr_mat[df_curr_mat["CANAL"] == c_nome] if not df_curr_mat.empty else pd.DataFrame()
+            qtd_cn = int(g_cn["QTDVENDIDA"].sum()) if not g_cn.empty else 0
+            fat_cn = float(g_cn["FAT_LIQUIDO"].sum()) if not g_cn.empty else 0.0
+            pct_cn = round(float(qtd_cn / qtd_itens_total * 100), 2) if qtd_itens_total > 0 else 0.0
+            vm_cn = round(float(fat_cn / qtd_cn), 2) if qtd_cn > 0 else 0.0
+
+            g_cn_ant = df_prev_mat[df_prev_mat["CANAL"] == c_nome] if not df_prev_mat.empty else pd.DataFrame()
+            prev_qtd_cn = float(g_cn_ant["QTDVENDIDA"].sum()) if not g_cn_ant.empty else 0.0
+            evol_cn = round(float((qtd_cn - prev_qtd_cn) / prev_qtd_cn * 100), 2) if prev_qtd_cn > 0 else (100.0 if qtd_cn > 0 else 0.0)
+
+            prods_canal = []
+            if not g_cn.empty:
+                prods_cn_agg = g_cn.groupby("PRODUTO").agg({
+                    "QTDVENDIDA": "sum",
+                    "FAT_LIQUIDO": "sum",
+                    "SKU_MQ": "first"
+                }).sort_values(by="FAT_LIQUIDO", ascending=False)
+
+                prod_cn_idx = 1
+                for p_nome, r in prods_cn_agg.iterrows():
+                    qtd_p = int(r["QTDVENDIDA"])
+                    fat_p = float(r["FAT_LIQUIDO"])
+                    pct_p = round(float(qtd_p / qtd_cn * 100), 2) if qtd_cn > 0 else 0.0
+                    vm_p = round(float(fat_p / qtd_p), 2) if qtd_p > 0 else 0.0
+
+                    g_p_ant = g_cn_ant[g_cn_ant["PRODUTO"] == p_nome] if not g_cn_ant.empty else pd.DataFrame()
+                    prev_qtd_p = float(g_p_ant["QTDVENDIDA"].sum()) if not g_p_ant.empty else 0.0
+                    evol_p = round(float((qtd_p - prev_qtd_p) / prev_qtd_p * 100), 2) if prev_qtd_p > 0 else (100.0 if qtd_p > 0 else 0.0)
+
+                    prods_canal.append({
+                        "rank": prod_cn_idx,
+                        "nome": str(p_nome),
+                        "sku": str(r["SKU_MQ"] or ""),
+                        "canal": str(c_nome),
+                        "qtd": qtd_p,
+                        "fat": round(fat_p, 2),
+                        "pct": pct_p,
+                        "vlr_medio": vm_p,
+                        "evolucao_pct": evol_p
+                    })
+                    prod_cn_idx += 1
+
+            lista_canais_prods.append({
+                "id": str(c_nome).replace(" ", "_"),
+                "nome": str(c_nome),
+                "rank": canal_m_idx,
+                "qtd": qtd_cn,
+                "fat": round(fat_cn, 2),
+                "pct": pct_cn,
+                "vlr_medio": vm_cn,
+                "evolucao_pct": evol_cn,
+                "produtos": prods_canal
+            })
+            canal_m_idx += 1
+
         prev_qtd_geral = float(df_prev_mat["QTDVENDIDA"].sum()) if not df_prev_mat.empty else 0.0
         evol_qtd_geral = round(float((qtd_itens_total - prev_qtd_geral) / prev_qtd_geral * 100), 2) if prev_qtd_geral > 0 else 0.0
 
         matriz_produtos = {
             "ranking_produtos": lista_ranking_produtos,
+            "canais": lista_canais_prods,
             "categorias": lista_categorias,
             "totais": {
                 "qtd": qtd_itens_total,
@@ -951,6 +1029,17 @@ def api_resumo():
         # 7. Matriz de Vendedores & Produtos (Segunda Tabela: Vendedor / Conta & Produto)
         vendedores_validos = ["MERC LIVRE FULL", "LOJA SHOPEE", "LOJA VTEX", "MAGALU", "ASSISTENCIA TEC"]
         
+        def _get_canal_vend(v_nome):
+            vn = str(v_nome or "").upper()
+            if "MERC" in vn: return "MERCADO LIVRE"
+            if "SHOPEE" in vn: return "SHOPEE"
+            if "VTEX" in vn or "PROPRIA" in vn: return "VTEX"
+            if "MAGALU" in vn: return "MAGALU"
+            if "PARLUX" in vn: return "PARLUX"
+            return "OUTROS"
+
+        fat_canal_totais_vend = df_periodo.groupby("CANAL")["FAT_LIQUIDO"].sum().to_dict() if not df_periodo.empty else {}
+
         df_curr_vend = df_periodo[df_periodo["VENDEDOR"].isin(vendedores_validos)].copy() if not df_periodo.empty else df_periodo
         if not df_ant.empty:
             df_prev_vend = df_ant[(df_ant["VENDEDOR"].isin(vendedores_validos)) & (df_ant["DIA"] >= dia_ini) & (df_ant["DIA"] <= dia_fim)].copy()
@@ -977,11 +1066,21 @@ def api_resumo():
         lista_vendedores = []
         vend_idx = 1
         for vend in vends_ordenados:
-            g_c = df_curr_vend[df_curr_vend["VENDEDOR"] == vend] if not df_curr_vend.empty else df_curr_vend
+            canal_do_vend = _get_canal_vend(vend)
+            if canal_do_vend == "VTEX":
+                g_c = df_curr_vend[(df_curr_vend["VENDEDOR"] == vend) & (df_curr_vend["CANAL"] == "VTEX")] if not df_curr_vend.empty else df_curr_vend
+            else:
+                g_c = df_curr_vend[df_curr_vend["VENDEDOR"] == vend] if not df_curr_vend.empty else df_curr_vend
             
             qtd_v = int(g_c["QTDVENDIDA"].sum()) if not g_c.empty else 0
             fat_v = float(g_c["FAT_LIQUIDO"].sum()) if not g_c.empty else 0.0
-            pct_v = round(float(fat_v / fat_liquido_total * 100), 2) if fat_liquido_total > 0 else 0.0
+            
+            fat_ref_canal = float(fat_canal_totais_vend.get(canal_do_vend, fat_v))
+            if fat_ref_canal <= 0:
+                fat_ref_canal = fat_v
+
+            # Participação da Conta no Total de Peças Vendidas do E-commerce
+            pct_v = round(float(qtd_v / qtd_itens_total * 100), 2) if qtd_itens_total > 0 else 0.0
             vm_v = round(float(fat_v / qtd_v), 2) if qtd_v > 0 else 0.0
             prev_qtd_v = float(prev_vend_qtd_dict.get(vend, 0.0))
             
@@ -1017,7 +1116,7 @@ def api_resumo():
                     prods_vistos.add(p_nome)
                     qtd_p = int(r["QTDVENDIDA"])
                     fat_p = float(r["FAT_LIQUIDO"])
-                    pct_p = round(float(fat_p / fat_liquido_total * 100), 2) if fat_liquido_total > 0 else 0.0
+                    pct_p = round(float(qtd_p / qtd_v * 100), 2) if qtd_v > 0 else 0.0
                     vm_p = round(float(fat_p / qtd_p), 2) if qtd_p > 0 else 0.0
                     
                     prev_qtd_p = float(prev_vend_prod_qtd_dict.get((vend, p_nome), 0.0))

@@ -13,7 +13,7 @@
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
     <!-- Estilos -->
-    <link rel="stylesheet" href="/static/css/style.css?v=20261019_col_exact_v11">
+    <link rel="stylesheet" href="/static/css/style.css?v=20261019_col_exact_v12">
     <style>
         /* === PADRONIZAÇÃO EXATA DOS CARDS DE CANAIS (CONFORME LAYOUT TOTAL E-COMMERCE) === */
         .canal-chart-card {
@@ -161,28 +161,15 @@
             line-height: 1.25 !important;
             text-align: right !important;
         }
-        /* Meta Mês totalmente em Verde (#00E676) */
-        .canal-perf-col:nth-child(3) [id^="perf-meta-mes-"],
-        .canal-perf-col:nth-child(3) [id^="perf-meta-mes-"] strong {
-            color: #00E676 !important;
-            font-weight: 700 !important;
-        }
-        /* Gap da Projeção */
+        /* Meta Mês e Gap na Projeção: número em Amarelo (#FFB300) */
+        .canal-perf-col:nth-child(3) [id^="perf-meta-mes-"] strong,
         .canal-perf-col:nth-child(3) [id^="perf-gap-proj-"] strong {
+            color: #FFB300 !important;
             font-weight: 700 !important;
         }
-        /* Faixa de Recorde Diário (apenas Maior Dia) */
+        /* Ocultar a faixa de Recorde Diário para manter layout vertical padronizado */
         .canal-record-strip {
-            display: flex !important;
-            align-items: center !important;
-            justify-content: flex-start !important;
-            gap: 10px !important;
-        }
-        .canal-record-col {
-            display: inline-flex !important;
-            align-items: center !important;
-            gap: 6px !important;
-            flex: 0 1 auto !important;
+            display: none !important;
         }
     </style>
 </head>
@@ -778,11 +765,14 @@
                                 <th class="sortable text-right" data-col="share_ant_pct" title="Clique para ordenar por Share Mês Anterior (%)">
                                     <span class="th-content">Share Mês Ant. (%) <i class="sort-icon"></i></span>
                                 </th>
-                                <th class="sortable text-right" data-col="diff_share_ano_ant" title="Clique para ordenar por Diferença de Share YoY">
-                                    <span class="th-content">Dif. Share (p.p.) <i class="sort-icon"></i></span>
+                                <th class="sortable text-right" data-col="diff_share_mom" title="Clique para ordenar por Diferença de Share vs Mês Anterior (p.p.)">
+                                    <span class="th-content">Dif. Mês (p.p.) <i class="sort-icon"></i></span>
                                 </th>
                                 <th class="sortable text-right" data-col="share_ano_ant_pct" title="Clique para ordenar por Share Mesmo Período Ano Anterior (%)">
                                     <span class="th-content">Share Ano Ant. (%) <i class="sort-icon"></i></span>
+                                </th>
+                                <th class="sortable text-right" data-col="diff_share_ano_ant" title="Clique para ordenar por Diferença de Share vs Ano Anterior (p.p.)">
+                                    <span class="th-content">Dif. Ano (p.p.) <i class="sort-icon"></i></span>
                                 </th>
                             </tr>
                         </thead>
@@ -1145,6 +1135,10 @@
                                     <i data-lucide="trophy"></i>
                                     <span>Ranking Geral</span>
                                 </button>
+                                <button id="btn-view-canal" class="toggle-btn" title="Agrupar produtos por Canal de Venda">
+                                    <i data-lucide="shopping-bag"></i>
+                                    <span>Por Canal</span>
+                                </button>
                                 <button id="btn-view-categoria" class="toggle-btn" title="Agrupar produtos por Categoria">
                                     <i data-lucide="layers"></i>
                                     <span>Por Categoria</span>
@@ -1305,7 +1299,7 @@
         </footer>
     </div>
 
-    <script src="/static/js/app.js?v=20261019_col_colors_v6"></script>
+    <script src="/static/js/app.js?v=20261020_qtd_pct_v3"></script>
     <script>
         lucide.createIcons();
     </script>

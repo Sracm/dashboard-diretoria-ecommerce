@@ -354,22 +354,44 @@ function setupEventListeners() {
 
     // Controles da Matriz 1: Produtos Mais Vendidos no Geral
     const btnRanking = document.getElementById('btn-view-ranking');
+    const btnCanal = document.getElementById('btn-view-canal');
     const btnCategoria = document.getElementById('btn-view-categoria');
     const actionBtns = document.getElementById('matrix-prods-action-btns');
 
-    if (btnRanking && btnCategoria) {
+    function resetViewBtns() {
+        if (btnRanking) btnRanking.classList.remove('active');
+        if (btnCanal) btnCanal.classList.remove('active');
+        if (btnCategoria) btnCategoria.classList.remove('active');
+    }
+
+    if (btnRanking) {
         btnRanking.addEventListener('click', () => {
+            resetViewBtns();
             btnRanking.classList.add('active');
-            btnCategoria.classList.remove('active');
             currentViewMode = 'ranking';
             if (actionBtns) actionBtns.style.display = 'none';
             const thLbl = document.getElementById('th-matrix1-label');
             if (thLbl) thLbl.innerHTML = 'PRODUTO <i class="sort-icon"></i>';
             renderizarMatriz();
         });
+    }
+
+    if (btnCanal) {
+        btnCanal.addEventListener('click', () => {
+            resetViewBtns();
+            btnCanal.classList.add('active');
+            currentViewMode = 'canal';
+            if (actionBtns) actionBtns.style.display = 'flex';
+            const thLbl = document.getElementById('th-matrix1-label');
+            if (thLbl) thLbl.innerHTML = 'CANAL / PRODUTO <i class="sort-icon"></i>';
+            renderizarMatriz();
+        });
+    }
+
+    if (btnCategoria) {
         btnCategoria.addEventListener('click', () => {
+            resetViewBtns();
             btnCategoria.classList.add('active');
-            btnRanking.classList.remove('active');
             currentViewMode = 'categoria';
             if (actionBtns) actionBtns.style.display = 'flex';
             const thLbl = document.getElementById('th-matrix1-label');
@@ -388,8 +410,12 @@ function setupEventListeners() {
     }
     if (btnCollapse) {
         btnCollapse.addEventListener('click', () => {
-            if (currentMatrizData && currentMatrizData.categorias) {
-                currentMatrizData.categorias.forEach(cat => collapsedNodes.add(cat.id));
+            if (currentMatrizData) {
+                if (currentViewMode === 'canal' && currentMatrizData.canais) {
+                    currentMatrizData.canais.forEach(cn => collapsedNodes.add(cn.id));
+                } else if (currentMatrizData.categorias) {
+                    currentMatrizData.categorias.forEach(cat => collapsedNodes.add(cat.id));
+                }
             }
             renderizarMatriz();
         });
@@ -902,10 +928,11 @@ function renderizarSeisGraficos(graficos) {
         const signMeta = isPosMeta ? '+' : '';
         const colorMeta = isPosMeta ? '#00E676' : '#FF5252';
 
-        // Faturamento Atual em destaque:
+        // Faturamento Atual em destaque (#FF5252):
         const perfFatVal = document.getElementById(`perf-fat-val-${s}`);
         if (perfFatVal) {
             perfFatVal.textContent = `R$ ${fmtMoedaZero(fatAtual)}`;
+            perfFatVal.style.setProperty('color', '#FF5252', 'important');
         }
         // Meta do Período Trabalhado (compatibilidade):
         const perfMetaPeriodo = document.getElementById(`perf-meta-periodo-${s}`);
@@ -923,7 +950,10 @@ function renderizarSeisGraficos(graficos) {
             const statusClass = info.atingimento_pct >= 100 ? 'superou' : (info.atingimento_pct >= 75 ? 'atencao' : 'critico');
             perfAting.className = `perf-pct-main status-badge ${statusClass}`;
         }
-        if (perfVendaDia) perfVendaDia.innerHTML = `Venda/dia: <strong style="color: #FF5252 !important;">R$ ${fmtMoedaZero(info.venda_dia)}</strong>`;
+        if (perfVendaDia) {
+            perfVendaDia.innerHTML = `Venda/dia: <strong style="color: #FF5252 !important;">R$ ${fmtMoedaZero(info.venda_dia)}</strong>`;
+            perfVendaDia.style.setProperty('color', '#8E8E93', 'important');
+        }
         if (perfMetaDia) perfMetaDia.innerHTML = `Meta/dia: <strong>R$ ${fmtMoedaZero(info.meta_dia)}</strong>`;
         
         if (perfBadge) {
@@ -966,15 +996,15 @@ function renderizarSeisGraficos(graficos) {
         }
         if (perfProjPct) perfProjPct.textContent = `${fmtPct(info.projecao_pct)} da Meta Mês`;
         if (perfMetaMes) {
-            perfMetaMes.innerHTML = `Meta Mês: <strong style="color: #00E676 !important;">R$ ${fmtMoedaZero(info.meta_mes)}</strong>`;
-            perfMetaMes.style.setProperty('color', '#00E676', 'important');
+            perfMetaMes.innerHTML = `Meta Mês: <strong style="color: #FFB300 !important;">R$ ${fmtMoedaZero(info.meta_mes)}</strong>`;
+            perfMetaMes.style.setProperty('color', '#8E8E93', 'important');
         }
         if (perfGapProj) {
             const isPosGap = (info.gap_projecao || 0) >= 0;
             const gapSign = isPosGap ? '+' : '';
-            const gapColor = isPosGap ? '#00E676' : '#FF5252';
-            perfGapProj.innerHTML = `Gap: <strong style="color: ${gapColor} !important;">${gapSign}R$ ${fmtMoedaZero(info.gap_projecao)}</strong>`;
+            perfGapProj.innerHTML = `Gap: <strong style="color: #FFB300 !important;">${gapSign}R$ ${fmtMoedaZero(info.gap_projecao)}</strong>`;
             perfGapProj.className = `daily-item`;
+            perfGapProj.style.setProperty('color', '#8E8E93', 'important');
         }
         if (perfProjBadge) {
             const atingProj = (info.projecao_pct || 0) >= 100;
@@ -1663,10 +1693,17 @@ function renderizarTabelaCanais() {
         const barWidth = Math.min(100, Math.max(0, c.atingimento_periodo_pct));
         const barClass = c.status === 'superou' ? 'fill-superou' : (c.status === 'atencao' ? 'fill-atencao' : 'fill-critico');
 
-        const diffPP = Number(c.diff_share_ano_ant) || 0;
-        const diffColor = diffPP > 0 ? '#00E676' : (diffPP < 0 ? '#EF5350' : '#94A3B8');
-        const diffIcon = diffPP > 0 ? '▲ +' : (diffPP < 0 ? '▼ ' : '');
-        const diffText = diffPP === 0 ? '0,00 p.p.' : `${diffIcon}${diffPP.toFixed(2).replace('.', ',')} p.p.`;
+        // Diferença de Share vs Mês Anterior (MoM)
+        const diffMom = c.diff_share_mom !== undefined ? Number(c.diff_share_mom) : ((Number(c.share_pct) || 0) - (Number(c.share_ant_pct) || 0));
+        const diffColorMom = diffMom > 0 ? '#00E676' : (diffMom < 0 ? '#EF5350' : '#94A3B8');
+        const diffIconMom = diffMom > 0 ? '▲ +' : (diffMom < 0 ? '▼ ' : '');
+        const diffTextMom = Math.abs(diffMom) < 0.001 ? '0,00 p.p.' : `${diffIconMom}${diffMom.toFixed(2).replace('.', ',')} p.p.`;
+
+        // Diferença de Share vs Mesmo Período Ano Anterior (YoY)
+        const diffYoY = c.diff_share_ano_ant !== undefined ? Number(c.diff_share_ano_ant) : ((Number(c.share_pct) || 0) - (Number(c.share_ano_ant_pct) || 0));
+        const diffColorYoY = diffYoY > 0 ? '#00E676' : (diffYoY < 0 ? '#EF5350' : '#94A3B8');
+        const diffIconYoY = diffYoY > 0 ? '▲ +' : (diffYoY < 0 ? '▼ ' : '');
+        const diffTextYoY = Math.abs(diffYoY) < 0.001 ? '0,00 p.p.' : `${diffIconYoY}${diffYoY.toFixed(2).replace('.', ',')} p.p.`;
 
         const tr = document.createElement('tr');
         tr.innerHTML = `
@@ -1676,8 +1713,9 @@ function renderizarTabelaCanais() {
             <td class="text-right">R$ ${fmtMoeda(c.ticket_medio)}</td>
             <td class="text-right" style="font-weight: 700; color: var(--mq-gold, #FFD700);">${fmtPct(c.share_pct)}</td>
             <td class="text-right" style="font-weight: 600; color: #94A3B8;">${fmtPct(c.share_ant_pct)}</td>
-            <td class="text-right" style="font-weight: 700; color: ${diffColor};">${diffText}</td>
+            <td class="text-right" style="font-weight: 700; color: ${diffColorMom};">${diffTextMom}</td>
             <td class="text-right" style="font-weight: 600; color: #CBD5E1;">${fmtPct(c.share_ano_ant_pct)}</td>
+            <td class="text-right" style="font-weight: 700; color: ${diffColorYoY};">${diffTextYoY}</td>
         `;
         tbody.appendChild(tr);
     });
@@ -1702,6 +1740,7 @@ function renderizarTabelaCanais() {
                 <td class="text-right" style="font-weight: 800; color: #94A3B8;">100,00%</td>
                 <td class="text-right" style="font-weight: 800; color: #94A3B8;">0,00 p.p.</td>
                 <td class="text-right" style="font-weight: 800; color: #CBD5E1;">100,00%</td>
+                <td class="text-right" style="font-weight: 800; color: #94A3B8;">0,00 p.p.</td>
             </tr>
         `;
     }
@@ -2091,7 +2130,7 @@ function renderizarMatriz() {
                 <td class="text-right" style="font-weight: 600; color: #FFFFFF;">${fmtInt(p.qtd)}</td>
                 <td class="text-right" style="font-weight: 800; color: #FFFFFF;">R$ ${fmtMoedaZero(p.fat)}</td>
                 <td class="text-right">
-                    <div class="share-progress-wrapper">
+                    <div class="share-progress-wrapper" title="Participação em peças no canal (${p.canal || ''}) (% QTD)">
                         <span style="font-weight: 700; color: #E2E8F0;">${fmtPct(p.pct)}</span>
                         <div class="share-bar-mini">
                             <div class="share-bar-fill" style="width: ${Math.min(100, p.pct)}%; background: var(--mq-gold);"></div>
@@ -2102,6 +2141,71 @@ function renderizarMatriz() {
                 <td class="text-center">${getEvolBadge(p.evolucao_pct)}</td>
             `;
             tbody.appendChild(tr);
+        });
+
+    } else if (currentViewMode === 'canal') {
+        // Modo 'canal' (agrupado por Canal Oficial: MERCADO LIVRE, SHOPEE, VTEX, MAGALU)
+        const canais = currentMatrizData.canais;
+        if (!canais || canais.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="7" class="text-center kpi-subtext" style="padding: 24px;">Nenhum canal encontrado</td></tr>';
+            if (tfoot) tfoot.innerHTML = '';
+            return;
+        }
+
+        canais.forEach(cn => {
+            const isCnCollapsed = collapsedNodes.has(cn.id);
+            const iconCn = isCnCollapsed ? '+' : '−';
+
+            // Linha Nível 1: Canal
+            const trCn = document.createElement('tr');
+            trCn.className = 'matrix-row matrix-row-n1';
+            trCn.dataset.id = cn.id;
+            trCn.dataset.type = 'canal';
+            trCn.dataset.search = cn.nome.toLowerCase();
+
+            trCn.innerHTML = `
+                <td class="text-center" style="padding: 4px 3px;">
+                    ${getRankBadge(cn.rank, null)}
+                </td>
+                <td class="cell-tree" style="padding-left: 8px;">
+                    <span class="btn-toggle-tree" onclick="toggleNode('${cn.id}', event)">${iconCn}</span>
+                    <strong style="color: #FFFFFF; font-size: 11px;">${cn.nome}</strong>
+                </td>
+                <td class="text-right" style="font-weight: 700;">${fmtInt(cn.qtd)}</td>
+                <td class="text-right" style="font-weight: 800; color: var(--mq-gold);">R$ ${fmtMoedaZero(cn.fat)}</td>
+                <td class="text-right" style="font-weight: 700;" title="Participação do canal no volume total de peças vendidas (% QTD)">${fmtPct(cn.pct)}</td>
+                <td class="text-right">R$ ${fmtMoeda(cn.vlr_medio)}</td>
+                <td class="text-center">${getEvolBadge(cn.evolucao_pct)}</td>
+            `;
+            tbody.appendChild(trCn);
+
+            // Linha Nível 2: Produtos do Canal
+            cn.produtos.forEach(p => {
+                const trP = document.createElement('tr');
+                trP.className = 'matrix-row matrix-row-n2';
+                trP.dataset.parentCat = cn.id;
+                trP.dataset.type = 'prod';
+                trP.dataset.search = `${cn.nome} ${p.nome} ${p.sku}`.toLowerCase();
+                if (isCnCollapsed) trP.style.display = 'none';
+
+                trP.innerHTML = `
+                    <td class="text-center" style="padding: 4px 2px;">
+                        ${getRankBadge(p.rank, null)}
+                    </td>
+                    <td class="cell-tree" style="padding-left: 18px;">
+                        <span class="tree-leaf-bullet"></span>
+                        <div class="prod-info-cell" style="display: inline-flex; vertical-align: middle;">
+                            <span class="prod-name-title" title="${p.nome}">${p.nome}</span>
+                        </div>
+                    </td>
+                    <td class="text-right">${fmtInt(p.qtd)}</td>
+                    <td class="text-right" style="font-weight: 700;">R$ ${fmtMoedaZero(p.fat)}</td>
+                    <td class="text-right" style="font-weight: 700; color: var(--mq-gold);" title="Participação no canal">${fmtPct(p.pct)}</td>
+                    <td class="text-right">R$ ${fmtMoeda(p.vlr_medio)}</td>
+                    <td class="text-center">${getEvolBadge(p.evolucao_pct)}</td>
+                `;
+                tbody.appendChild(trP);
+            });
         });
 
     } else {
@@ -2272,7 +2376,7 @@ function renderizarMatrizVendedores() {
             </td>
             <td class="text-right">${v.qtd > 0 ? fmtInt(v.qtd) : ''}</td>
             <td class="text-right" style="font-weight: 800; color: var(--mq-gold);">R$ ${fmtMoedaZero(v.fat)}</td>
-            <td class="text-right">${fmtPct(v.pct)}</td>
+            <td class="text-right" style="font-weight: 700;" title="Participação da conta no volume total de peças vendidas (% QTD)">${fmtPct(v.pct)}</td>
             <td class="text-right">${v.vlr_medio > 0 ? 'R$ ' + fmtMoeda(v.vlr_medio) : ''}</td>
             <td class="text-center">${getEvolBadge(v.evolucao_pct)}</td>
         `;
@@ -2299,7 +2403,7 @@ function renderizarMatrizVendedores() {
                 </td>
                 <td class="text-right">${p.qtd > 0 ? fmtInt(p.qtd) : '-'}</td>
                 <td class="text-right" style="font-weight: 700;">${p.fat > 0 ? 'R$ ' + fmtMoedaZero(p.fat) : '-'}</td>
-                <td class="text-right">${p.pct > 0 ? fmtPct(p.pct) : '-'}</td>
+                <td class="text-right" style="font-weight: 700; color: var(--mq-gold);" title="Participação em peças na conta comercial (% QTD)">${p.pct > 0 ? fmtPct(p.pct) : '-'}</td>
                 <td class="text-right">${p.vlr_medio > 0 ? 'R$ ' + fmtMoeda(p.vlr_medio) : '-'}</td>
                 <td class="text-center">${getEvolBadge(p.evolucao_pct)}</td>
             `;

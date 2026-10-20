@@ -4801,16 +4801,16 @@ span[id^="kpi-meta-"],
     text-align: right !important;
 }
 
-/* Meta Mês totalmente em Verde (#00E676) */
-.canal-perf-col:nth-child(3) [id^="perf-meta-mes-"],
-.canal-perf-col:nth-child(3) [id^="perf-meta-mes-"] strong {
-    color: #00E676 !important;
+/* Meta Mês e Gap na Projeção: número em Amarelo (#FFB300) */
+.canal-perf-col:nth-child(3) [id^="perf-meta-mes-"] strong,
+.canal-perf-col:nth-child(3) [id^="perf-gap-proj-"] strong {
+    color: #FFB300 !important;
     font-weight: 700 !important;
 }
 
-/* Gap da Projeção */
-.canal-perf-col:nth-child(3) [id^="perf-gap-proj-"] strong {
-    font-weight: 700 !important;
+/* Ocultar a faixa de Recorde Diário para manter layout vertical padronizado */
+.canal-record-strip {
+    display: none !important;
 }
 
 .canal-chart-container {
