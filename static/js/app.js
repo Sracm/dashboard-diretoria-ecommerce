@@ -914,7 +914,7 @@ function renderizarSeisGraficos(graficos) {
     if (!graficos) return;
     currentGraficosData = graficos;
 
-    document.querySelectorAll('.canal-perf-strip [title], .canal-record-strip [title]').forEach(el => el.removeAttribute('title'));
+    document.querySelectorAll('.canal-chart-card [title]').forEach(el => { if (!el.classList.contains('btn-zoom-chart')) el.removeAttribute('title'); });
     const mapaCanais = [
         { key: 'GERAL', canvasId: 'chart-geral', badgeId: 'badge-geral', suffix: 'geral', footFat: 'foot-geral-fat', footMeta: 'foot-geral-meta', footMetaMes: 'foot-geral-metames', footAnt: 'foot-geral-ant' },
         { key: 'MERCADO LIVRE', canvasId: 'chart-ml', badgeId: 'badge-ml', suffix: 'ml', footFat: 'foot-ml-fat', footMeta: 'foot-ml-meta', footMetaMes: 'foot-ml-metames', footAnt: 'foot-ml-ant' },
@@ -1161,40 +1161,7 @@ function renderizarSeisGraficos(graficos) {
                 plugins: {
                     legend: { display: false },
                     tooltip: {
-                        backgroundColor: 'rgba(20, 20, 26, 0.95)',
-                        titleColor: '#CB9727',
-                        titleFont: { family: 'Montserrat', size: 11, weight: '700' },
-                        bodyColor: '#FFFFFF',
-                        bodyFont: { family: 'Montserrat', size: 10.5 },
-                        borderColor: 'rgba(203, 151, 39, 0.35)',
-                        borderWidth: 1,
-                        padding: 10,
-                        boxPadding: 4,
-                        usePointStyle: true,
-                        callbacks: {
-                            title: (items) => {
-                                if (!items.length) return '';
-                                const dLabel = String(items[0].label).replace(/^D/i, '');
-                                const isRec = (items[0].dataIndex === diaRecIdx && rec.faturamento > 0);
-                                return isRec ? `🏆 Dia ${dLabel} (MAIOR VENDA DO CANAL)` : `📅 Dia ${dLabel}`;
-                            },
-                            label: (ctx) => ` ${ctx.dataset.label}: R$ ${fmtMoeda(ctx.raw)}`,
-                            afterBody: (items) => {
-                                const lines = [];
-                                const fatItem = items.find(i => i.dataset.label === 'Fat. Acumulado');
-                                const metaItem = items.find(i => i.dataset.label === 'Meta Acumulada');
-                                if (fatItem && metaItem && metaItem.raw > 0) {
-                                    const ating = ((fatItem.raw / metaItem.raw) * 100).toFixed(1);
-                                    const diff = fatItem.raw - metaItem.raw;
-                                    const sinal = diff >= 0 ? '+' : '';
-                                    lines.push(`\n🎯 Ating. até o dia: ${ating}%\n⚖️ Saldo vs Meta: ${sinal}R$ ${fmtMoeda(diff)}`);
-                                }
-                                if (items[0].dataIndex === diaRecIdx && rec.faturamento > 0) {
-                                    lines.push(`\n⭐ Pico de Faturamento: R$ ${fmtMoedaZero(rec.faturamento)}`);
-                                }
-                                return lines.join('');
-                            }
-                        }
+                        enabled: false
                     }
                 },
                 layout: {
@@ -1490,31 +1457,7 @@ function renderizarModalCanal(canalKey, modo) {
                         }
                     },
                     tooltip: {
-                        backgroundColor: 'rgba(20, 20, 26, 0.95)',
-                        titleColor: '#CB9727',
-                        titleFont: { family: 'Montserrat', size: 12, weight: '700' },
-                        bodyColor: '#FFFFFF',
-                        bodyFont: { family: 'Montserrat', size: 11 },
-                        borderColor: 'rgba(203, 151, 39, 0.4)',
-                        borderWidth: 1,
-                        padding: 12,
-                        boxPadding: 5,
-                        usePointStyle: true,
-                        callbacks: {
-                            title: (items) => `📅 Dia ${String(items[0].label).replace(/^D/i, '')}`,
-                            label: (ctx) => ` ${ctx.dataset.label}: R$ ${fmtMoeda(ctx.raw)}`,
-                            afterBody: (items) => {
-                                const fatItem = items.find(i => i.dataset.label === 'Fat. Acumulado');
-                                const metaItem = items.find(i => i.dataset.label === 'Meta Acumulada');
-                                if (fatItem && metaItem && metaItem.raw > 0) {
-                                    const ating = ((fatItem.raw / metaItem.raw) * 100).toFixed(1);
-                                    const diff = fatItem.raw - metaItem.raw;
-                                    const sinal = diff >= 0 ? '+' : '';
-                                    return `\n🎯 Ating. acumulado: ${ating}%\n⚖️ Saldo vs Meta: ${sinal}R$ ${fmtMoeda(diff)}`;
-                                }
-                                return '';
-                            }
-                        }
+                        enabled: false
                     }
                 },
                 scales: {
@@ -1606,15 +1549,7 @@ function renderizarModalCanal(canalKey, modo) {
                         }
                     },
                     tooltip: {
-                        backgroundColor: 'rgba(20, 20, 26, 0.95)',
-                        titleColor: '#CB9727',
-                        borderColor: 'rgba(203, 151, 39, 0.4)',
-                        borderWidth: 1,
-                        padding: 12,
-                        callbacks: {
-                            title: (items) => `📅 Dia ${String(items[0].label).replace(/^D/i, '')}`,
-                            label: (ctx) => ` ${ctx.dataset.label}: R$ ${fmtMoeda(ctx.raw)}`
-                        }
+                        enabled: false
                     }
                 },
                 scales: {
