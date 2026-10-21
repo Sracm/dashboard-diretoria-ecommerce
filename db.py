@@ -402,6 +402,10 @@ def carregar_pedidos_vtex_mes(ano: int, mes: int, force_refresh: bool = False) -
             df_mv = pd.read_sql(sql_mv, conn_m, params=[ano, mes])
             if not df_mv.empty:
                 _MEMORY_CACHE[cache_key] = (df_mv.copy(), now_ts)
+                try:
+                    df_mv.to_pickle(disk_file)
+                except Exception as e_p:
+                    print(f"[CACHE DISCO] Erro ao salvar {disk_file}: {e_p}")
                 return df_mv.copy()
         finally:
             conn_m.close()

@@ -5,6 +5,7 @@ MQ Professional — Alinhado 100% às regras e métricas do Power BI
 """
 
 import os
+import time
 import calendar
 from datetime import datetime
 import pandas as pd
@@ -78,6 +79,10 @@ def index():
     )
 
 
+# Cache em memória para resposta ultra-rápida de /api/resumo
+_RESUMO_CACHE = {}
+_RESUMO_CACHE_TTL = 300  # 5 minutos
+
 @app.route("/api/resumo")
 def api_resumo():
     try:
@@ -119,6 +124,15 @@ def api_resumo():
             else:
                 dia_fim = max_dias_meses
         dia_fim = min(max_dias_meses, max(dia_ini, dia_fim))
+
+        # FAST PATH: Cache em memória se filtros repetidos (0ms)
+        cache_key = (tuple(sorted(anos)), tuple(sorted(meses)), dia_ini, dia_fim, str(marca_filtro), str(canal_filtro))
+        if not force and cache_key in _RESUMO_CACHE:
+            c_data, c_ts = _RESUMO_CACHE[cache_key]
+            if time.time() - c_ts < _RESUMO_CACHE_TTL:
+                return jsonify(c_data)
+        if force:
+            _RESUMO_CACHE.clear()
 
         # 1. Carrega dados de todos os anos e meses do Sankhya (com cache)
         dfs_meses = []
@@ -424,12 +438,44 @@ def api_resumo():
                         rec_prod_per_fat = float(grp_per_p.max())
                         rec_prod_per_qtd = int(df_c_periodo[df_c_periodo["PRODUTO"] == rec_prod_per_full]["QTDVENDIDA"].sum())
 
+            # Cálculo do mês completo (1 até max_dias_meses) para resposta instantânea ao arrastar o slider
+            fm_labels = []
+            fm_acum_meta = []
+            fm_acum_fat = []
+            fm_acum_fat_ant = []
+            fm_s_real = 0.0
+            fm_s_meta = 0.0
+            fm_s_ant = 0.0
+            for d in range(1, max_dias_meses + 1):
+                fm_labels.append(str(d))
+                fm_s_meta += meta_dia_c
+                fm_acum_meta.append(round(fm_s_meta, 2))
+                
+                fd = float(fat_dia_map.get(d, 0.0))
+                fm_s_real += fd
+                fm_acum_fat.append(round(fm_s_real, 2))
+                
+                fda = float(fat_ant_dia_map.get(d, 0.0))
+                fm_s_ant += fda
+                fm_acum_fat_ant.append(round(fm_s_ant, 2))
+                
+            if fm_s_ant == 0.0 and fat_ant_cheio_c > 0.0:
+                fm_acum_fat_ant = [round((fat_ant_cheio_c / max_dias_meses) * d, 2) for d in range(1, max_dias_meses + 1)]
+
             graficos_canais[canal] = {
                 "canal": canal,
                 "labels": labels,
                 "acumulado_meta": acum_meta_list,
                 "acumulado_fat": acum_fat_list,
                 "acumulado_fat_ant": acum_fat_ant_list,
+                "full_month": {
+                    "labels": fm_labels,
+                    "acumulado_meta": fm_acum_meta,
+                    "acumulado_fat": fm_acum_fat,
+                    "acumulado_fat_ant": fm_acum_fat_ant,
+                    "meta_dia": meta_dia_c_val,
+                    "meta_mes": round(meta_mes_c, 2)
+                },
                 "total_fat_periodo": round(soma_real, 2),
                 "total_meta_periodo": round(soma_meta, 2),
                 "total_fat_ant_periodo": round(soma_ant, 2),
@@ -526,12 +572,41 @@ def api_resumo():
                     rec_prod_per_fat_g = float(grp_per_pg.max())
                     rec_prod_per_qtd_g = int(df_g_periodo[df_g_periodo["PRODUTO"] == rec_prod_per_full_g]["QTDVENDIDA"].sum())
 
+        # GERAL full_month
+        fm_labels_g = [str(d) for d in range(1, max_dias_meses + 1)]
+        fm_acum_meta_g = []
+        fm_acum_fat_g = []
+        fm_acum_fat_ant_g = []
+        sm_g = 0.0
+        sf_g = 0.0
+        sa_g = 0.0
+        for d in range(1, max_dias_meses + 1):
+            md = sum(graficos_canais[c]["full_month"]["acumulado_meta"][d-1] - (graficos_canais[c]["full_month"]["acumulado_meta"][d-2] if d > 1 else 0) for c in CANAIS_OFICIAIS if c != "PARLUX")
+            sm_g += md
+            fm_acum_meta_g.append(round(sm_g, 2))
+            
+            fd = sum(graficos_canais[c]["full_month"]["acumulado_fat"][d-1] - (graficos_canais[c]["full_month"]["acumulado_fat"][d-2] if d > 1 else 0) for c in CANAIS_OFICIAIS if c != "PARLUX")
+            sf_g += fd
+            fm_acum_fat_g.append(round(sf_g, 2))
+            
+            fa = sum(graficos_canais[c]["full_month"]["acumulado_fat_ant"][d-1] - (graficos_canais[c]["full_month"]["acumulado_fat_ant"][d-2] if d > 1 else 0) for c in CANAIS_OFICIAIS if c != "PARLUX")
+            sa_g += fa
+            fm_acum_fat_ant_g.append(round(sa_g, 2))
+
         graficos_canais["GERAL"] = {
             "canal": "GERAL",
             "labels": labels_geral,
             "acumulado_meta": acum_meta_geral_list,
             "acumulado_fat": acum_fat_geral_list,
             "acumulado_fat_ant": acum_fat_ant_geral_list,
+            "full_month": {
+                "labels": fm_labels_g,
+                "acumulado_meta": fm_acum_meta_g,
+                "acumulado_fat": fm_acum_fat_g,
+                "acumulado_fat_ant": fm_acum_fat_ant_g,
+                "meta_dia": meta_dia_g,
+                "meta_mes": round(meta_mes_geral, 2)
+            },
             "total_fat_periodo": round(soma_fat_g, 2),
             "total_meta_periodo": round(soma_meta_g, 2),
             "total_fat_ant_periodo": round(soma_ant_g, 2),
@@ -1714,7 +1789,7 @@ def api_resumo():
 
         mes_nome_str = ", ".join([NOMES_MESES[m-1][:3] for m in meses])
         ano_str = ", ".join([str(a) for a in anos])
-        return jsonify({
+        resumo_payload = {
             "status": "success",
             "parametros": {
                 "anos": anos,
@@ -1783,7 +1858,9 @@ def api_resumo():
             "analytics_conversao": analytics_conversao,
             "pagamentos_por_canal": pagamentos_por_canal,
             "ultima_atualizacao": obter_ultima_atualizacao()
-        })
+        }
+        _RESUMO_CACHE[cache_key] = (resumo_payload, time.time())
+        return jsonify(resumo_payload)
         
     except Exception as e:
         import traceback

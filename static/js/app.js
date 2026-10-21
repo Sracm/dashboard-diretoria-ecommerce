@@ -286,10 +286,14 @@ function setupEventListeners() {
     }
 
     sliderDias.addEventListener('input', (e) => {
-        labelDiaFim.textContent = e.target.value;
+        const dia = parseInt(e.target.value);
+        if (labelDiaFim) labelDiaFim.textContent = dia;
+        atualizarVisualizacaoPeriodoInstantaneo(dia);
     });
 
-    sliderDias.addEventListener('change', () => carregarDadosDebounced(100));
+    sliderDias.addEventListener('change', () => {
+        carregarDadosDebounced(150);
+    });
     selectMarca.addEventListener('change', () => carregarDados(false));
 
     const btnSync = document.getElementById('btn-manual-sync');
@@ -655,8 +659,262 @@ function carregarDadosDebounced(delay = 150) {
     }, delay);
 }
 
+
+// ==========================================================================
+// ATUALIZAÇÃO ULTRA-RÁPIDA DO PERÍODO NO CLIENTE (0ms - 60 FPS)
+// Permite arrastar o slider de dias com resposta instantânea e suave
+// ==========================================================================
+function atualizarVisualizacaoPeriodoInstantaneo(diaNum) {
+    if (!currentGraficosData) return;
+    diaNum = Math.max(1, parseInt(diaNum) || 1);
+
+    const mapaCanais = [
+        { key: 'GERAL', canvasId: 'chart-geral', suffix: 'geral', footFat: 'foot-geral-fat', footMeta: 'foot-geral-meta', footAnt: 'foot-geral-ant' },
+        { key: 'MERCADO LIVRE', canvasId: 'chart-ml', suffix: 'ml', footFat: 'foot-ml-fat', footMeta: 'foot-ml-meta', footAnt: 'foot-ml-ant' },
+        { key: 'VTEX', canvasId: 'chart-vtex', suffix: 'vtex', footFat: 'foot-vtex-fat', footMeta: 'foot-vtex-meta', footAnt: 'foot-vtex-ant' },
+        { key: 'SHOPEE', canvasId: 'chart-shopee', suffix: 'shopee', footFat: 'foot-shopee-fat', footMeta: 'foot-shopee-meta', footAnt: 'foot-shopee-ant' },
+        { key: 'MAGALU', canvasId: 'chart-magalu', suffix: 'magalu', footFat: 'foot-magalu-fat', footMeta: 'foot-magalu-meta', footAnt: 'foot-magalu-ant' },
+        { key: 'PARLUX', canvasId: 'chart-parlux', suffix: 'parlux', footFat: 'foot-parlux-fat', footMeta: 'foot-parlux-meta', footAnt: 'foot-parlux-ant' }
+    ];
+
+    let totalDiasMes = 31;
+    if (currentParams && currentParams.total_dias_mes) {
+        totalDiasMes = currentParams.total_dias_mes;
+    } else {
+        const sliderEl = document.getElementById('slider-dias');
+        if (sliderEl && sliderEl.max) totalDiasMes = parseInt(sliderEl.max) || 31;
+    }
+
+    mapaCanais.forEach(c => {
+        const info = currentGraficosData[c.key];
+        if (!info) return;
+
+        const fm = info.full_month || {
+            labels: info.labels || [],
+            acumulado_fat: info.acumulado_fat || [],
+            acumulado_meta: info.acumulado_meta || [],
+            acumulado_fat_ant: info.acumulado_fat_ant || [],
+            meta_mes: info.meta_mes || 0,
+            meta_dia: info.meta_dia || 0
+        };
+
+        const sliceEnd = Math.min(diaNum, (fm.labels && fm.labels.length) ? fm.labels.length : diaNum);
+        const slicedLabels = (fm.labels || []).slice(0, sliceEnd);
+        const slicedFat = (fm.acumulado_fat || []).slice(0, sliceEnd);
+        const slicedMeta = (fm.acumulado_meta || []).slice(0, sliceEnd);
+        const slicedAnt = (fm.acumulado_fat_ant || []).slice(0, sliceEnd);
+
+        const fatAtual = slicedFat.length > 0 ? (slicedFat[slicedFat.length - 1] || 0) : 0;
+        const metaAcum = slicedMeta.length > 0 ? (slicedMeta[slicedMeta.length - 1] || 0) : 0;
+        const fatAntAcum = slicedAnt.length > 0 ? (slicedAnt[slicedAnt.length - 1] || 0) : 0;
+
+        const diffMetaVal = fatAtual - metaAcum;
+        const diffMetaPct = metaAcum > 0 ? (diffMetaVal / metaAcum * 100) : (fatAtual > 0 ? 100 : 0);
+        const isPosMeta = diffMetaVal >= 0;
+        const signMeta = isPosMeta ? '+' : '';
+        const colorMeta = isPosMeta ? '#00E676' : '#FF5252';
+
+        const atingPct = metaAcum > 0 ? (fatAtual / metaAcum * 100) : 0;
+        const vendaDia = diaNum > 0 ? (fatAtual / diaNum) : 0;
+        const projecao = vendaDia * totalDiasMes;
+        const metaMes = fm.meta_mes || info.meta_mes || 0;
+        const gapProj = projecao - metaMes;
+        const atingProj = metaMes > 0 ? (projecao / metaMes * 100) : 0;
+
+        const s = c.suffix;
+
+        // Faturamento Atual (#FF5252)
+        const perfFatVal = document.getElementById(`perf-fat-val-${s}`);
+        if (perfFatVal) {
+            perfFatVal.textContent = `R$ ${fmtMoedaZero(fatAtual)}`;
+            perfFatVal.style.setProperty('color', '#FF5252', 'important');
+        }
+
+        // Atingimento %
+        const perfAtingVal = document.getElementById(`perf-ating-val-${s}`);
+        if (perfAtingVal) {
+            perfAtingVal.textContent = `${fmtPct(atingPct)}`;
+            perfAtingVal.style.setProperty('color', colorMeta, 'important');
+        }
+        const perfAting = document.getElementById(`perf-ating-${s}`);
+        if (perfAting) {
+            perfAting.textContent = `${fmtPct(atingPct)}`;
+            const statusClass = atingPct >= 100 ? 'superou' : (atingPct >= 75 ? 'atencao' : 'critico');
+            perfAting.className = `perf-pct-main status-badge ${statusClass}`;
+        }
+
+        // Venda/dia
+        const perfVendaDia = document.getElementById(`perf-venda-dia-${s}`);
+        if (perfVendaDia) {
+            perfVendaDia.innerHTML = `Venda/dia: <strong style="color: #FF5252 !important;">R$ ${fmtMoedaZero(vendaDia)}</strong>`;
+            perfVendaDia.style.setProperty('color', '#8E8E93', 'important');
+        }
+
+        // Status Badge DENTRO/FORA DA META
+        const perfBadge = document.getElementById(`perf-badge-${s}`);
+        if (perfBadge) {
+            const dentro = atingPct >= 100;
+            perfBadge.textContent = dentro ? 'DENTRO DA META' : 'FORA DA META';
+            perfBadge.className = `perf-status-pill ${dentro ? 'dentro' : 'fora'}`;
+        }
+
+        // Meta do Período Acumulado e Diferença
+        const perfMetaVal = document.getElementById(`perf-meta-acum-val-${s}`) || document.getElementById(`perf-ant-val-${s}`);
+        const perfMetaDiffVal = document.getElementById(`perf-meta-diff-val-${s}`) || document.getElementById(`perf-ant-diff-val-${s}`);
+        const perfMetaDiffPct = document.getElementById(`perf-meta-diff-pct-${s}`) || document.getElementById(`perf-ant-diff-pct-${s}`);
+        if (perfMetaVal) {
+            perfMetaVal.textContent = `R$ ${fmtMoedaZero(metaAcum)}`;
+            perfMetaVal.style.setProperty('color', '#00E676', 'important');
+        }
+        if (perfMetaDiffVal) {
+            perfMetaDiffVal.textContent = `${signMeta}R$ ${fmtMoedaZero(diffMetaVal)}`;
+            perfMetaDiffVal.style.setProperty('color', '#00E676', 'important');
+        }
+        if (perfMetaDiffPct) {
+            perfMetaDiffPct.textContent = `${signMeta}${diffMetaPct.toFixed(1)}%`;
+            perfMetaDiffPct.style.setProperty('color', '#00E676', 'important');
+        }
+
+        // Projeção
+        const perfProjVal = document.getElementById(`perf-proj-val-${s}`);
+        if (perfProjVal) {
+            perfProjVal.textContent = `R$ ${fmtMoedaZero(projecao)}`;
+            perfProjVal.style.setProperty('color', '#FFB300', 'important');
+        }
+        const perfProjPct = document.getElementById(`perf-proj-pct-${s}`);
+        if (perfProjPct) perfProjPct.textContent = `${fmtPct(atingProj)} da Meta Mês`;
+
+        const perfGapProj = document.getElementById(`perf-gap-proj-${s}`);
+        if (perfGapProj) {
+            const isPosGap = gapProj >= 0;
+            const gapSign = isPosGap ? '+' : '';
+            perfGapProj.innerHTML = `Gap: <strong style="color: #FFB300 !important;">${gapSign}R$ ${fmtMoedaZero(gapProj)}</strong>`;
+            perfGapProj.style.setProperty('color', '#8E8E93', 'important');
+        }
+
+        // Rodapé do Card
+        const footAnt = document.getElementById(c.footAnt);
+        if (footAnt) footAnt.textContent = `Fat. Acum Mês ant.: R$ ${fmtMoedaZero(fatAntAcum)}`;
+        const footFat = document.getElementById(c.footFat);
+        if (footFat) footFat.textContent = `Fat: R$ ${fmtMoedaZero(fatAtual)}`;
+        const footMeta = document.getElementById(c.footMeta);
+        if (footMeta) footMeta.textContent = `Meta: R$ ${fmtMoedaZero(metaAcum)}`;
+
+        // Encontrar o maior dia dentro do intervalo 1..diaNum
+        let maxFatVal = 0;
+        let maxFatDiaIdx = -1;
+        for (let i = 0; i < slicedFat.length; i++) {
+            const dFat = i === 0 ? slicedFat[0] : (slicedFat[i] - slicedFat[i - 1]);
+            if (dFat > maxFatVal) {
+                maxFatVal = dFat;
+                maxFatDiaIdx = i;
+            }
+        }
+        const recDiaEl = document.getElementById(`perf-record-dia-${s}`);
+        const recFatEl = document.getElementById(`perf-record-fat-${s}`);
+        if (recDiaEl && maxFatDiaIdx >= 0) {
+            const mStr = (currentParams && currentParams.meses && currentParams.meses[0]) ? String(currentParams.meses[0]).padStart(2, '0') : '10';
+            recDiaEl.textContent = `${String(maxFatDiaIdx + 1).padStart(2, '0')}/${mStr}`;
+        }
+        if (recFatEl) {
+            recFatEl.textContent = maxFatVal > 0 ? `(R$ ${fmtMoedaZero(maxFatVal)})` : '';
+        }
+
+        // Atualizar o gráfico Chart.js
+        const ch = chartInstances[c.canvasId];
+        if (ch) {
+            ch.data.labels = slicedLabels;
+            ch.data.datasets[0].data = slicedMeta;
+            ch.data.datasets[1].data = slicedAnt;
+            ch.data.datasets[2].data = slicedFat;
+
+            // Ajustar raios e destaques do maior dia
+            const totalPontos = slicedLabels.length;
+            const pRadiusFat = totalPontos > 25 ? 3 : 4.5;
+            const fatPointRadii = [];
+            const fatPointBg = [];
+            const fatPointBorder = [];
+            const fatPointBorderW = [];
+
+            for (let idxPt = 0; idxPt < totalPontos; idxPt++) {
+                if (idxPt === maxFatDiaIdx && maxFatVal > 0) {
+                    fatPointRadii.push(pRadiusFat + 3.5);
+                    fatPointBg.push('#FFB300');
+                    fatPointBorder.push('#FFFFFF');
+                    fatPointBorderW.push(2.5);
+                } else {
+                    fatPointRadii.push(pRadiusFat);
+                    fatPointBg.push('#FFFFFF');
+                    fatPointBorder.push('#FF5252');
+                    fatPointBorderW.push(2.2);
+                }
+            }
+
+            if (ch.data.datasets[2]) {
+                ch.data.datasets[2].pointRadius = fatPointRadii;
+                ch.data.datasets[2].pointBackgroundColor = fatPointBg;
+                ch.data.datasets[2].pointBorderColor = fatPointBorder;
+                ch.data.datasets[2].pointBorderWidth = fatPointBorderW;
+            }
+
+            ch.update('none'); // Update ultra-rápido sem animação travando
+        }
+    });
+
+    // Top Header KPIs
+    const infoGeral = currentGraficosData['GERAL'];
+    if (infoGeral) {
+        const fg = infoGeral.full_month || {
+            acumulado_fat: infoGeral.acumulado_fat || [],
+            meta_mes: infoGeral.meta_mes || 0
+        };
+        const sliceEnd = Math.min(diaNum, (fg.acumulado_fat || []).length);
+        const fatGeral = fg.acumulado_fat && fg.acumulado_fat.length > 0 ? (fg.acumulado_fat[sliceEnd - 1] || 0) : 0;
+        const metaMesGeral = fg.meta_mes || 0;
+        const projGeral = diaNum > 0 ? (fatGeral / diaNum) * totalDiasMes : 0;
+        const projPctGeral = metaMesGeral > 0 ? (projGeral / metaMesGeral * 100) : 0;
+
+        const projEl = document.getElementById('kpi-projecao');
+        if (projEl) projEl.textContent = fmtMoeda(projGeral);
+        const projPctEl = document.getElementById('kpi-projecao-pct');
+        if (projPctEl) {
+            projPctEl.textContent = `${fmtPct(projPctGeral)} da Meta Total`;
+            projPctEl.className = 'badge-pill ' + (projPctGeral >= 100 ? 'pill-green' : (projPctGeral >= 80 ? 'pill-blue' : 'pill-red'));
+        }
+    }
+
+    // Atualizar Tabela de Canais
+    if (currentCanaisData && Array.isArray(currentCanaisData)) {
+        currentCanaisData.forEach(row => {
+            const chInfo = currentGraficosData[row.canal];
+            if (chInfo) {
+                const fm = chInfo.full_month || {
+                    acumulado_fat: chInfo.acumulado_fat || [],
+                    acumulado_meta: chInfo.acumulado_meta || [],
+                    meta_mes: chInfo.meta_mes || 0
+                };
+                const endIdx = Math.min(diaNum, (fm.acumulado_fat || []).length) - 1;
+                if (endIdx >= 0) {
+                    const rFat = fm.acumulado_fat[endIdx] || 0;
+                    const rMeta = fm.acumulado_meta[endIdx] || 0;
+                    const rVd = diaNum > 0 ? rFat / diaNum : 0;
+                    row.faturamento_liquido = rFat;
+                    row.meta_periodo = rMeta;
+                    row.projecao_mes = rVd * totalDiasMes;
+                    row.atingimento_periodo_pct = rMeta > 0 ? (rFat / rMeta * 100) : 0;
+                    row.status = row.atingimento_periodo_pct >= 100 ? 'superou' : (row.atingimento_periodo_pct >= 75 ? 'atencao' : 'critico');
+                }
+            }
+        });
+        renderizarTabelaCanais();
+    }
+}
+
 function aplicarDadosDashboard(data) {
     if (!data) return;
+    window.dashboardInicializado = true;
+    currentParams = data.parametros;
+    currentGraficosData = data.graficos_canais;
     atualizarKPIs(data.kpis);
     renderizarSeisGraficos(data.graficos_canais);
     atualizarTabelaCanais(data.canais_tabela);
@@ -764,7 +1022,9 @@ async function carregarDados(forceRefresh = false) {
 
     try {
         // Se já temos algo na tela, não precisa travar tudo com spinner pesado, apenas suave
-        overlay.classList.remove('hidden');
+        if (!window.dashboardInicializado) {
+            overlay.classList.remove('hidden');
+        }
         if (iconRefresh) iconRefresh.classList.add('spinning');
 
         const url = `/api/resumo?anos=${anos.join(',')}&meses=${meses.join(',')}&dia_ini=1&dia_fim=${diaFim}&marca=${encodeURIComponent(marca)}&force=${forceRefresh}`;
@@ -791,6 +1051,7 @@ async function carregarDados(forceRefresh = false) {
     } finally {
         overlay.classList.add('hidden');
         if (iconRefresh) iconRefresh.classList.remove('spinning');
+        window.dashboardInicializado = true;
     }
 }
 
