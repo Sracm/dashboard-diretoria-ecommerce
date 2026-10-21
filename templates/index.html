@@ -1112,7 +1112,36 @@
                         </div>
 
                         <!-- Tabela de Conversão Mês a Mês -->
-                        
+                        <div class="table-responsive conversao-table-container" style="margin-top: 15px;">
+                            <table class="matrix-table conversao-table" id="table-conversao">
+                                <thead>
+                                    <tr class="thead-group-row">
+                                        <th colspan="2" class="th-group-left">GOOGLE ANALYTICS 4</th>
+                                        <th colspan="2" class="th-group-right">TAXA CONVERSÃO VTEX</th>
+                                    </tr>
+                                    <tr class="thead-cols-row">
+                                        <th class="sortable" data-col="mes_abrev" title="Ordenar por Mês">
+                                            <span class="th-content">MÊS <i class="sort-icon"></i></span>
+                                        </th>
+                                        <th class="sortable text-right" data-col="sessoes" title="Ordenar por Sessões">
+                                            <span class="th-content">SESSÕES <i class="sort-icon"></i></span>
+                                        </th>
+                                        <th class="sortable text-right" data-col="pedidos" title="Ordenar por Pedidos">
+                                            <span class="th-content">PEDIDOS <i class="sort-icon"></i></span>
+                                        </th>
+                                        <th class="sortable text-right" data-col="taxa_conversao" title="Ordenar por Taxa">
+                                            <span class="th-content">TAXA CONV. <i class="sort-icon"></i></span>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody id="conversao-table-body">
+                                    <!-- Preenchido dinamicamente via JS -->
+                                </tbody>
+                                <tfoot id="conversao-table-foot">
+                                    <!-- Linha de Média Anual preenchida via JS -->
+                                </tfoot>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </section>

@@ -1785,7 +1785,7 @@ def api_resumo():
         }
         
         # 10. Dados de Conversão e Sessões (Google Analytics 4)
-        analytics_conversao = get_analytics_conversao(meses=meses)
+        analytics_conversao = get_analytics_conversao(meses=meses, ano=anos[0] if anos else 2026, dia_ini=dia_ini, dia_fim=dia_fim)
 
         mes_nome_str = ", ".join([NOMES_MESES[m-1][:3] for m in meses])
         ano_str = ", ".join([str(a) for a in anos])
