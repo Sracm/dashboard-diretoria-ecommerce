@@ -1445,20 +1445,19 @@ function renderizarSeisGraficos(graficos) {
                             drawTicks: false
                         },
                         ticks: {
-                            autoSkip: totalPontos > 22,
-                            maxTicksLimit: totalPontos > 22 ? 16 : totalPontos,
+                            autoSkip: false,
                             maxRotation: 0,
                             minRotation: 0,
                             color: '#94A3B8',
                             font: {
                                 family: 'Montserrat',
-                                size: totalPontos > 20 ? 8.5 : 9.5,
+                                size: totalPontos > 20 ? 7.5 : 9,
                                 weight: '600'
                             },
                             padding: 6,
-                            callback: function(val, index) {
+                            callback: function(val, index, ticks) {
                                 const lbl = this.getLabelForValue(val);
-                                return lbl ? String(lbl).replace(/^D/i, '') : val;
+                                return lbl ? String(lbl).replace(/^D/i, '') : String(val);
                             }
                         }
                     },
@@ -1728,16 +1727,15 @@ function renderizarModalCanal(canalKey, modo) {
                             drawTicks: false
                         },
                         ticks: {
-                            autoSkip: true,
-                            maxTicksLimit: 16,
+                            autoSkip: false,
                             maxRotation: 0,
                             minRotation: 0,
                             color: '#94A3B8',
                             padding: 8,
                             font: { family: 'Montserrat', size: 10, weight: '600' },
-                            callback: function(val, index) {
+                            callback: function(val, index, ticks) {
                                 const lbl = this.getLabelForValue(val);
-                                return lbl ? String(lbl).replace(/^D/i, '') : val;
+                                return lbl ? String(lbl).replace(/^D/i, '') : String(val);
                             }
                         }
                     },
@@ -1820,9 +1818,9 @@ function renderizarModalCanal(canalKey, modo) {
                             autoSkip: false,
                             color: '#A0A0B0',
                             font: { family: 'Montserrat', size: 10, weight: '600' },
-                            callback: function(val, index) {
+                            callback: function(val, index, ticks) {
                                 const lbl = this.getLabelForValue(val);
-                                return lbl ? String(lbl).replace(/^D/i, '') : val;
+                                return lbl ? String(lbl).replace(/^D/i, '') : String(val);
                             }
                         }
                     },
@@ -3628,7 +3626,7 @@ function renderizarTabelaConversao() {
     if (tfoot) {
         tfoot.innerHTML = `
             <tr class="tfoot-total-row">
-                <td style="padding: 8px 12px;"><span class="tfoot-glow-text">MÉDIA ANUAL</span></td>
+                <td style="padding: 8px 12px;"><span class="tfoot-glow-text">Total</span></td>
                 <td class="text-right" style="padding: 8px 12px; font-weight: 800; color: #BAE6FD;">${fmtInt(currentConversaoData.totais.total_sessoes)}</td>
                 <td class="text-right" style="padding: 8px 12px; font-weight: 800;">${fmtInt(currentConversaoData.totais.total_pedidos)}</td>
                 <td class="text-right" style="padding: 8px 12px; font-weight: 800;">

@@ -25,6 +25,16 @@ from analytics_data import get_analytics_conversao
 
 app = Flask(__name__)
 app.config.from_object(Config)
+app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
+
+@app.after_request
+def add_no_cache_headers(response):
+    if request.path == '/' or request.path.endswith('.js') or request.path.endswith('.css'):
+        response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, max-age=0'
+        response.headers['Pragma'] = 'no-cache'
+        response.headers['Expires'] = '0'
+    return response
+
 
 CANAIS_OFICIAIS = ["MERCADO LIVRE", "VTEX", "SHOPEE", "MAGALU", "PARLUX"]
 NOMES_MESES = [
@@ -1908,13 +1918,19 @@ def _executar_etl_background(ano=None, mes=None):
         mes_alvo = mes or agora.month
         print(f"[ETL BACKGROUND] Iniciando atualização rápida Sankhya -> MariaDB para {mes_alvo:02d}/{ano_alvo}...")
         executar_etl(ano=ano_alvo, mes=mes_alvo)
-        sync_state["is_running"] = False
+        try:
+            from etl.atualizar_ga4 import sincronizar_ga4_mariadb
+            sincronizar_ga4_mariadb(dias_atras=35)
+        except Exception as ge:
+            print(f"[ETL BACKGROUND] Aviso ao sincronizar GA4: {ge}")
+        # Limpar cache de memória e disco ANTES de liberar o status para o frontend carregar dados frescos
+        from db import limpar_cache_geral
+        limpar_cache_geral()
+        _RESUMO_CACHE.clear()
         sync_state["last_result"] = "sucesso"
         sync_state["last_run"] = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
         sync_state["error"] = None
-        # Limpar cache de memória para o dashboard carregar dados frescos
-        from db import limpar_cache_geral
-        limpar_cache_geral()
+        sync_state["is_running"] = False
         print(f"[ETL BACKGROUND] Concluído com sucesso para {mes_alvo:02d}/{ano_alvo} e caches renovados.")
     except Exception as e:
         import traceback
@@ -1958,6 +1974,18 @@ def rota_sincronizar_status():
         "ultima_atualizacao": ult
     })
 
+def _agendador_automatico_etl():
+    import time
+    time.sleep(15)
+    while True:
+        try:
+            print("[AUTO-SYNC] Iniciando sincronizacao periodica GA4 + Vendas...")
+            _executar_etl_background()
+        except Exception as e:
+            print(f"[AUTO-SYNC] Erro: {e}")
+        time.sleep(3600)
+
 if __name__ == "__main__":
-    print(f"Iniciando Dashboard E-commerce na porta {Config.PORT}...")
+    threading.Thread(target=_agendador_automatico_etl, daemon=True).start()
+    print(f"Iniciando Dashboard E-commerce na porta {Config.PORT} (Auto-sync 1h ativo)...")
     app.run(host=Config.HOST, port=Config.PORT, debug=Config.DEBUG)
