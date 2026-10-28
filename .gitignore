@@ -20,3 +20,6 @@ scratch_*.js
 # IDEs
 .vscode/
 .idea/
+
+ga4_credentials.json
+ga4_property_id.txt
