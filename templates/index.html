@@ -218,7 +218,7 @@
                     <div class="filter-group custom-multiselect" id="ms-container-mes">
                         <label class="filter-label">Mês</label>
                         <div class="multiselect-trigger" id="trigger-mes" tabindex="0" title="Clique para selecionar um ou mais meses">
-                            <span class="trigger-label" id="label-selected-meses">Out</span>
+                            <span class="trigger-label" id="label-selected-meses">{{ mes_nome_padrao|default("Nov") }}</span>
                             <i data-lucide="chevron-down" class="dropdown-chevron"></i>
                         </div>
                         <div class="multiselect-dropdown dropdown-mes-grid hidden" id="dropdown-mes">
@@ -1078,31 +1078,31 @@
                                     <span class="subcard-tag tag-ga4"><i data-lucide="bar-chart-2" class="tag-icon"></i> Google Analytics 4</span>
                                 </div>
                             </div>
-                            <span class="subcard-total-badge badge-conversao-glow" id="badge-total-conversao">Out: 1,30%</span>
+                            <span class="subcard-total-badge badge-conversao-glow" id="badge-total-conversao">—</span>
                         </div>
 
                         <!-- 3 Mini KPIs de Conversão -->
                         <div class="mini-kpis-row">
                             <div class="mini-kpi-item kpi-accent-blue">
                                 <div class="mini-kpi-header">
-                                    <span class="mini-kpi-label">Sessões (Out)</span>
+                                    <span class="mini-kpi-label">Sessões</span>
                                     <span class="mini-kpi-icon-pill icon-pill-blue"><i data-lucide="users"></i></span>
                                 </div>
-                                <span class="mini-kpi-val" id="kpi-ga-sessoes">74.121</span>
+                                <span class="mini-kpi-val" id="kpi-ga-sessoes">—</span>
                             </div>
                             <div class="mini-kpi-item kpi-accent-purple">
                                 <div class="mini-kpi-header">
-                                    <span class="mini-kpi-label">Pedidos (Out)</span>
+                                    <span class="mini-kpi-label">Pedidos</span>
                                     <span class="mini-kpi-icon-pill icon-pill-purple"><i data-lucide="shopping-cart"></i></span>
                                 </div>
-                                <span class="mini-kpi-val" id="kpi-ga-pedidos">967</span>
+                                <span class="mini-kpi-val" id="kpi-ga-pedidos">—</span>
                             </div>
                             <div class="mini-kpi-item kpi-accent-green">
                                 <div class="mini-kpi-header">
-                                    <span class="mini-kpi-label">Taxa (Out)</span>
+                                    <span class="mini-kpi-label">Taxa</span>
                                     <span class="mini-kpi-icon-pill icon-pill-green"><i data-lucide="percent"></i></span>
                                 </div>
-                                <span class="mini-kpi-val" id="kpi-ga-taxa">1,30%</span>
+                                <span class="mini-kpi-val" id="kpi-ga-taxa">—</span>
                             </div>
                         </div>
 
@@ -1116,8 +1116,8 @@
                             <table class="matrix-table conversao-table" id="table-conversao">
                                 <thead>
                                     <tr class="thead-group-row">
-                                        <th colspan="2" class="th-group-left">GOOGLE ANALYTICS 4</th>
-                                        <th colspan="2" class="th-group-right">TAXA CONVERSÃO VTEX</th>
+                                        <th colspan="3" class="th-group-left">GOOGLE ANALYTICS 4</th>
+                                        <th colspan="3" class="th-group-right">FUNIL & TAXA DE CONVERSÃO VTEX</th>
                                     </tr>
                                     <tr class="thead-cols-row">
                                         <th class="sortable" data-col="mes_abrev" title="Ordenar por Mês">
@@ -1126,11 +1126,17 @@
                                         <th class="sortable text-right" data-col="sessoes" title="Ordenar por Sessões">
                                             <span class="th-content">SESSÕES <i class="sort-icon"></i></span>
                                         </th>
+                                        <th class="sortable text-right" data-col="add_to_cart" title="Ordenar por Add to Cart">
+                                            <span class="th-content">ADD TO CART <i class="sort-icon"></i></span>
+                                        </th>
                                         <th class="sortable text-right" data-col="pedidos" title="Ordenar por Pedidos">
                                             <span class="th-content">PEDIDOS <i class="sort-icon"></i></span>
                                         </th>
-                                        <th class="sortable text-right" data-col="taxa_conversao" title="Ordenar por Taxa">
-                                            <span class="th-content">TAXA CONV. <i class="sort-icon"></i></span>
+                                        <th class="sortable text-right" data-col="taxa_carrinho" title="Ordenar por Taxa de Carrinho">
+                                            <span class="th-content">TX. CARRINHO <i class="sort-icon"></i></span>
+                                        </th>
+                                        <th class="sortable text-right" data-col="taxa_conversao" title="Ordenar por Taxa de Conversão">
+                                            <span class="th-content">TX. CONV. <i class="sort-icon"></i></span>
                                         </th>
                                     </tr>
                                 </thead>

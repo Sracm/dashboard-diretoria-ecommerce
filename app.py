@@ -79,9 +79,11 @@ def index():
     ano_padrao = now.year
     _, total_dias = calendar.monthrange(ano_padrao, mes_padrao)
     dia_padrao = min(now.day, total_dias)
+    mes_nome = NOMES_MESES[mes_padrao - 1][:3]
     return render_template(
         "index.html",
         mes_atual=mes_padrao,
+        mes_nome_padrao=mes_nome,
         ano_atual=ano_padrao,
         dia_hoje=dia_padrao,
         total_dias_mes=total_dias,
@@ -143,6 +145,11 @@ def api_resumo():
                 return jsonify(c_data)
         if force:
             _RESUMO_CACHE.clear()
+            try:
+                from etl.atualizar_ga4 import sincronizar_ga4_mariadb
+                sincronizar_ga4_mariadb(dias_atras=7)
+            except Exception as ge:
+                print(f"[GA4 Quick Sync on force] Aviso: {ge}")
 
         # 1. Carrega dados de todos os anos e meses do Sankhya (com cache)
         dfs_meses = []
@@ -1977,13 +1984,22 @@ def rota_sincronizar_status():
 def _agendador_automatico_etl():
     import time
     time.sleep(15)
+    contador = 0
     while True:
         try:
-            print("[AUTO-SYNC] Iniciando sincronizacao periodica GA4 + Vendas...")
-            _executar_etl_background()
+            # A cada 15 min atualiza GA4 automaticamente
+            from etl.atualizar_ga4 import sincronizar_ga4_mariadb
+            sincronizar_ga4_mariadb(dias_atras=7)
+            _RESUMO_CACHE.clear()
+            
+            # A cada 1 hora roda o ETL completo de vendas do Sankhya
+            if contador % 4 == 0:
+                print("[AUTO-SYNC] Iniciando sincronizacao completa Sankhya + GA4...")
+                _executar_etl_background()
+            contador += 1
         except Exception as e:
             print(f"[AUTO-SYNC] Erro: {e}")
-        time.sleep(3600)
+        time.sleep(900)
 
 if __name__ == "__main__":
     threading.Thread(target=_agendador_automatico_etl, daemon=True).start()
